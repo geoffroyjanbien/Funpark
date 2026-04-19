@@ -16,6 +16,7 @@ Track the progress of the Funpark Management Web Application development. Update
 - ✅ Added dark theme UI planning and navigation structure
 - ✅ Emphasized UI layout to prevent component overlaps
 - ✅ Added progress tracking mechanism (this file)
+- ✅ Created API specification document (api-spec.md)
 
 ### Documentation Updates
 - ✅ Merged implementation1 into master (commit 0a2d148)
