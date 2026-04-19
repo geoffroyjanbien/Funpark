@@ -18,6 +18,7 @@ Track the progress of the Funpark Management Web Application development. Update
 - ✅ Added progress tracking mechanism (this file)
 - ✅ Created API specification document (api-spec.md)
 - ✅ Created CSV schema definition (csv-schema.md)
+- ✅ Created .env template (.env.example)
 
 ### Documentation Updates
 - ✅ Merged implementation1 into master (commit 0a2d148)
