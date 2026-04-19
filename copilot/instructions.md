@@ -94,6 +94,7 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
     - Configure Angular Router with routes for each section and lazy loading
     - Make navigation responsive and integrate with dark theme (use theme variables for menu styling)
     - Set daily dashboard as home page
+    - Plan component layout carefully to avoid overlaps: use CSS Grid or Flexbox for proper spacing, ensure responsive design on all screen sizes
 
 16. **Build Forms with Validation**:
     - Revenue form: category dropdown, amount_ll, amount_usd, date picker

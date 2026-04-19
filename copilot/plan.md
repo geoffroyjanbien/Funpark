@@ -68,13 +68,14 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
     - Create sub-menus for summaries (daily, monthly, yearly) and data entry forms
     - Configure Angular routing with lazy loading and guards if needed
     - Make navigation responsive and dark-theme compatible
+    - Plan layout to prevent component overlaps: use flexbox/grid for proper spacing and responsive design
 
 13. Build data entry forms with validation.
     - Revenue form: category, amount_ll, amount_usd, date with validation messages
     - Expense form: main_category, subcategory, investment_type, amounts, date
     - Investment form: type, description, amounts, owner allocation
 
-13. Create daily dashboard component.
+14. Create daily dashboard component.
     - Date selector, per-day revenue, expenses, balance, owner-specific shares
     - Detailed line items for revenue and expenses
 
@@ -145,7 +146,7 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
 **Verification**
 1. **Phase 1 Verification**: API spec and CSV schema documented; Excel import plan finalized
 2. **Phase 2 Verification**: All unit tests pass (>90% coverage); backend integration tests pass; calculations match Excel formulas exactly
-3. **Phase 3 Verification**: All forms validate correctly; dashboards display correct data; charts render properly; dark theme loads and renders consistently
+3. **Phase 3 Verification**: All forms validate correctly; dashboards display correct data; charts render properly; dark theme loads and renders consistently; no UI component overlaps occur across different screen sizes and devices
 4. **Phase 4 Verification**: 
    - End-to-end tests confirm all calculations match Excel sample data
    - CI/CD pipeline runs successfully on push
