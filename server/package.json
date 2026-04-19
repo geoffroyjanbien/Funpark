@@ -1,0 +1,33 @@
+{
+  "name": "funpark-server",
+  "version": "1.0.0",
+  "description": "Backend API server for Funpark management application",
+  "main": "src/index.js",
+  "scripts": {
+    "start": "node src/index.js",
+    "dev": "nodemon src/index.js",
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "seed-excel": "node src/utils/excelImport.js"
+  },
+  "keywords": [
+    "funpark",
+    "api",
+    "express",
+    "csv"
+  ],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "dependencies": {
+    "cors": "^2.8.6",
+    "csv-parser": "^3.2.0",
+    "csv-writer": "^1.6.0",
+    "dotenv": "^16.6.1",
+    "express": "^4.22.1",
+    "winston": "^3.19.0",
+    "xlsx": "^0.18.5"
+  },
+  "devDependencies": {
+    "jest": "^29.0.0",
+    "nodemon":
