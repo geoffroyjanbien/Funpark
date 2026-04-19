@@ -241,4 +241,11 @@ async function deleteFromCSV(fileType, criteria, dataPath = './data') {
 
 module.exports = {
   CSV_FILES,
- 
+  SCHEMAS,
+  readCSV,
+  writeCSV,
+  appendToCSV,
+  updateInCSV,
+  deleteFromCSV,
+  validateRecord
+};

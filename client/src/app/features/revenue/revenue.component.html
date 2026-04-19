@@ -1,0 +1,187 @@
+<div class="revenue-page">
+  <div class="page-header">
+    <div>
+      <h1>Revenue Management</h1>
+      <p>Track ticket sales, food sales, and merchandise revenue</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">Dashboard</a>
+      <button (click)="openAddForm()" class="btn btn-primary">
+        <span>➕</span>
+        Add Revenue
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    <span>⚠️</span>
+    {{ error }}
+    <button (click)="error = null" class="alert-close">×</button>
+  </div>
+
+  <!-- Stats Card -->
+  <div class="stats-card">
+    <div class="stat-item">
+      <div class="stat-label">Total Revenue</div>
+      <div class="stat-value">${{ getTotalRevenue() | number:'1.0-0' }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">Total Entries</div>
+      <div class="stat-value">{{ revenueItems.length }}</div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        placeholder="Search by source, description, or amount..."
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        class="form-input">
+      <span class="search-icon">🔍</span>
+    </div>
+  </div>
+
+  <!-- Revenue Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ editingItem ? 'Edit' : 'Add' }} Revenue Entry</h2>
+        <button (click)="cancelForm()" class="modal-close">×</button>
+      </div>
+
+      <form [formGroup]="revenueForm" (ngSubmit)="onSubmit()" class="revenue-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Date *</label>
+            <input
+              type="date"
+              formControlName="date"
+              class="form-input"
+              [class.error]="getFormFieldError('date')">
+            <div *ngIf="getFormFieldError('date')" class="field-error">
+              {{ getFormFieldError('date') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Source *</label>
+            <select formControlName="source" class="form-select" [class.error]="getFormFieldError('source')">
+              <option value="">Select source</option>
+              <option value="Tickets">Tickets</option>
+              <option value="Food & Beverage">Food & Beverage</option>
+              <option value="Merchandise">Merchandise</option>
+              <option value="Games">Games</option>
+              <option value="Parking">Parking</option>
+              <option value="Other">Other</option>
+            </select>
+            <div *ngIf="getFormFieldError('source')" class="field-error">
+              {{ getFormFieldError('source') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">Amount *</label>
+            <div class="amount-input">
+              <span class="currency-symbol">$</span>
+              <input
+                type="number"
+                formControlName="amount"
+                placeholder="0.00"
+                step="0.01"
+                min="0"
+                class="form-input amount-field"
+                [class.error]="getFormFieldError('amount')">
+            </div>
+            <div *ngIf="getFormFieldError('amount')" class="field-error">
+              {{ getFormFieldError('amount') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Description</label>
+            <input
+              type="text"
+              formControlName="description"
+              placeholder="Optional description"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="cancelForm()" class="btn btn-secondary">Cancel</button>
+          <button type="submit" [disabled]="!revenueForm.valid" class="btn btn-primary">
+            {{ editingItem ? 'Update' : 'Add' }} Revenue
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Revenue Table -->
+  <div class="card">
+    <div class="card-header">
+      <h2 class="card-title">Revenue Entries</h2>
+      <div class="card-actions">
+        <button (click)="loadRevenue()" class="btn btn-secondary btn-sm" [disabled]="loading">
+          <span *ngIf="loading">⟳</span>
+          <span *ngIf="!loading">🔄</span>
+          Refresh
+        </button>
+      </div>
+    </div>
+
+    <div class="card-content">
+      <div *ngIf="loading" class="loading-state">
+        <div class="loading-spinner">⟳</div>
+        <p>Loading revenue data...</p>
+      </div>
+
+      <div *ngIf="!loading && filteredItems.length === 0" class="empty-state">
+        <div class="empty-icon">💰</div>
+        <h3>No revenue entries found</h3>
+        <p>{{ searchTerm ? 'Try adjusting your search terms' : 'Add your first revenue entry to get started' }}</p>
+        <button *ngIf="!searchTerm" (click)="openAddForm()" class="btn btn-primary">Add First Entry</button>
+      </div>
+
+      <div *ngIf="!loading && filteredItems.length > 0" class="table-responsive">
+        <table class="table">
+          <thead>
+            <tr>
+              <th>Date</th>
+              <th>Source</th>
+              <th>Description</th>
+              <th class="text-right">Amount</th>
+              <th class="text-center">Actions</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let item of filteredItems; trackBy: trackById">
+              <td>{{ item.date | date:'shortDate' }}</td>
+              <td>
+                <span class="source-badge" [ngClass]="'source-' + item.source.toLowerCase().replace(/\s+/g, '-')">
+                  {{ item.source }}
+                </span>
+              </td>
+              <td>{{ item.description || '-' }}</td>
+              <td class="text-right">${{ item.amount | number:'1.2-2' }}</td>
+              <td class="text-center">
+                <button (click)="editItem(item)" class="btn-action btn-edit" title="Edit">
+                  ✏️
+                </button>
+                <button (click)="deleteItem(item)" class="btn-action btn-delete" title="Delete">
+                  🗑️
+                </button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+</div>

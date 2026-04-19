@@ -1,0 +1,46 @@
+<nav class="navigation">
+  <div class="nav-header">
+    <h1 class="nav-title">🎢 Funpark</h1>
+    <p class="nav-subtitle">Management System</p>
+  </div>
+
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">Dashboard</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/revenue" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">💰</span>
+        <span class="nav-text">Revenue</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/expenses" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">💸</span>
+        <span class="nav-text">Expenses</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/investments" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">📈</span>
+        <span class="nav-text">Investments</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/reports" routerLinkActive="active" class="nav-link">
+        <span class="nav-icon">📋</span>
+        <span class="nav-text">Reports</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="nav-footer">
+    <div class="nav-info">
+      <small class="nav-version">v1.0.0</small>
+      <small class="nav-date">{{ currentDate | date:'short' }}</small>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,2 @@
+{"dataPath":"./data","environment":"development","level":"info","message":"Funpark API server running on port 3000","service":"funpark-api","timestamp":"2026-04-19T16:54:33.299Z"}
+{"level":"info","message":"Created data directory: ./data","service":"funpark-api","timestamp":"2026-04-19T16:54:33.302Z"}
