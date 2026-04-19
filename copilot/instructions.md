@@ -25,9 +25,15 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
 
 4. **Plan Excel Import**: Script using xlsx package to read funpark.xlsx and seed CSV files with validation
 
+5. **Set Up Progress Tracking**:
+   - Create `copilot/progress.md` file to log implementation progress
+   - Update after each completed step with date, commit hash, and brief status
+   - Include current phase, next steps, and any blockers or notes
+   - Use this to resume work if interrupted, avoiding duplicate tasks
+
 ## Phase 2: Backend Development
 
-5. **Initialize Node.js Project**:
+6. **Initialize Node.js Project**:
    ```bash
    mkdir server && cd server
    npm init -y
@@ -35,7 +41,7 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
    npm install --save-dev jest@^29.0.0 supertest@^6.3.0 nodemon@^2.0.0
    ```
 
-6. **Create Folder Structure**:
+7. **Create Folder Structure**:
    ```
    server/src/routes/  (revenue.js, expenses.js, investments.js, summaries.js)
    server/src/controllers/  (CRUD handlers)
@@ -45,42 +51,40 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
    server/tests/  (unit and integration tests)
    ```
 
-7. **Implement CSV Handlers** (src/utils/csvHandler.js):
+8. **Implement CSV Handlers** (src/utils/csvHandler.js):
    - Read/write with atomic operations (write to temp file, then rename)
    - Include error handling and logging
    - Support all CSV files defined in Phase 1
 
-8. **Implement Profit Calculations** (src/utils/calculations.js):
+9. **Implement Profit Calculations** (src/utils/calculations.js):
    - Formula: daily_profit = sum(daily_revenue) - sum(daily_expenses)
    - Owner1 (30%): 30% of daily_profit + 0% of Long Term investments
    - Owner2 (70%): 70% of daily_profit + 100% of Long Term investments
    - Mid Term / Short Term investments: split 30%/70%
    - Monthly/Yearly: aggregate from daily summaries
 
-9. **Build REST API Routes**: Implement all CRUD endpoints with:
-   - Request validation middleware
-   - Standard JSON responses: {success: true/false, data: ..., error: ...}
-   - Proper HTTP status codes (200 GET, 201 POST, 400 validation error, 404 not found, 500 server error)
+10. **Build REST API Routes**: Implement all CRUD endpoints with:
+    - Request validation middleware
+    - Standard JSON responses: {success: true/false, data: ..., error: ...}
+    - Proper HTTP status codes (200 GET, 201 POST, 400 validation error, 404 not found, 500 server error)
 
-10. **Add Error Handling**: Centralized error handler middleware, Winston logging, audit trail for all modifications
+11. **Add Error Handling**: Centralized error handler middleware, Winston logging, audit trail for all modifications
 
-11. **Set Up Environment Configuration**: Create .env files for dev, staging, production
+12. **Set Up Environment Configuration**: Create .env files for dev, staging, production
 
-12. **Build Excel Import Utility** (src/utils/excelImport.js):
-    - Parse funpark.xlsx using xlsx package
-    - Convert data to CSV format matching schema
+13. **Build Excel Import Utility** (src/utils/excelImport.js):
     - Validate imported data
     - Command: `npm run seed-excel`
 
 ## Phase 3: Frontend Development
 
-13. **Initialize Angular**:
+14. **Initialize Angular**:
     ```bash
     ng new client --routing --style=css --skip-git
     cd client
     ```
 
-14. **Create Folder Structure**:
+15. **Create Folder Structure**:
     ```
     client/src/app/
     ├── components/ (revenue-form, expense-form, investment-form, daily-dashboard, monthly-overview, yearly-overview, charts)
@@ -88,12 +92,13 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
     ├── models/ (revenue.model.ts, expense.model.ts, investment.model.ts, summary.model.ts)
     ```
 
-15. **Set Up Navigation and Routing**:
+16. **Set Up Navigation and Routing**:
     - Create main navigation component with menu items: Dashboard, Revenue, Expenses, Investments, Summaries, Export
     - Add sub-menu for Summaries (daily, monthly, yearly views)
     - Configure Angular Router with routes for each section and lazy loading
     - Make navigation responsive and integrate with dark theme (use theme variables for menu styling)
     - Set daily dashboard as home page
+    - Plan component layout carefully to avoid overlaps: use CSS Grid or Flexbox for proper spacing, ensure responsive design on all screen sizes
     - Plan component layout carefully to avoid overlaps: use CSS Grid or Flexbox for proper spacing, ensure responsive design on all screen sizes
 
 16. **Build Forms with Validation**:
@@ -132,33 +137,33 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
 
 ## Phase 4: Testing & Deployment
 
-21. **Write Unit Tests** (server/tests/calculations.test.js):
+22. **Write Unit Tests** (server/tests/calculations.test.js):
     - Test profit calculation formulas
     - Test owner share allocation (30%/70%)
     - Test investment-type allocation
     - Run: `npm test`
     - Target: >90% code coverage
 
-22. **Write Integration Tests** (server/tests/api.test.js):
+23. **Write Integration Tests** (server/tests/api.test.js):
     - Supertest for all CRUD endpoints
     - Test daily/monthly/yearly summary generation
     - Run: `npm run test:integration`
 
-23. **End-to-End Testing**:
+24. **End-to-End Testing**:
     - Use Excel sample data
     - Verify app calculations match Excel output exactly
     - Test all user workflows
 
-24. **Set Up CI/CD** (.github/workflows/):
+25. **Set Up CI/CD** (.github/workflows/):
     - GitHub Actions: run tests on every push
     - Auto-deploy on merge to main
 
-25. **Docker Setup**:
+26. **Docker Setup**:
     - Create Dockerfile for Node backend
     - Create docker-compose.yml for local development
     - Command: `docker-compose up`
 
-26. **Documentation**:
+27. **Documentation**:
     - README.md with installation, setup, API docs, calculation details, troubleshooting
 
 ## Commands Reference

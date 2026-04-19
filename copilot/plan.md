@@ -182,3 +182,9 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
 - CSV-based storage is sufficient for current daily operations scale
 - If data grows significantly (millions of rows), consider migration to PostgreSQL/MongoDB
 - API design supports future database swap without frontend changes
+
+**Progress Tracking**
+- Maintain a `progress.md` file in the `copilot/` folder to log completed tasks, current status, and next steps
+- Update progress after each major implementation milestone (e.g., after completing a phase step)
+- Include timestamps, commit hashes, and brief notes on challenges encountered
+- Use this to resume work seamlessly if interrupted, ensuring no duplicate effort
