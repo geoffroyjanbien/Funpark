@@ -63,7 +63,13 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
 11. Initialize Angular project with structure.
     - Create with routing and CSS; set up HttpClient service
 
-12. Build data entry forms with validation.
+12. Set up navigation and routing.
+    - Define main menu: Dashboard (home), Revenue, Expenses, Investments, Summaries, Export
+    - Create sub-menus for summaries (daily, monthly, yearly) and data entry forms
+    - Configure Angular routing with lazy loading and guards if needed
+    - Make navigation responsive and dark-theme compatible
+
+13. Build data entry forms with validation.
     - Revenue form: category, amount_ll, amount_usd, date with validation messages
     - Expense form: main_category, subcategory, investment_type, amounts, date
     - Investment form: type, description, amounts, owner allocation

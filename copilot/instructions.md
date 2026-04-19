@@ -88,7 +88,14 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
     ├── models/ (revenue.model.ts, expense.model.ts, investment.model.ts, summary.model.ts)
     ```
 
-15. **Build Forms with Validation**:
+15. **Set Up Navigation and Routing**:
+    - Create main navigation component with menu items: Dashboard, Revenue, Expenses, Investments, Summaries, Export
+    - Add sub-menu for Summaries (daily, monthly, yearly views)
+    - Configure Angular Router with routes for each section and lazy loading
+    - Make navigation responsive and integrate with dark theme (use theme variables for menu styling)
+    - Set daily dashboard as home page
+
+16. **Build Forms with Validation**:
     - Revenue form: category dropdown, amount_ll, amount_usd, date picker
     - Expense form: main_category, subcategory, investment_type, amounts, date
     - Investment form: investment_type, description, amounts, owner_allocation
