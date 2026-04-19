@@ -81,11 +81,16 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
     - Pie chart: owner share breakdown
     - Bar chart: monthly comparisons
 
-16. Implement data export functionality.
+16. Add dark theme support and theme toggle.
+    - Define reusable dark theme styles using CSS variables
+    - Ensure forms, dashboards, tables, cards, and charts adapt to dark mode
+    - Add a theme toggle and persist preference in localStorage
+
+17. Implement data export functionality.
     - Export to CSV and PDF
 
 ### Phase 4: Testing & Deployment (depends on Phase 2 & 3)
-17. Write unit tests for backend calculations.
+18. Write unit tests for backend calculations.
     - Jest tests for profit calculation, owner allocation, investment handling
     - Target: >90% code coverage
 
@@ -105,6 +110,9 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
 **Relevant files**
 - `copilot/plan.md` — This detailed phased plan
 - `copilot/instructions.md` — Step-by-step implementation guide
+- `client/src/styles.css` or `client/src/styles.scss` — Global theme variables and base styling
+- `client/src/app/services/theme.service.ts` — Theme switcher logic
+- `client/src/app/app.component.ts` / `app.component.html` — Theme toggle and body class binding
 - `server/` — Node.js/Express backend (Phase 2)
   - `src/routes/` — API endpoint definitions
   - `src/controllers/` — Request handlers
@@ -131,7 +139,7 @@ Organized into 4 phases with explicit dependencies to enable parallel developmen
 **Verification**
 1. **Phase 1 Verification**: API spec and CSV schema documented; Excel import plan finalized
 2. **Phase 2 Verification**: All unit tests pass (>90% coverage); backend integration tests pass; calculations match Excel formulas exactly
-3. **Phase 3 Verification**: All forms validate correctly; dashboards display correct data; charts render properly
+3. **Phase 3 Verification**: All forms validate correctly; dashboards display correct data; charts render properly; dark theme loads and renders consistently
 4. **Phase 4 Verification**: 
    - End-to-end tests confirm all calculations match Excel sample data
    - CI/CD pipeline runs successfully on push

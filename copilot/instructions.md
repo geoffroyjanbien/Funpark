@@ -100,49 +100,57 @@ Follow the phased plan in `plan.md` to build the Funpark Management Web Applicat
     - Show owner1_share_ll (30%) and owner2_share_ll (70%)
     - List all revenue and expense line items for selected date
 
-17. **Create Monthly/Yearly Overviews**:
+17. **Add Dark Theme Support**:
+    - Create `client/src/styles.css` or `client/src/styles.scss` with CSS variables for dark theme colors
+    - Define `--bg`, `--surface`, `--text`, `--text-secondary`, `--border`, `--primary`, `--accent`, `--success`, `--danger`, `--shadow`
+    - Create `client/src/app/services/theme.service.ts` to apply a `dark-theme` class and persist theme selection in localStorage
+    - Add a toggle control in `client/src/app/app.component.html` or the main header
+    - Ensure cards, forms, tables, charts, and panels use theme variables and render clearly in dark mode
+    - Validate that theme preference persists after refresh
+
+18. **Create Monthly/Yearly Overviews**:
     - Month/year selector
     - Aggregate all revenue, expenses, profits
     - Display owner share distributions
 
-18. **Add Charts**:
+19. **Add Charts**:
     - Line chart: revenue/expense trends over time
     - Pie chart: owner share breakdown (30% / 70%)
     - Bar chart: monthly comparisons
 
-19. **Implement Export**:
+20. **Implement Export**:
     - Export daily/monthly/yearly summaries to CSV
     - Basic PDF generation
 
 ## Phase 4: Testing & Deployment
 
-20. **Write Unit Tests** (server/tests/calculations.test.js):
+21. **Write Unit Tests** (server/tests/calculations.test.js):
     - Test profit calculation formulas
     - Test owner share allocation (30%/70%)
     - Test investment-type allocation
     - Run: `npm test`
     - Target: >90% code coverage
 
-21. **Write Integration Tests** (server/tests/api.test.js):
+22. **Write Integration Tests** (server/tests/api.test.js):
     - Supertest for all CRUD endpoints
     - Test daily/monthly/yearly summary generation
     - Run: `npm run test:integration`
 
-22. **End-to-End Testing**:
+23. **End-to-End Testing**:
     - Use Excel sample data
     - Verify app calculations match Excel output exactly
     - Test all user workflows
 
-23. **Set Up CI/CD** (.github/workflows/):
+24. **Set Up CI/CD** (.github/workflows/):
     - GitHub Actions: run tests on every push
     - Auto-deploy on merge to main
 
-24. **Docker Setup**:
+25. **Docker Setup**:
     - Create Dockerfile for Node backend
     - Create docker-compose.yml for local development
     - Command: `docker-compose up`
 
-25. **Documentation**:
+26. **Documentation**:
     - README.md with installation, setup, API docs, calculation details, troubleshooting
 
 ## Commands Reference
