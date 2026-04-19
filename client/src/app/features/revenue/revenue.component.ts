@@ -158,4 +158,8 @@ export class RevenueComponent implements OnInit {
   trackById(index: number, item: RevenueItem): string {
     return item.id || index.toString();
   }
+
+  getSourceClass(source: string): string {
+    return 'source-' + source.toLowerCase().replace(/\s+/g, '-');
+  }
 }

@@ -164,7 +164,7 @@
             <tr *ngFor="let item of filteredItems; trackBy: trackById">
               <td>{{ item.date | date:'shortDate' }}</td>
               <td>
-                <span class="source-badge" [ngClass]="'source-' + item.source.toLowerCase().replace(/\s+/g, '-')">
+                <span class="source-badge" [ngClass]="getSourceClass(item.source)">
                   {{ item.source }}
                 </span>
               </td>
