@@ -1,0 +1,15 @@
+{
+  "version": 2,
+  "name": "funpark-client",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist/funpark-client",
+  "devCommand": "npm start",
+  "installCommand": "npm install",
+  "framework": "angular",
+  "rewrites": [
+    {
+      "source": "/(.*)",
+      "destination": "/index.html"
+    }
+  ]
+}
