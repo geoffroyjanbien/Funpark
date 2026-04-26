@@ -1,14 +1,14 @@
 <div class="revenue-page">
   <div class="page-header">
     <div>
-      <h1>Revenue Management</h1>
-      <p>Track ticket sales, food sales, and merchandise revenue</p>
+      <h1>{{ 'REVENUE.TITLE' | translate }}</h1>
+      <p>{{ 'REVENUE.SUBTITLE' | translate }}</p>
     </div>
     <div class="header-actions">
-      <a routerLink="/dashboard" class="btn btn-secondary">Dashboard</a>
+      <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
       <button (click)="openAddForm()" class="btn btn-primary">
         <span>➕</span>
-        Add Revenue
+        {{ 'REVENUE.ADD_REVENUE' | translate }}
       </button>
     </div>
   </div>
@@ -23,12 +23,12 @@
   <!-- Stats Card -->
   <div class="stats-card">
     <div class="stat-item">
-      <div class="stat-label">Total Revenue</div>
+      <div class="stat-label">{{ 'REVENUE.TOTAL_REVENUE' | translate }}</div>
       <div class="stat-value">${{ getTotalRevenue() | number:'1.0-0' }}</div>
     </div>
     <div class="stat-item">
-      <div class="stat-label">Total Entries</div>
-      <div class="stat-value">{{ revenueItems.length }}</div>
+      <div class="stat-label">{{ 'REVENUE.FILTERED_ENTRIES' | translate }}</div>
+      <div class="stat-value">{{ filteredItems.length }}</div>
     </div>
   </div>
 
@@ -37,11 +37,46 @@
     <div class="search-box">
       <input
         type="text"
-        placeholder="Search by source, description, or amount..."
+        [placeholder]="'REVENUE.SEARCH_PLACEHOLDER' | translate"
         [(ngModel)]="searchTerm"
         (input)="onSearch()"
         class="form-input">
       <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="date-filters">
+      <div class="filter-group">
+        <label>{{ 'FILTERS.VIEW_MODE' | translate }}:</label>
+        <select [(ngModel)]="viewMode" (change)="onViewModeChange()" class="filter-select">
+          <option value="all">{{ 'FILTERS.ALL_TIME' | translate }}</option>
+          <option value="yearly">{{ 'FILTERS.YEARLY' | translate }}</option>
+          <option value="monthly">{{ 'FILTERS.MONTHLY' | translate }}</option>
+          <option value="daily">{{ 'FILTERS.DAILY' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="viewMode === 'yearly' || viewMode === 'monthly'">
+        <label>{{ 'FILTERS.YEAR' | translate }}:</label>
+        <select [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()" class="filter-select">
+          <option *ngFor="let year of availableYears" [ngValue]="year">{{year}}</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="viewMode === 'monthly'">
+        <label>{{ 'FILTERS.MONTH' | translate }}:</label>
+        <select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange()" class="filter-select">
+          <option *ngFor="let month of availableMonths; let i = index" [ngValue]="i">{{month}}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>{{ 'FILTERS.GROUP_BY' | translate }}:</label>
+        <select [(ngModel)]="groupByField" (ngModelChange)="onGroupByChange()" class="filter-select">
+          <option value="none">{{ 'FILTERS.NO_GROUPING' | translate }}</option>
+          <option value="source">{{ 'REVENUE.SOURCE' | translate }}</option>
+          <option value="date">{{ 'COMMON.DATE' | translate }}</option>
+        </select>
+      </div>
     </div>
   </div>
 
@@ -49,14 +84,14 @@
   <div *ngIf="showForm" class="modal-overlay" (click)="cancelForm()">
     <div class="modal-content" (click)="$event.stopPropagation()">
       <div class="modal-header">
-        <h2>{{ editingItem ? 'Edit' : 'Add' }} Revenue Entry</h2>
+        <h2>{{ (editingItem ? 'COMMON.EDIT' : 'COMMON.ADD') | translate }} {{ 'REVENUE.TITLE' | translate }}</h2>
         <button (click)="cancelForm()" class="modal-close">×</button>
       </div>
 
       <form [formGroup]="revenueForm" (ngSubmit)="onSubmit()" class="revenue-form">
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Date *</label>
+            <label class="form-label">{{ 'COMMON.DATE' | translate }} *</label>
             <input
               type="date"
               formControlName="date"
@@ -68,15 +103,12 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Source *</label>
+            <label class="form-label">{{ 'REVENUE.SOURCE' | translate }} *</label>
             <select formControlName="source" class="form-select" [class.error]="getFormFieldError('source')">
-              <option value="">Select source</option>
-              <option value="Tickets">Tickets</option>
-              <option value="Food & Beverage">Food & Beverage</option>
-              <option value="Merchandise">Merchandise</option>
-              <option value="Games">Games</option>
-              <option value="Parking">Parking</option>
-              <option value="Other">Other</option>
+              <option value="">{{ 'FORM.SELECT_SOURCE' | translate }}</option>
+              <option *ngFor="let category of revenueCategories" [value]="category.name_en">
+                {{ getCategoryName(category) }}
+              </option>
             </select>
             <div *ngIf="getFormFieldError('source')" class="field-error">
               {{ getFormFieldError('source') }}
@@ -86,13 +118,13 @@
 
         <div class="form-row">
           <div class="form-group">
-            <label class="form-label">Amount *</label>
+            <label class="form-label">{{ 'COMMON.AMOUNT' | translate }} *</label>
             <div class="amount-input">
               <span class="currency-symbol">$</span>
               <input
                 type="number"
                 formControlName="amount"
-                placeholder="0.00"
+                [placeholder]="'FORM.AMOUNT_PLACEHOLDER' | translate"
                 step="0.01"
                 min="0"
                 class="form-input amount-field"
@@ -104,19 +136,19 @@
           </div>
 
           <div class="form-group">
-            <label class="form-label">Description</label>
+            <label class="form-label">{{ 'COMMON.DESCRIPTION' | translate }}</label>
             <input
               type="text"
               formControlName="description"
-              placeholder="Optional description"
+              [placeholder]="'FORM.DESCRIPTION_PLACEHOLDER' | translate"
               class="form-input">
           </div>
         </div>
 
         <div class="form-actions">
-          <button type="button" (click)="cancelForm()" class="btn btn-secondary">Cancel</button>
+          <button type="button" (click)="cancelForm()" class="btn btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
           <button type="submit" [disabled]="!revenueForm.valid" class="btn btn-primary">
-            {{ editingItem ? 'Update' : 'Add' }} Revenue
+            {{ (editingItem ? 'COMMON.UPDATE' : 'COMMON.ADD') | translate }}
           </button>
         </div>
       </form>
@@ -126,12 +158,12 @@
   <!-- Revenue Table -->
   <div class="card">
     <div class="card-header">
-      <h2 class="card-title">Revenue Entries</h2>
+      <h2 class="card-title">{{ 'REVENUE.TITLE' | translate }}</h2>
       <div class="card-actions">
         <button (click)="loadRevenue()" class="btn btn-secondary btn-sm" [disabled]="loading">
           <span *ngIf="loading">⟳</span>
           <span *ngIf="!loading">🔄</span>
-          Refresh
+          {{ 'COMMON.REFRESH' | translate }}
         </button>
       </div>
     </div>
@@ -139,48 +171,62 @@
     <div class="card-content">
       <div *ngIf="loading" class="loading-state">
         <div class="loading-spinner">⟳</div>
-        <p>Loading revenue data...</p>
+        <p>{{ 'COMMON.LOADING' | translate }}...</p>
       </div>
 
       <div *ngIf="!loading && filteredItems.length === 0" class="empty-state">
         <div class="empty-icon">💰</div>
-        <h3>No revenue entries found</h3>
-        <p>{{ searchTerm ? 'Try adjusting your search terms' : 'Add your first revenue entry to get started' }}</p>
-        <button *ngIf="!searchTerm" (click)="openAddForm()" class="btn btn-primary">Add First Entry</button>
+        <h3>{{ 'REVENUE.NO_ENTRIES' | translate }}</h3>
+        <p>{{ searchTerm ? ('REVENUE.ADJUST_SEARCH' | translate) : ('REVENUE.ADD_FIRST' | translate) }}</p>
+        <button *ngIf="!searchTerm" (click)="openAddForm()" class="btn btn-primary">{{ 'COMMON.ADD' | translate }}</button>
       </div>
 
       <div *ngIf="!loading && filteredItems.length > 0" class="table-responsive">
-        <table class="table">
-          <thead>
-            <tr>
-              <th>Date</th>
-              <th>Source</th>
-              <th>Description</th>
-              <th class="text-right">Amount</th>
-              <th class="text-center">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            <tr *ngFor="let item of filteredItems; trackBy: trackById">
-              <td>{{ item.date | date:'shortDate' }}</td>
-              <td>
-                <span class="source-badge" [ngClass]="getSourceClass(item.source)">
-                  {{ item.source }}
-                </span>
-              </td>
-              <td>{{ item.description || '-' }}</td>
-              <td class="text-right">${{ item.amount | number:'1.2-2' }}</td>
-              <td class="text-center">
-                <button (click)="editItem(item)" class="btn-action btn-edit" title="Edit">
-                  ✏️
-                </button>
-                <button (click)="deleteItem(item)" class="btn-action btn-delete" title="Delete">
-                  🗑️
-                </button>
-              </td>
-            </tr>
-          </tbody>
-        </table>
+        <div class="group-controls" *ngIf="groupByField !== 'none' && groupedData.length > 1">
+          <button (click)="expandAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.EXPAND_ALL' | translate }}</button>
+          <button (click)="collapseAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.COLLAPSE_ALL' | translate }}</button>
+        </div>
+        <div *ngFor="let group of groupedData" class="group-section">
+          <div class="group-header" *ngIf="groupByField !== 'none'" (click)="toggleGroup(group)">
+            <div class="group-header-left">
+              <span class="group-toggle">{{ group.expanded ? '▼' : '▶' }}</span>
+              <h3>{{ group.groupValue }}</h3>
+              <span class="group-count">({{ group.items.length }} {{ 'COMMON.ITEMS' | translate }})</span>
+            </div>
+            <span class="group-total">${{ group.total | number:'1.2-2' }}</span>
+          </div>
+          <table class="table" *ngIf="group.expanded">
+            <thead>
+              <tr>
+                <th>{{ 'COMMON.DATE' | translate }}</th>
+                <th>{{ 'REVENUE.SOURCE' | translate }}</th>
+                <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+                <th class="text-right">{{ 'COMMON.AMOUNT' | translate }}</th>
+                <th class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of group.items; trackBy: trackById">
+                <td>{{ item.date | customDate }}</td>
+                <td>
+                  <span class="source-badge" [ngClass]="getSourceClass(item.source)">
+                    {{ 'REVENUE.SOURCES.' + item.source.toUpperCase() | translate }}
+                  </span>
+                </td>
+                <td>{{ item.description || '-' }}</td>
+                <td class="text-right">${{ item.amount | number:'1.2-2' }}</td>
+                <td class="text-center">
+                  <button (click)="editItem(item)" class="btn-action btn-edit" [title]="'COMMON.EDIT' | translate">
+                    ✏️
+                  </button>
+                  <button (click)="deleteItem(item)" class="btn-action btn-delete" [title]="'COMMON.DELETE' | translate">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
       </div>
     </div>
   </div>

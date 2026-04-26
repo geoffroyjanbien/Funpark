@@ -1,6 +1,7 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
+import { TranslateModule } from '@ngx-translate/core';
 
 import { NavigationComponent } from './navigation.component';
 
@@ -8,7 +9,8 @@ import { NavigationComponent } from './navigation.component';
   declarations: [NavigationComponent],
   imports: [
     CommonModule,
-    RouterModule
+    RouterModule,
+    TranslateModule
   ],
   exports: [NavigationComponent]
 })

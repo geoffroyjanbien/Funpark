@@ -25,7 +25,10 @@ const getAllRevenue = async (req, res) => {
     // Add IDs for frontend (using index as simple ID)
     const revenuesWithIds = revenues.map((revenue, index) => ({
       id: index + 1,
-      ...revenue
+      date: revenue.date,
+      source: revenue.category, // Map category back to source for frontend
+      amount: parseFloat(revenue.amount_ll || revenue.amount_usd || 0), // Use amount_ll or amount_usd
+      description: revenue.description || ''
     }));
 
     res.json({
@@ -79,40 +82,38 @@ const getRevenueById = async (req, res) => {
  */
 const createRevenue = async (req, res) => {
   try {
-    const { date, category, amount_ll, amount_usd } = req.body;
+    const { date, source, amount, description } = req.body;
 
     // Validate required fields
-    if (!date || !category || amount_ll === undefined || amount_usd === undefined) {
+    if (!date || !source || amount === undefined) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: date, category, amount_ll, amount_usd'
+        error: 'Missing required fields: date, source, amount'
       });
     }
 
-    // Validate category
-    const validCategories = ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various'];
-    if (!validCategories.includes(category)) {
-      return res.status(400).json({
-        success: false,
-        error: `Invalid category. Must be one of: ${validCategories.join(', ')}`
-      });
-    }
-
-    const newRevenue = {
+    // Convert to CSV format (amount_ll and amount_usd both set to the same amount)
+    const revenueData = {
       date,
-      category,
-      amount_ll: parseFloat(amount_ll).toFixed(2),
-      amount_usd: parseFloat(amount_usd).toFixed(2)
+      category: source, // Map source to category for CSV
+      amount_ll: parseFloat(amount).toFixed(2),
+      amount_usd: parseFloat(amount).toFixed(2)
     };
 
-    await appendToCSV('REVENUE', newRevenue);
+    await appendToCSV('REVENUE', revenueData);
 
     // Update daily summary
     await updateDailySummary(date);
 
     res.status(201).json({
       success: true,
-      data: newRevenue,
+      data: {
+        id: Date.now().toString(), // Simple ID generation
+        date,
+        source,
+        amount: parseFloat(amount),
+        description
+      },
       message: 'Revenue entry created successfully'
     });
   } catch (error) {
@@ -130,7 +131,7 @@ const createRevenue = async (req, res) => {
 const updateRevenue = async (req, res) => {
   try {
     const { id } = req.params;
-    const { date, category, amount_ll, amount_usd } = req.body;
+    const { date, source, amount, description } = req.body;
 
     const revenues = await readCSV('REVENUE');
     const revenueIndex = parseInt(id) - 1;
@@ -145,9 +146,9 @@ const updateRevenue = async (req, res) => {
     const originalDate = revenues[revenueIndex].date;
 
     // Validate category if provided
-    if (category) {
+    if (source) {
       const validCategories = ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various'];
-      if (!validCategories.includes(category)) {
+      if (!validCategories.includes(source)) {
         return res.status(400).json({
           success: false,
           error: `Invalid category. Must be one of: ${validCategories.join(', ')}`
@@ -157,9 +158,11 @@ const updateRevenue = async (req, res) => {
 
     const updates = {};
     if (date) updates.date = date;
-    if (category) updates.category = category;
-    if (amount_ll !== undefined) updates.amount_ll = parseFloat(amount_ll).toFixed(2);
-    if (amount_usd !== undefined) updates.amount_usd = parseFloat(amount_usd).toFixed(2);
+    if (source) updates.category = source; // Map source to category
+    if (amount !== undefined) {
+      updates.amount_ll = parseFloat(amount).toFixed(2);
+      updates.amount_usd = parseFloat(amount).toFixed(2);
+    }
 
     await updateInCSV('REVENUE', revenues[revenueIndex], updates);
 
@@ -173,8 +176,10 @@ const updateRevenue = async (req, res) => {
       success: true,
       data: {
         id: parseInt(id),
-        ...revenues[revenueIndex],
-        ...updates
+        date: updates.date || revenues[revenueIndex].date,
+        source: updates.category || revenues[revenueIndex].category,
+        amount: parseFloat(updates.amount_ll || revenues[revenueIndex].amount_ll),
+        description: description || ''
       },
       message: 'Revenue entry updated successfully'
     });

@@ -57,16 +57,16 @@
 
 .filters-section {
   display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-lg);
+  margin-bottom: var(--spacing-lg);
   flex-wrap: wrap;
+  align-items: center;
 }
 
 .search-box {
   position: relative;
   flex: 1;
-  max-width: 400px;
+  min-width: 250px;
 }
 
 .search-box .form-input {
@@ -80,6 +80,34 @@
   transform: translateY(-50%);
   color: var(--muted-text);
   pointer-events: none;
+}
+
+.date-filters {
+  display: flex;
+  gap: var(--spacing-md);
+  flex-wrap: wrap;
+}
+
+.filter-group {
+  display: flex;
+  flex-direction: column;
+  gap: var(--spacing-xs);
+}
+
+.filter-group label {
+  font-size: var(--font-size-sm);
+  color: var(--text-secondary);
+  font-weight: 500;
+}
+
+.filter-select {
+  padding: var(--spacing-xs) var(--spacing-sm);
+  border: 1px solid var(--border-color);
+  border-radius: var(--border-radius);
+  background-color: var(--bg-secondary);
+  color: var(--text-primary);
+  font-size: var(--font-size-base);
+  min-width: 120px;
 }
 
 /* Modal Styles */
@@ -319,6 +347,69 @@
 /* Table Styles */
 .table-responsive {
   overflow-x: auto;
+  padding: var(--spacing-md);
+}
+
+.group-section {
+  margin-bottom: var(--spacing-lg);
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  overflow: hidden;
+}
+
+.group-controls {
+  display: flex;
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-md);
+  justify-content: flex-end;
+}
+
+.group-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: var(--spacing-md) var(--spacing-lg);
+  background-color: var(--accent-bg);
+  border-bottom: 1px solid var(--border-color);
+  cursor: pointer;
+  transition: background-color 0.2s ease;
+  user-select: none;
+}
+
+.group-header:hover {
+  background-color: var(--table-row-hover);
+}
+
+.group-header-left {
+  display: flex;
+  align-items: center;
+  gap: var(--spacing-sm);
+}
+
+.group-toggle {
+  font-size: 0.875rem;
+  color: var(--primary-accent);
+  min-width: 1rem;
+}
+
+.group-header h3 {
+  margin: 0;
+  font-size: 1rem;
+  font-weight: 600;
+  color: var(--primary-text);
+}
+
+.group-count {
+  font-size: 0.875rem;
+  color: var(--muted-text);
+  font-weight: 400;
+}
+
+.group-total {
+  font-size: 1.125rem;
+  font-weight: 700;
+  color: var(--success-color);
 }
 
 .table {

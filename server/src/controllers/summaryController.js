@@ -66,6 +66,8 @@ const getMonthlySummary = async (req, res) => {
   try {
     const { month, year } = req.query;
 
+    console.log('getMonthlySummary called with:', { month, year });
+
     if (!month || !year) {
       return res.status(400).json({
         success: false,
@@ -76,6 +78,8 @@ const getMonthlySummary = async (req, res) => {
     const monthNum = parseInt(month);
     const yearNum = parseInt(year);
 
+    console.log('Parsed values:', { monthNum, yearNum });
+
     if (monthNum < 1 || monthNum > 12) {
       return res.status(400).json({
         success: false,
@@ -84,6 +88,7 @@ const getMonthlySummary = async (req, res) => {
     }
 
     const summary = await calculateMonthlySummary(yearNum, monthNum);
+    console.log('Calculated summary:', summary);
 
     res.json({
       success: true,
@@ -115,9 +120,22 @@ const getYearlySummary = async (req, res) => {
     const yearNum = parseInt(year);
     const summary = await calculateYearlySummary(yearNum);
 
+    // Get monthly breakdown for the year
+    const monthlyBreakdown = [];
+    for (let month = 1; month <= 12; month++) {
+      const monthlySummary = await calculateMonthlySummary(yearNum, month);
+      // Only include months with data
+      if (parseFloat(monthlySummary.total_revenue_ll) > 0 || parseFloat(monthlySummary.total_expenses_ll) > 0) {
+        monthlyBreakdown.push(monthlySummary);
+      }
+    }
+
     res.json({
       success: true,
-      data: summary
+      data: {
+        ...summary,
+        months: monthlyBreakdown
+      }
     });
   } catch (error) {
     console.error('Error getting yearly summary:', error);

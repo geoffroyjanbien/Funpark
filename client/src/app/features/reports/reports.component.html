@@ -1,18 +1,210 @@
-<div class="feature-page">
-  <div class="page-header">
-    <div>
-      <h1>Reports</h1>
-      <p>Generate and view comprehensive financial reports and analytics.</p>
-    </div>
-    <a routerLink="/dashboard" class="btn btn-secondary">Back to Dashboard</a>
+<div class="reports-container">
+  <div class="header">
+    <h1>{{ 'REPORTS.TITLE' | translate }}</h1>
+    <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
   </div>
 
-  <div class="card">
-    <div class="card-header">
-      <h2 class="card-title">Financial Reports</h2>
+  <!-- Controls -->
+  <div class="controls-section">
+    <div class="control-group">
+      <label>{{ 'FILTERS.VIEW_MODE' | translate }}:</label>
+      <select [(ngModel)]="viewMode" (change)="onViewModeChange()" class="control-select">
+        <option value="yearly">{{ 'REPORTS.YEARLY_SUMMARY' | translate }}</option>
+        <option value="monthly">{{ 'REPORTS.MONTHLY_SUMMARY' | translate }}</option>
+      </select>
     </div>
-    <div class="card-content">
-      <p class="text-muted">This section will show profit & loss statements, profit distribution, and detailed financial analytics.</p>
+
+    <div class="control-group">
+      <label>{{ 'FILTERS.YEAR' | translate }}:</label>
+      <select [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()" class="control-select">
+        <option *ngFor="let year of availableYears" [ngValue]="year">{{year}}</option>
+      </select>
+    </div>
+
+    <div class="control-group" *ngIf="viewMode === 'monthly'">
+      <label>{{ 'FILTERS.MONTH' | translate }}:</label>
+      <select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange()" class="control-select">
+        <option *ngFor="let month of availableMonths; let i = index" [ngValue]="i">{{month}}</option>
+      </select>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div class="error-message" *ngIf="error">
+    {{error}}
+  </div>
+
+  <!-- Loading Indicator -->
+  <div class="loading" *ngIf="loading">
+    {{ 'COMMON.LOADING' | translate }}...
+  </div>
+
+  <!-- Overall Summary -->
+  <div class="summary-section" *ngIf="summary && !loading">
+    <h2>{{ 'REPORTS.PROFIT_LOSS' | translate }}</h2>
+    <div class="summary-cards">
+      <div class="summary-card revenue">
+        <div class="card-icon">💰</div>
+        <div class="card-content">
+          <div class="card-title">{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</div>
+          <div class="card-value">${{summary.totalRevenue | number:'1.2-2'}}</div>
+        </div>
+      </div>
+
+      <div class="summary-card expenses">
+        <div class="card-icon">💸</div>
+        <div class="card-content">
+          <div class="card-title">{{ 'DASHBOARD.TOTAL_EXPENSES' | translate }}</div>
+          <div class="card-value">${{summary.totalExpenses | number:'1.2-2'}}</div>
+        </div>
+      </div>
+
+      <div class="summary-card investments">
+        <div class="card-icon">📈</div>
+        <div class="card-content">
+          <div class="card-title">{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</div>
+          <div class="card-value">${{summary.totalInvestments | number:'1.2-2'}}</div>
+        </div>
+      </div>
+
+      <div class="summary-card profit" [class]="summary.netProfit >= 0 ? 'positive' : 'negative'">
+        <div class="card-icon">{{summary.netProfit >= 0 ? '📊' : '📉'}}</div>
+        <div class="card-content">
+          <div class="card-title">{{ 'DASHBOARD.NET_PROFIT' | translate }}</div>
+          <div class="card-value">${{summary.netProfit | number:'1.2-2'}}</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Profit Distribution -->
+    <div class="distribution-section">
+      <h3>{{ 'REPORTS.SHARES_DISTRIBUTION' | translate }}</h3>
+      <div class="distribution-cards">
+        <div class="distribution-card">
+          <div class="distribution-label">{{ 'DASHBOARD.FIRST_SHARE' | translate }} (70%)</div>
+          <div class="distribution-value">${{summary.ownerShare | number:'1.2-2'}}</div>
+        </div>
+        <div class="distribution-card">
+          <div class="distribution-label">{{ 'DASHBOARD.SECOND_SHARE' | translate }} (30%)</div>
+          <div class="distribution-value">${{summary.partnerShare | number:'1.2-2'}}</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Yearly Dashboard -->
+  <div class="dashboard-section" *ngIf="viewMode === 'yearly' && getCurrentYearData() as yearData">
+    <h2>{{yearData.year}} {{ 'REPORTS.YEARLY_SUMMARY' | translate }}</h2>
+
+    <div class="yearly-metrics">
+      <div class="metric-card">
+        <h3>{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</h3>
+        <div class="metric-value">${{yearData.revenue | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>{{ 'DASHBOARD.TOTAL_EXPENSES' | translate }}</h3>
+        <div class="metric-value">${{yearData.expenses | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</h3>
+        <div class="metric-value">${{yearData.investments | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card" [class]="yearData.profit >= 0 ? 'positive' : 'negative'">
+        <h3>{{ 'DASHBOARD.NET_PROFIT' | translate }}</h3>
+        <div class="metric-value">${{yearData.profit | number:'1.2-2'}}</div>
+      </div>
+    </div>
+
+    <!-- Monthly Breakdown Table -->
+    <div class="monthly-table-section">
+      <h3>{{ 'REPORTS.MONTHLY_SUMMARY' | translate }}</h3>
+      <div class="table-container">
+        <table class="monthly-table">
+          <thead>
+            <tr>
+              <th>{{ 'FILTERS.MONTH' | translate }}</th>
+              <th>{{ 'REVENUE.TITLE' | translate }}</th>
+              <th>{{ 'EXPENSES.TITLE' | translate }}</th>
+              <th>{{ 'INVESTMENTS.TITLE' | translate }}</th>
+              <th>{{ 'DASHBOARD.NET_PROFIT' | translate }}</th>
+              <th>{{ 'COMMON.TOTAL' | translate }}</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr *ngFor="let month of yearData.months">
+              <td>{{month.month}}</td>
+              <td class="amount-cell">${{month.revenue | number:'1.2-2'}}</td>
+              <td class="amount-cell">${{month.expenses | number:'1.2-2'}}</td>
+              <td class="amount-cell">${{month.investments | number:'1.2-2'}}</td>
+              <td class="amount-cell" [class]="month.profit >= 0 ? 'positive' : 'negative'">
+                ${{month.profit | number:'1.2-2'}}
+              </td>
+              <td class="percentage-cell">
+                {{getProfitMargin(month.profit, month.revenue) | number:'1.1-1'}}%
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  </div>
+
+  <!-- Monthly Dashboard -->
+  <div class="dashboard-section" *ngIf="viewMode === 'monthly' && getCurrentMonthData() as monthData">
+    <h2>{{availableMonths[selectedMonth]}} {{selectedYear}} {{ 'REPORTS.MONTHLY_SUMMARY' | translate }}</h2>
+
+    <div class="monthly-metrics">
+      <div class="metric-card">
+        <h3>{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</h3>
+        <div class="metric-value">${{monthData.revenue | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>{{ 'DASHBOARD.TOTAL_EXPENSES' | translate }}</h3>
+        <div class="metric-value">${{monthData.expenses | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card">
+        <h3>{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</h3>
+        <div class="metric-value">${{monthData.investments | number:'1.2-2'}}</div>
+      </div>
+      <div class="metric-card" [class]="monthData.profit >= 0 ? 'positive' : 'negative'">
+        <h3>{{ 'DASHBOARD.NET_PROFIT' | translate }}</h3>
+        <div class="metric-value">${{monthData.profit | number:'1.2-2'}}</div>
+      </div>
+    </div>
+
+    <!-- Performance Indicators -->
+    <div class="performance-section">
+      <h3>{{ 'REPORTS.PROFIT_LOSS' | translate }}</h3>
+      <div class="indicators-grid">
+        <div class="indicator-card">
+          <div class="indicator-label">{{ 'EXPENSES.TITLE' | translate }}</div>
+          <div class="indicator-value">
+            {{getProfitMargin(monthData.expenses, monthData.revenue) | number:'1.1-1'}}%
+          </div>
+          <div class="indicator-desc">{{ 'EXPENSES.TITLE' | translate }} / {{ 'REVENUE.TITLE' | translate }}</div>
+        </div>
+        <div class="indicator-card">
+          <div class="indicator-label">{{ 'INVESTMENTS.TITLE' | translate }}</div>
+          <div class="indicator-value">
+            {{getProfitMargin(monthData.investments, monthData.revenue) | number:'1.1-1'}}%
+          </div>
+          <div class="indicator-desc">{{ 'INVESTMENTS.TITLE' | translate }} / {{ 'REVENUE.TITLE' | translate }}</div>
+        </div>
+        <div class="indicator-card">
+          <div class="indicator-label">{{ 'DASHBOARD.NET_PROFIT' | translate }}</div>
+          <div class="indicator-value" [class]="monthData.profit >= 0 ? 'positive' : 'negative'">
+            {{getProfitMargin(monthData.profit, monthData.revenue) | number:'1.1-1'}}%
+          </div>
+          <div class="indicator-desc">{{ 'DASHBOARD.NET_PROFIT' | translate }} / {{ 'REVENUE.TITLE' | translate }}</div>
+        </div>
+        <div class="indicator-card">
+          <div class="indicator-label">ROI</div>
+          <div class="indicator-value">
+            {{monthData.investments > 0 ? ((monthData.profit / monthData.investments) * 100) : 0 | number:'1.1-1'}}%
+          </div>
+          <div class="indicator-desc">{{ 'DASHBOARD.NET_PROFIT' | translate }} / {{ 'INVESTMENTS.TITLE' | translate }}</div>
+        </div>
+      </div>
     </div>
   </div>
 </div>

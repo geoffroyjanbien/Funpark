@@ -11,21 +11,24 @@ const { updateDailySummary } = require('../utils/profitCalculator');
  */
 const getAllInvestments = async (req, res) => {
   try {
-    const { date, investment_type } = req.query;
+    const { date, type } = req.query;
     let investments = await readCSV('INVESTMENT_ENTRIES');
 
     // Apply filters
     if (date) {
       investments = investments.filter(i => i.date === date);
     }
-    if (investment_type) {
-      investments = investments.filter(i => i.investment_type === investment_type);
+    if (type) {
+      investments = investments.filter(i => i.type === type);
     }
 
     // Add IDs for frontend (using index as simple ID)
     const investmentsWithIds = investments.map((investment, index) => ({
       id: index + 1,
-      ...investment
+      date: investment.date,
+      type: investment.investment_type || investment.type || '', // Handle both old and new format
+      amount: parseFloat(investment.amount_ll || investment.amount_usd || investment.amount || 0),
+      description: investment.description || ''
     }));
 
     res.json({
@@ -79,51 +82,40 @@ const getInvestmentById = async (req, res) => {
  */
 const createInvestment = async (req, res) => {
   try {
-    const { date, investment_type, description, amount_ll, amount_usd, owner_allocation } = req.body;
+    const { date, type, amount, description } = req.body;
 
     // Validate required fields
-    if (!date || !investment_type || !description || !owner_allocation || amount_ll === undefined || amount_usd === undefined) {
+    if (!date || !type || amount === undefined) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: date, investment_type, description, owner_allocation, amount_ll, amount_usd'
+        error: 'Missing required fields: date, type, amount'
       });
     }
 
-    // Validate investment type
-    const validTypes = ['Long Term', 'Mid Term', 'Short Term'];
-    if (!validTypes.includes(investment_type)) {
-      return res.status(400).json({
-        success: false,
-        error: `Invalid investment_type. Must be one of: ${validTypes.join(', ')}`
-      });
-    }
-
-    // Validate owner allocation
-    const validAllocations = ['Owner1', 'Owner2', 'Both'];
-    if (!validAllocations.includes(owner_allocation)) {
-      return res.status(400).json({
-        success: false,
-        error: `Invalid owner_allocation. Must be one of: ${validAllocations.join(', ')}`
-      });
-    }
-
-    const newInvestment = {
+    // Convert to CSV format matching the schema
+    const investmentData = {
       date,
-      investment_type,
-      description,
-      amount_ll: parseFloat(amount_ll).toFixed(2),
-      amount_usd: parseFloat(amount_usd).toFixed(2),
-      owner_allocation
+      investment_type: type,
+      description: description || 'Investment', // Provide default description
+      amount_ll: parseFloat(amount).toFixed(2),
+      amount_usd: '0.00',
+      owner_allocation: 'Both' // Default to Both
     };
 
-    await appendToCSV('INVESTMENT_ENTRIES', newInvestment);
+    await appendToCSV('INVESTMENT_ENTRIES', investmentData);
 
-    // Update daily summary (for Long Term investments that affect owner shares)
+    // Update daily summary
     await updateDailySummary(date);
 
     res.status(201).json({
       success: true,
-      data: newInvestment,
+      data: {
+        id: Date.now().toString(),
+        date,
+        type,
+        amount: parseFloat(amount),
+        description
+      },
       message: 'Investment entry created successfully'
     });
   } catch (error) {
@@ -141,7 +133,7 @@ const createInvestment = async (req, res) => {
 const updateInvestment = async (req, res) => {
   try {
     const { id } = req.params;
-    const { date, investment_type, description, amount_ll, amount_usd, owner_allocation } = req.body;
+    const { date, type, amount, description } = req.body;
 
     const investments = await readCSV('INVESTMENT_ENTRIES');
     const investmentIndex = parseInt(id) - 1;
@@ -155,35 +147,14 @@ const updateInvestment = async (req, res) => {
 
     const originalDate = investments[investmentIndex].date;
 
-    // Validate investment type if provided
-    if (investment_type) {
-      const validTypes = ['Long Term', 'Mid Term', 'Short Term'];
-      if (!validTypes.includes(investment_type)) {
-        return res.status(400).json({
-          success: false,
-          error: `Invalid investment_type. Must be one of: ${validTypes.join(', ')}`
-        });
-      }
-    }
-
-    // Validate owner allocation if provided
-    if (owner_allocation) {
-      const validAllocations = ['Owner1', 'Owner2', 'Both'];
-      if (!validAllocations.includes(owner_allocation)) {
-        return res.status(400).json({
-          success: false,
-          error: `Invalid owner_allocation. Must be one of: ${validAllocations.join(', ')}`
-        });
-      }
-    }
-
     const updates = {};
     if (date) updates.date = date;
-    if (investment_type) updates.investment_type = investment_type;
-    if (description) updates.description = description;
-    if (amount_ll !== undefined) updates.amount_ll = parseFloat(amount_ll).toFixed(2);
-    if (amount_usd !== undefined) updates.amount_usd = parseFloat(amount_usd).toFixed(2);
-    if (owner_allocation) updates.owner_allocation = owner_allocation;
+    if (type) updates.investment_type = type;
+    if (description !== undefined) updates.description = description || 'Investment';
+    if (amount !== undefined) {
+      updates.amount_ll = parseFloat(amount).toFixed(2);
+      updates.amount_usd = '0.00';
+    }
 
     await updateInCSV('INVESTMENT_ENTRIES', investments[investmentIndex], updates);
 
@@ -197,8 +168,10 @@ const updateInvestment = async (req, res) => {
       success: true,
       data: {
         id: parseInt(id),
-        ...investments[investmentIndex],
-        ...updates
+        date: updates.date || investments[investmentIndex].date,
+        type: updates.investment_type || investments[investmentIndex].investment_type,
+        amount: parseFloat(updates.amount_ll || investments[investmentIndex].amount_ll),
+        description: updates.description || investments[investmentIndex].description
       },
       message: 'Investment entry updated successfully'
     });

@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Logo Color Analyzer</title>
+    <style>
+        body { font-family: Arial; padding: 20px; background: #1a1a1a; color: #fff; }
+        canvas { border: 1px solid #444; margin: 20px 0; }
+        .colors { display: flex; gap: 10px; flex-wrap: wrap; }
+        .color-box { padding: 10px; border: 1px solid #444; }
+        .swatch { width: 50px; height: 50px; display: inline-block; border: 1px solid #fff; }
+    </style>
+</head>
+<body>
+    <h1>Funpark Logo Color Analyzer</h1>
+    <input type="file" id="fileInput" accept="image/*">
+    <br><br>
+    <canvas id="canvas"></canvas>
+    <div id="output"></div>
+
+    <script>
+        document.getElementById('fileInput').addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            const reader = new FileReader();
+            
+            reader.onload = function(event) {
+                const img = new Image();
+                img.onload = function() {
+                    const canvas = document.getElementById('canvas');
+                    const ctx = canvas.getContext('2d');
+                    canvas.width = img.width;
+                    canvas.height = img.height;
+                    ctx.drawImage(img, 0, 0);
+                    
+                    // Click on canvas to get color
+                    canvas.addEventListener('click', function(e) {
+                        const rect = canvas.getBoundingClientRect();
+                        const x = e.clientX - rect.left;
+                        const y = e.clientY - rect.top;
+                        const pixel = ctx.getImageData(x, y, 1, 1).data;
+                        const hex = '#' + [pixel[0], pixel[1], pixel[2]].map(x => x.toString(16).padStart(2, '0')).join('');
+                        
+                        const output = document.getElementById('output');
+                        output.innerHTML += `<div class="color-box">
+                            <span class="swatch" style="background: ${hex}"></span>
+                            <strong>${hex}</strong> at (${Math.round(x)}, ${Math.round(y)})
+                        </div>`;
+                    });
+                    
+                    alert('Click on each letter to extract its color!');
+                };
+                img.src = event.target.result;
+            };
+            reader.readAsDataURL(file);
+        });
+    </script>
+</body>
+</html>

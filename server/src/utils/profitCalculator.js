@@ -63,13 +63,21 @@ async function calculateDailyProfit(date, dataPath = './data') {
 async function calculateMonthlySummary(year, month, dataPath = './data') {
   const dailySummaries = await readCSV('DAILY_SUMMARY', dataPath);
 
+  console.log('calculateMonthlySummary - All daily summaries:', dailySummaries);
+
   // Filter for the specific month/year
   const monthStr = month.toString().padStart(2, '0');
   const yearStr = year.toString();
+  
+  console.log('Filtering for:', { yearStr, monthStr });
+  
   const monthlyData = dailySummaries.filter(s => {
     const [sYear, sMonth] = s.date.split('-');
+    console.log('Checking date:', s.date, 'Year match:', sYear === yearStr, 'Month match:', sMonth === monthStr);
     return sYear === yearStr && sMonth === monthStr;
   });
+
+  console.log('Filtered monthly data:', monthlyData);
 
   // Calculate totals
   const totalRevenueLL = monthlyData.reduce((sum, s) => sum + parseFloat(s.daily_revenue_ll), 0);
@@ -78,7 +86,7 @@ async function calculateMonthlySummary(year, month, dataPath = './data') {
   const owner1ShareLL = monthlyData.reduce((sum, s) => sum + parseFloat(s.owner1_share_ll), 0);
   const owner2ShareLL = monthlyData.reduce((sum, s) => sum + parseFloat(s.owner2_share_ll), 0);
 
-  return {
+  const result = {
     month: monthStr,
     year: yearStr,
     total_revenue_ll: totalRevenueLL.toFixed(2),
@@ -87,6 +95,10 @@ async function calculateMonthlySummary(year, month, dataPath = './data') {
     owner1_share_ll: owner1ShareLL.toFixed(2),
     owner2_share_ll: owner2ShareLL.toFixed(2)
   };
+
+  console.log('Final result:', result);
+
+  return result;
 }
 
 /**

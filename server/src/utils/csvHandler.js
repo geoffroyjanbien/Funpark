@@ -14,7 +14,8 @@ const CSV_FILES = {
   EXPENSE_ENTRIES: 'expense_entries.csv',
   INVESTMENT_ENTRIES: 'investment_entries.csv',
   DAILY_SUMMARY: 'daily_summary.csv',
-  SUMMARY_VIEWS: 'summary_views.csv'
+  SUMMARY_VIEWS: 'summary_views.csv',
+  CATEGORIES: 'categories.csv'
 };
 
 // Schema definitions for validation
@@ -56,6 +57,14 @@ const SCHEMAS = {
     required: ['year', 'total_revenue_ll', 'total_expenses_ll', 'balance_ll', 'owner1_share_ll', 'owner2_share_ll'],
     validations: {
       amounts: ['total_revenue_ll', 'total_expenses_ll', 'balance_ll', 'owner1_share_ll', 'owner2_share_ll']
+    }
+  },
+  CATEGORIES: {
+    headers: ['id', 'type', 'name_en', 'name_ar', 'parent_category', 'is_active'],
+    required: ['id', 'type', 'name_en', 'name_ar', 'is_active'],
+    validations: {
+      type: ['revenue', 'expense', 'investment'],
+      is_active: ['true', 'false']
     }
   }
 };
@@ -101,7 +110,11 @@ function validateRecord(record, schema) {
     if (schema.validations.amounts) {
       for (const amountField of schema.validations.amounts) {
         const value = parseFloat(record[amountField]);
-        if (isNaN(value) || value < 0) {
+        if (isNaN(value)) {
+          throw new Error(`Invalid amount for ${amountField}: ${record[amountField]}. Must be a number.`);
+        }
+        // Allow negative values for balance fields (profit can be negative)
+        if (value < 0 && !amountField.includes('balance') && !amountField.includes('share')) {
           throw new Error(`Invalid amount for ${amountField}: ${record[amountField]}. Must be non-negative number.`);
         }
         // Check decimal places - allow up to 2 decimal places

@@ -8,6 +8,7 @@ const routes: Routes = [
   { path: 'expenses', loadChildren: () => import('./features/expenses/expenses.module').then(m => m.ExpensesModule) },
   { path: 'investments', loadChildren: () => import('./features/investments/investments.module').then(m => m.InvestmentsModule) },
   { path: 'reports', loadChildren: () => import('./features/reports/reports.module').then(m => m.ReportsModule) },
+  { path: 'settings', loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule) },
   { path: '**', redirectTo: '/dashboard' }
 ];
 

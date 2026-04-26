@@ -11,27 +11,24 @@ const { updateDailySummary } = require('../utils/profitCalculator');
  */
 const getAllExpenses = async (req, res) => {
   try {
-    const { date, main_category, subcategory, investment_type } = req.query;
+    const { date, category } = req.query;
     let expenses = await readCSV('EXPENSE_ENTRIES');
 
     // Apply filters
     if (date) {
       expenses = expenses.filter(e => e.date === date);
     }
-    if (main_category) {
-      expenses = expenses.filter(e => e.main_category === main_category);
-    }
-    if (subcategory) {
-      expenses = expenses.filter(e => e.subcategory === subcategory);
-    }
-    if (investment_type) {
-      expenses = expenses.filter(e => e.investment_type === investment_type);
+    if (category) {
+      expenses = expenses.filter(e => e.category === category);
     }
 
     // Add IDs for frontend (using index as simple ID)
     const expensesWithIds = expenses.map((expense, index) => ({
       id: index + 1,
-      ...expense
+      date: expense.date,
+      category: expense.main_category || expense.category || '', // Handle both old and new format
+      amount: parseFloat(expense.amount_ll || expense.amount_usd || expense.amount || 0),
+      description: expense.subcategory || expense.description || ''
     }));
 
     res.json({
@@ -85,42 +82,40 @@ const getExpenseById = async (req, res) => {
  */
 const createExpense = async (req, res) => {
   try {
-    const { date, main_category, subcategory, investment_type, amount_ll, amount_usd } = req.body;
+    const { date, category, amount, description } = req.body;
 
     // Validate required fields
-    if (!date || !main_category || !investment_type || amount_ll === undefined || amount_usd === undefined) {
+    if (!date || !category || amount === undefined) {
       return res.status(400).json({
         success: false,
-        error: 'Missing required fields: date, main_category, investment_type, amount_ll, amount_usd'
+        error: 'Missing required fields: date, category, amount'
       });
     }
 
-    // Validate investment type
-    const validTypes = ['Long Term', 'Mid Term', 'Short Term'];
-    if (!validTypes.includes(investment_type)) {
-      return res.status(400).json({
-        success: false,
-        error: `Invalid investment_type. Must be one of: ${validTypes.join(', ')}`
-      });
-    }
-
-    const newExpense = {
+    // Convert to CSV format matching the schema
+    const expenseData = {
       date,
-      main_category,
-      subcategory: subcategory || '',
-      investment_type,
-      amount_ll: parseFloat(amount_ll).toFixed(2),
-      amount_usd: parseFloat(amount_usd).toFixed(2)
+      main_category: category,
+      subcategory: description || '',
+      investment_type: 'Short Term', // Default to Short Term
+      amount_ll: parseFloat(amount).toFixed(2),
+      amount_usd: '0.00'
     };
 
-    await appendToCSV('EXPENSE_ENTRIES', newExpense);
+    await appendToCSV('EXPENSE_ENTRIES', expenseData);
 
     // Update daily summary
     await updateDailySummary(date);
 
     res.status(201).json({
       success: true,
-      data: newExpense,
+      data: {
+        id: Date.now().toString(),
+        date,
+        category,
+        amount: parseFloat(amount),
+        description
+      },
       message: 'Expense entry created successfully'
     });
   } catch (error) {
@@ -138,7 +133,7 @@ const createExpense = async (req, res) => {
 const updateExpense = async (req, res) => {
   try {
     const { id } = req.params;
-    const { date, main_category, subcategory, investment_type, amount_ll, amount_usd } = req.body;
+    const { date, category, amount, description } = req.body;
 
     const expenses = await readCSV('EXPENSE_ENTRIES');
     const expenseIndex = parseInt(id) - 1;
@@ -152,24 +147,14 @@ const updateExpense = async (req, res) => {
 
     const originalDate = expenses[expenseIndex].date;
 
-    // Validate investment type if provided
-    if (investment_type) {
-      const validTypes = ['Long Term', 'Mid Term', 'Short Term'];
-      if (!validTypes.includes(investment_type)) {
-        return res.status(400).json({
-          success: false,
-          error: `Invalid investment_type. Must be one of: ${validTypes.join(', ')}`
-        });
-      }
-    }
-
     const updates = {};
     if (date) updates.date = date;
-    if (main_category) updates.main_category = main_category;
-    if (subcategory !== undefined) updates.subcategory = subcategory || '';
-    if (investment_type) updates.investment_type = investment_type;
-    if (amount_ll !== undefined) updates.amount_ll = parseFloat(amount_ll).toFixed(2);
-    if (amount_usd !== undefined) updates.amount_usd = parseFloat(amount_usd).toFixed(2);
+    if (category) updates.main_category = category;
+    if (description !== undefined) updates.subcategory = description;
+    if (amount !== undefined) {
+      updates.amount_ll = parseFloat(amount).toFixed(2);
+      updates.amount_usd = '0.00';
+    }
 
     await updateInCSV('EXPENSE_ENTRIES', expenses[expenseIndex], updates);
 
@@ -183,8 +168,10 @@ const updateExpense = async (req, res) => {
       success: true,
       data: {
         id: parseInt(id),
-        ...expenses[expenseIndex],
-        ...updates
+        date: updates.date || expenses[expenseIndex].date,
+        category: updates.main_category || expenses[expenseIndex].main_category,
+        amount: parseFloat(updates.amount_ll || expenses[expenseIndex].amount_ll),
+        description: updates.subcategory || expenses[expenseIndex].subcategory || ''
       },
       message: 'Expense entry updated successfully'
     });
