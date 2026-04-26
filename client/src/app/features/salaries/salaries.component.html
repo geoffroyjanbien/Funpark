@@ -1,0 +1,325 @@
+<div class="salaries-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'SALARIES.TITLE' | translate }}</h1>
+      <p>{{ 'SALARIES.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
+      <button *ngIf="activeTab === 'employees'" (click)="openEmployeeForm()" class="btn btn-add">
+        <span class="icon">➕</span>
+        {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
+      </button>
+      <button *ngIf="activeTab === 'payments'" (click)="openPaymentForm()" class="btn btn-add">
+        <span class="icon">➕</span>
+        {{ 'SALARIES.ADD_PAYMENT' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    <span>⚠️</span>
+    {{ error }}
+    <button (click)="error = null" class="alert-close">×</button>
+  </div>
+
+  <!-- Summary Cards -->
+  <div class="stats-card">
+    <div class="stat-item">
+      <div class="stat-label">{{ 'SALARIES.TOTAL_EMPLOYEES' | translate }}</div>
+      <div class="stat-value">{{ summary.totalEmployees }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">{{ 'SALARIES.ACTIVE_EMPLOYEES' | translate }}</div>
+      <div class="stat-value">{{ summary.activeEmployees }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">{{ 'SALARIES.MONTHLY_SALARIES' | translate }}</div>
+      <div class="stat-value">${{ summary.totalMonthlySalaries | number:'1.0-0' }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">{{ 'SALARIES.PAID_THIS_MONTH' | translate }}</div>
+      <div class="stat-value">${{ summary.totalPaidThisMonth | number:'1.0-0' }}</div>
+    </div>
+  </div>
+
+  <!-- Tabs -->
+  <div class="tabs">
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'employees'"
+      (click)="switchTab('employees')">
+      👥 {{ 'SALARIES.EMPLOYEES' | translate }}
+    </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'payments'"
+      (click)="switchTab('payments')">
+      💰 {{ 'SALARIES.PAYMENTS' | translate }}
+    </button>
+  </div>
+
+  <!-- Employees Tab -->
+  <div *ngIf="activeTab === 'employees'">
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="search-box">
+        <input
+          type="text"
+          [placeholder]="'SALARIES.SEARCH_EMPLOYEES' | translate"
+          [(ngModel)]="searchTerm"
+          (input)="onSearch()"
+          class="form-input">
+        <span class="search-icon">🔍</span>
+      </div>
+
+      <div class="filter-group">
+        <label>{{ 'SALARIES.STATUS' | translate }}:</label>
+        <select [(ngModel)]="statusFilter" (change)="onFilterChange()" class="filter-select">
+          <option value="all">{{ 'COMMON.ALL' | translate }}</option>
+          <option value="active">{{ 'SALARIES.ACTIVE' | translate }}</option>
+          <option value="inactive">{{ 'SALARIES.INACTIVE' | translate }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Employees Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'SALARIES.EMPLOYEES_LIST' | translate }}</h2>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{{ 'SALARIES.NAME' | translate }}</th>
+                <th>{{ 'SALARIES.POSITION' | translate }}</th>
+                <th>{{ 'SALARIES.MONTHLY_SALARY' | translate }}</th>
+                <th>{{ 'SALARIES.HIRE_DATE' | translate }}</th>
+                <th>{{ 'SALARIES.STATUS' | translate }}</th>
+                <th class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let employee of filteredEmployees; trackBy: trackById">
+                <td>{{ employee.name }}</td>
+                <td>{{ employee.position }}</td>
+                <td class="text-right">${{ employee.monthly_salary | number:'1.0-0' }}</td>
+                <td>{{ employee.hire_date | customDate }}</td>
+                <td>
+                  <span class="status-badge" [class.active]="employee.status === 'active'">
+                    {{ employee.status }}
+                  </span>
+                </td>
+                <td class="text-center">
+                  <button (click)="openEmployeeForm(employee)" class="btn-action btn-edit" title="Edit">
+                    ✏️
+                  </button>
+                  <button (click)="deleteEmployee(employee)" class="btn-action btn-delete" title="Delete">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payments Tab -->
+  <div *ngIf="activeTab === 'payments'">
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>{{ 'FILTERS.YEAR' | translate }}:</label>
+        <select [(ngModel)]="selectedYear" (change)="onFilterChange()" class="filter-select">
+          <option *ngFor="let year of availableYears" [ngValue]="year">{{ year }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>{{ 'FILTERS.MONTH' | translate }}:</label>
+        <select [(ngModel)]="selectedMonth" (change)="onFilterChange()" class="filter-select">
+          <option *ngFor="let month of availableMonths; let i = index" [ngValue]="i">{{ month }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Payments Table -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'SALARIES.PAYMENTS_LIST' | translate }}</h2>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{{ 'COMMON.DATE' | translate }}</th>
+                <th>{{ 'SALARIES.EMPLOYEE' | translate }}</th>
+                <th>{{ 'COMMON.AMOUNT' | translate }}</th>
+                <th>{{ 'SALARIES.PAYMENT_TYPE' | translate }}</th>
+                <th>{{ 'SALARIES.MONTH' | translate }}</th>
+                <th>{{ 'COMMON.NOTES' | translate }}</th>
+                <th class="text-center">{{ 'COMMON.ACTIONS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let payment of filteredPayments; trackBy: trackById">
+                <td>{{ payment.payment_date | customDate }}</td>
+                <td>{{ getEmployeeName(payment.employee_id) }}</td>
+                <td class="text-right">${{ payment.amount | number:'1.0-0' }}</td>
+                <td>
+                  <span class="payment-type-badge" [class]="'type-' + payment.payment_type">
+                    {{ payment.payment_type }}
+                  </span>
+                </td>
+                <td>{{ payment.month }} {{ payment.year }}</td>
+                <td>{{ payment.notes || '-' }}</td>
+                <td class="text-center">
+                  <button (click)="openPaymentForm(payment)" class="btn-action btn-edit" title="Edit">
+                    ✏️
+                  </button>
+                  <button (click)="deletePayment(payment)" class="btn-action btn-delete" title="Delete">
+                    🗑️
+                  </button>
+                </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Employee Form Modal -->
+  <div *ngIf="showEmployeeForm" class="modal-overlay" (click)="closeEmployeeForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ (editingEmployee ? 'COMMON.EDIT' : 'COMMON.ADD') | translate }} {{ 'SALARIES.EMPLOYEE' | translate }}</h2>
+        <button (click)="closeEmployeeForm()" class="modal-close">×</button>
+      </div>
+
+      <form [formGroup]="employeeForm" (ngSubmit)="submitEmployee()" class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.NAME' | translate }} *</label>
+            <input type="text" formControlName="name" class="form-input">
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.POSITION' | translate }} *</label>
+            <input type="text" formControlName="position" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.MONTHLY_SALARY' | translate }} *</label>
+            <div class="amount-input">
+              <span class="currency-symbol">$</span>
+              <input type="number" formControlName="monthly_salary" class="form-input amount-field" step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.HIRE_DATE' | translate }} *</label>
+            <input type="date" formControlName="hire_date" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'SALARIES.STATUS' | translate }} *</label>
+          <select formControlName="status" class="form-select">
+            <option value="active">{{ 'SALARIES.ACTIVE' | translate }}</option>
+            <option value="inactive">{{ 'SALARIES.INACTIVE' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="closeEmployeeForm()" class="btn btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
+          <button type="submit" [disabled]="!employeeForm.valid" class="btn btn-primary">
+            {{ (editingEmployee ? 'COMMON.UPDATE' : 'COMMON.ADD') | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Payment Form Modal -->
+  <div *ngIf="showPaymentForm" class="modal-overlay" (click)="closePaymentForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ (editingPayment ? 'COMMON.EDIT' : 'COMMON.ADD') | translate }} {{ 'SALARIES.PAYMENT' | translate }}</h2>
+        <button (click)="closePaymentForm()" class="modal-close">×</button>
+      </div>
+
+      <form [formGroup]="paymentForm" (ngSubmit)="submitPayment()" class="form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.EMPLOYEE' | translate }} *</label>
+            <select formControlName="employee_id" class="form-select">
+              <option value="">{{ 'FORM.SELECT_EMPLOYEE' | translate }}</option>
+              <option *ngFor="let emp of employees" [value]="emp.id">{{ emp.name }} - {{ emp.position }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'COMMON.DATE' | translate }} *</label>
+            <input type="date" formControlName="payment_date" class="form-input">
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'COMMON.AMOUNT' | translate }} *</label>
+            <div class="amount-input">
+              <span class="currency-symbol">$</span>
+              <input type="number" formControlName="amount" class="form-input amount-field" step="0.01" min="0">
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.PAYMENT_TYPE' | translate }} *</label>
+            <select formControlName="payment_type" class="form-select">
+              <option value="full">{{ 'SALARIES.FULL_PAYMENT' | translate }}</option>
+              <option value="partial">{{ 'SALARIES.PARTIAL_PAYMENT' | translate }}</option>
+              <option value="advance">{{ 'SALARIES.ADVANCE_PAYMENT' | translate }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'SALARIES.MONTH' | translate }} *</label>
+            <select formControlName="month" class="form-select">
+              <option *ngFor="let month of availableMonths" [value]="month">{{ month }}</option>
+            </select>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'FILTERS.YEAR' | translate }} *</label>
+            <select formControlName="year" class="form-select">
+              <option *ngFor="let year of availableYears" [value]="year">{{ year }}</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">{{ 'COMMON.NOTES' | translate }}</label>
+          <textarea formControlName="notes" class="form-textarea" rows="3"></textarea>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="closePaymentForm()" class="btn btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
+          <button type="submit" [disabled]="!paymentForm.valid" class="btn btn-primary">
+            {{ (editingPayment ? 'COMMON.UPDATE' : 'COMMON.ADD') | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+</div>

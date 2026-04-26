@@ -1,8 +1,9 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CategoryService, Category } from '../../services/category.service';
+import { SalariesService, Employee } from '../../services/salaries.service';
 
-type SettingsTab = 'revenue' | 'expense' | 'investment' | 'general';
+type SettingsTab = 'revenue' | 'expense' | 'investment' | 'employees' | 'general';
 
 @Component({
   selector: 'app-settings',
@@ -13,6 +14,7 @@ export class SettingsComponent implements OnInit {
   activeTab: SettingsTab = 'revenue';
   categories: Category[] = [];
   filteredCategories: Category[] = [];
+  employees: Employee[] = [];
   loading = false;
   error: string | null = null;
   successMessage: string | null = null;
@@ -21,6 +23,7 @@ export class SettingsComponent implements OnInit {
   showForm = false;
   editMode = false;
   currentCategory: Partial<Category> = {};
+  currentEmployee: Partial<Employee> = {};
   
   // Parent categories for hierarchical structure
   parentCategories: Category[] = [];
@@ -38,11 +41,13 @@ export class SettingsComponent implements OnInit {
 
   constructor(
     private categoryService: CategoryService,
+    private salariesService: SalariesService,
     private translate: TranslateService
   ) {}
 
   ngOnInit(): void {
     this.loadCategories();
+    this.loadEmployees();
     this.loadGeneralSettings();
   }
 
@@ -66,11 +71,21 @@ export class SettingsComponent implements OnInit {
   }
 
   loadGeneralSettings(): void {
-    // Load from localStorage or API
     const saved = localStorage.getItem('generalSettings');
     if (saved) {
       this.generalSettings = JSON.parse(saved);
     }
+  }
+
+  loadEmployees(): void {
+    this.salariesService.getAllEmployees().subscribe({
+      next: (data) => {
+        this.employees = data || [];
+      },
+      error: (error) => {
+        console.error('Error loading employees:', error);
+      }
+    });
   }
 
   saveGeneralSettings(): void {
@@ -79,7 +94,7 @@ export class SettingsComponent implements OnInit {
   }
 
   filterCategories(): void {
-    if (this.activeTab === 'general') {
+    if (this.activeTab === 'general' || this.activeTab === 'employees') {
       this.filteredCategories = [];
       return;
     }
@@ -90,7 +105,7 @@ export class SettingsComponent implements OnInit {
   }
 
   updateParentCategories(): void {
-    if (this.activeTab === 'general') {
+    if (this.activeTab === 'general' || this.activeTab === 'employees') {
       this.parentCategories = [];
       return;
     }
@@ -111,28 +126,48 @@ export class SettingsComponent implements OnInit {
   openAddForm(): void {
     this.showForm = true;
     this.editMode = false;
-    this.currentCategory = {
-      type: this.activeTab as 'revenue' | 'expense' | 'investment',
-      name_en: '',
-      name_ar: '',
-      parent_category: '',
-      is_active: 'true'
-    };
+    if (this.activeTab === 'employees') {
+      this.currentEmployee = {
+        name: '',
+        position: '',
+        monthly_salary: 0,
+        hire_date: new Date().toISOString().split('T')[0],
+        status: 'active'
+      };
+    } else {
+      this.currentCategory = {
+        type: this.activeTab as 'revenue' | 'expense' | 'investment',
+        name_en: '',
+        name_ar: '',
+        parent_category: '',
+        is_active: 'true'
+      };
+    }
   }
 
-  openEditForm(category: Category): void {
+  openEditForm(item: Category | Employee): void {
     this.showForm = true;
     this.editMode = true;
-    this.currentCategory = { ...category };
+    if (this.activeTab === 'employees') {
+      this.currentEmployee = { ...item as Employee };
+    } else {
+      this.currentCategory = { ...item as Category };
+    }
   }
 
   cancelForm(): void {
     this.showForm = false;
     this.editMode = false;
     this.currentCategory = {};
+    this.currentEmployee = {};
   }
 
   saveCategory(): void {
+    if (this.activeTab === 'employees') {
+      this.saveEmployee();
+      return;
+    }
+
     if (!this.currentCategory.name_en || !this.currentCategory.name_ar) {
       this.showErrorMessage(this.translate.instant('SETTINGS.VALIDATION.NAME_REQUIRED'));
       return;
@@ -170,7 +205,13 @@ export class SettingsComponent implements OnInit {
     }
   }
 
-  deleteCategory(category: Category): void {
+  deleteCategory(item: Category | Employee): void {
+    if (this.activeTab === 'employees') {
+      this.deleteEmployee(item as Employee);
+      return;
+    }
+
+    const category = item as Category;
     if (!confirm(this.translate.instant('SETTINGS.DELETE_CONFIRM', { name: this.getCategoryName(category) }))) {
       return;
     }
@@ -254,5 +295,64 @@ export class SettingsComponent implements OnInit {
     };
 
     this.saveGeneralSettings();
+  }
+
+  saveEmployee(): void {
+    if (!this.currentEmployee.name || !this.currentEmployee.position) {
+      this.showErrorMessage('Name and position are required');
+      return;
+    }
+
+    this.loading = true;
+    this.clearMessages();
+
+    if (this.editMode && this.currentEmployee.id) {
+      this.salariesService.updateEmployee(this.currentEmployee.id, this.currentEmployee).subscribe({
+        next: () => {
+          this.showSuccessMessage('Employee updated successfully');
+          this.loadEmployees();
+          this.cancelForm();
+          this.loading = false;
+        },
+        error: (error) => {
+          this.showErrorMessage('Failed to update employee');
+          this.loading = false;
+        }
+      });
+    } else {
+      this.salariesService.createEmployee(this.currentEmployee as Omit<Employee, 'id'>).subscribe({
+        next: () => {
+          this.showSuccessMessage('Employee created successfully');
+          this.loadEmployees();
+          this.cancelForm();
+          this.loading = false;
+        },
+        error: (error) => {
+          this.showErrorMessage('Failed to create employee');
+          this.loading = false;
+        }
+      });
+    }
+  }
+
+  deleteEmployee(employee: Employee): void {
+    if (!confirm(`Are you sure you want to delete ${employee.name}?`)) {
+      return;
+    }
+
+    this.loading = true;
+    this.clearMessages();
+
+    this.salariesService.deleteEmployee(employee.id!).subscribe({
+      next: () => {
+        this.showSuccessMessage('Employee deleted successfully');
+        this.loadEmployees();
+        this.loading = false;
+      },
+      error: (error) => {
+        this.showErrorMessage('Failed to delete employee');
+        this.loading = false;
+      }
+    });
   }
 }

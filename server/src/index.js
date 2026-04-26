@@ -10,6 +10,7 @@ const expenseRoutes = require('./routes/expenses');
 const investmentRoutes = require('./routes/investments');
 const summaryRoutes = require('./routes/summaries');
 const categoryRoutes = require('./routes/categories');
+const salaryRoutes = require('./routes/salaries');
 
 // Create Express app
 const app = express();
@@ -81,6 +82,7 @@ app.use('/api/expenses', expenseRoutes);
 app.use('/api/investments', investmentRoutes);
 app.use('/api/summaries', summaryRoutes);
 app.use('/api/categories', categoryRoutes);
+app.use('/api/salaries', salaryRoutes);
 
 // 404 handler
 app.use('*', (req, res) => {

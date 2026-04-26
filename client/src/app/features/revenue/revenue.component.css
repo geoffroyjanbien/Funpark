@@ -1,7 +1,7 @@
 .revenue-page {
   display: flex;
   flex-direction: column;
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
 }
 
 .page-header {
@@ -57,8 +57,8 @@
 
 .filters-section {
   display: flex;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -140,7 +140,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
 }
 
@@ -152,7 +152,7 @@
 
 .modal-close {
   background: none;
-  border: none;
+  border: 1px solid transparent;
   font-size: 1.5rem;
   color: var(--muted-text);
   cursor: pointer;
@@ -168,19 +168,20 @@
 
 .modal-close:hover {
   background-color: var(--accent-bg);
+  border-color: var(--border-color);
   color: var(--primary-text);
 }
 
 /* Form Styles */
 .revenue-form {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
 }
 
 .form-row {
   display: grid;
   grid-template-columns: 1fr 1fr;
-  gap: var(--spacing-md);
-  margin-bottom: var(--spacing-md);
+  gap: var(--spacing-sm);
+  margin-bottom: var(--spacing-sm);
 }
 
 .form-group {
@@ -245,8 +246,8 @@
   display: flex;
   justify-content: flex-end;
   gap: var(--spacing-sm);
-  margin-top: var(--spacing-lg);
-  padding-top: var(--spacing-lg);
+  margin-top: var(--spacing-md);
+  padding-top: var(--spacing-md);
   border-top: 1px solid var(--border-color);
 }
 
@@ -268,12 +269,18 @@
 
 .alert-close {
   background: none;
-  border: none;
+  border: 1px solid transparent;
   color: inherit;
   cursor: pointer;
   font-size: 1.25rem;
   padding: 0;
   margin-left: auto;
+  transition: all 0.2s ease;
+}
+
+.alert-close:hover {
+  border-color: currentColor;
+  opacity: 0.8;
 }
 
 /* Card Styles */
@@ -289,7 +296,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   border-bottom: 1px solid var(--border-color);
   background-color: var(--accent-bg);
 }
@@ -307,7 +314,7 @@
 }
 
 .card-content {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-sm);
 }
 
 /* Loading and Empty States */
@@ -351,7 +358,7 @@
 }
 
 .group-section {
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
   background-color: var(--secondary-bg);
   border: 1px solid var(--border-color);
   border-radius: var(--radius-md);
@@ -361,7 +368,7 @@
 .group-controls {
   display: flex;
   gap: var(--spacing-sm);
-  margin-bottom: var(--spacing-md);
+  margin-bottom: var(--spacing-sm);
   justify-content: flex-end;
 }
 
@@ -369,7 +376,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: var(--spacing-md) var(--spacing-lg);
+  padding: var(--spacing-sm) var(--spacing-md);
   background-color: var(--accent-bg);
   border-bottom: 1px solid var(--border-color);
   cursor: pointer;
@@ -459,7 +466,7 @@
 /* Action Buttons */
 .btn-action {
   background: none;
-  border: none;
+  border: 1px solid transparent;
   cursor: pointer;
   padding: var(--spacing-xs);
   margin: 0 var(--spacing-xs);
@@ -470,11 +477,13 @@
 
 .btn-edit:hover {
   background-color: rgba(74, 158, 255, 0.1);
+  border-color: var(--primary-accent);
   color: var(--primary-accent);
 }
 
 .btn-delete:hover {
   background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--error-color);
   color: var(--error-color);
 }
 
@@ -484,7 +493,7 @@
   align-items: center;
   justify-content: center;
   padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
+  border: 1px solid transparent;
   border-radius: var(--radius-md);
   font-size: 0.875rem;
   font-weight: 500;
@@ -502,19 +511,23 @@
 .btn-primary {
   background-color: var(--btn-primary);
   color: white;
+  border-color: var(--btn-primary);
 }
 
 .btn-primary:hover:not(:disabled) {
   background-color: var(--btn-primary-hover);
+  border-color: var(--btn-primary-hover);
 }
 
 .btn-secondary {
   background-color: var(--btn-secondary);
   color: white;
+  border-color: var(--btn-secondary);
 }
 
 .btn-secondary:hover:not(:disabled) {
   background-color: var(--btn-secondary-hover);
+  border-color: var(--btn-secondary-hover);
 }
 
 .btn-sm {

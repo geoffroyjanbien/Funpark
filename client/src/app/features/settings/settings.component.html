@@ -33,6 +33,14 @@
       </button>
       <button 
         class="tab-button" 
+        [class.active]="activeTab === 'employees'"
+        (click)="onTabChange('employees')">
+        <span class="tab-icon">👥</span>
+        <span class="tab-text">{{ 'SETTINGS.EMPLOYEES' | translate }}</span>
+        <span class="tab-count">{{ employees.length }}</span>
+      </button>
+      <button 
+        class="tab-button" 
         [class.active]="activeTab === 'general'"
         (click)="onTabChange('general')">
         <span class="tab-icon">⚙️</span>
@@ -168,7 +176,7 @@
     </div>
 
     <!-- Category Management Tabs -->
-    <div class="tab-content" *ngIf="activeTab !== 'general' && (!loading || showForm)">
+    <div class="tab-content" *ngIf="activeTab !== 'general' && activeTab !== 'employees' && (!loading || showForm)">
       
       <!-- Add Button -->
       <div class="action-bar" *ngIf="!showForm">
@@ -292,6 +300,110 @@
           <button class="btn btn-primary" (click)="openAddForm()">
             <span class="icon">+</span>
             {{ 'SETTINGS.ADD_FIRST_CATEGORY' | translate }}
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Employees Tab -->
+    <div class="tab-content" *ngIf="activeTab === 'employees' && !loading">
+      <div class="action-bar" *ngIf="!showForm">
+        <div class="category-stats">
+          <span class="stat-item">
+            <strong>{{ employees.length }}</strong> {{ 'SETTINGS.EMPLOYEES' | translate }}
+          </span>
+        </div>
+        <button class="btn btn-primary" (click)="openAddForm()">
+          <span class="icon">+</span>
+          {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
+        </button>
+      </div>
+
+      <!-- Employee Form -->
+      <div class="category-form" *ngIf="showForm">
+        <h3>{{ editMode ? ('COMMON.EDIT' | translate) : ('COMMON.ADD' | translate) }} {{ 'SALARIES.EMPLOYEE' | translate }}</h3>
+        
+        <div class="form-group">
+          <label>{{ 'SALARIES.NAME' | translate }} *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentEmployee.name" 
+            class="form-control">
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'SALARIES.POSITION' | translate }} *</label>
+          <input 
+            type="text" 
+            [(ngModel)]="currentEmployee.position" 
+            class="form-control">
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label>{{ 'SALARIES.MONTHLY_SALARY' | translate }}</label>
+            <input 
+              type="number" 
+              [(ngModel)]="currentEmployee.monthly_salary" 
+              class="form-control"
+              min="0">
+          </div>
+
+          <div class="form-group">
+            <label>{{ 'SALARIES.HIRE_DATE' | translate }}</label>
+            <input 
+              type="date" 
+              [(ngModel)]="currentEmployee.hire_date" 
+              class="form-control">
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>{{ 'SALARIES.STATUS' | translate }}</label>
+          <select [(ngModel)]="currentEmployee.status" class="form-control">
+            <option value="active">{{ 'SALARIES.ACTIVE' | translate }}</option>
+            <option value="inactive">{{ 'SALARIES.INACTIVE' | translate }}</option>
+          </select>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn btn-primary" (click)="saveCategory()">
+            <span class="icon">💾</span>
+            {{ 'COMMON.SAVE' | translate }}
+          </button>
+          <button class="btn btn-secondary" (click)="cancelForm()">
+            {{ 'COMMON.CANCEL' | translate }}
+          </button>
+        </div>
+      </div>
+
+      <!-- Employees List -->
+      <div class="categories-list" *ngIf="!showForm">
+        <div class="category-item" *ngFor="let employee of employees">
+          <div class="category-info">
+            <span class="category-icon">👤</span>
+            <span class="category-name">{{ employee.name }} - {{ employee.position }}</span>
+            <span class="category-badge" [class.active]="employee.status === 'active'">
+              {{ employee.status === 'active' ? ('SALARIES.ACTIVE' | translate) : ('SALARIES.INACTIVE' | translate) }}
+            </span>
+            <span class="children-count">${{ employee.monthly_salary | number:'1.0-0' }}/{{ 'SALARIES.MONTH' | translate }}</span>
+          </div>
+          <div class="category-actions">
+            <button class="btn-icon edit" (click)="openEditForm(employee)" [title]="'COMMON.EDIT' | translate">
+              ✏️
+            </button>
+            <button class="btn-icon delete" (click)="deleteCategory(employee)" [title]="'COMMON.DELETE' | translate">
+              🗑️
+            </button>
+          </div>
+        </div>
+
+        <div class="no-data" *ngIf="employees.length === 0">
+          <div class="no-data-icon">💭</div>
+          <p>{{ 'SETTINGS.NO_CATEGORIES' | translate }}</p>
+          <button class="btn btn-primary" (click)="openAddForm()">
+            <span class="icon">+</span>
+            {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
           </button>
         </div>
       </div>

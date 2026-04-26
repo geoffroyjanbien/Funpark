@@ -1,5 +1,5 @@
 .reports-container {
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   max-width: 1200px;
   margin: 0 auto;
 }
@@ -8,7 +8,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .header h1 {
@@ -19,8 +19,8 @@
 /* Controls Section */
 .controls-section {
   display: flex;
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-lg);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-md);
   flex-wrap: wrap;
   align-items: center;
 }
@@ -49,12 +49,12 @@
 
 /* Error and Loading */
 .error-message {
-  padding: var(--spacing-md);
+  padding: var(--spacing-sm);
   background-color: rgba(231, 76, 60, 0.1);
   border: 1px solid rgba(231, 76, 60, 0.3);
   border-radius: var(--border-radius);
   color: #e74c3c;
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .loading {
@@ -66,29 +66,29 @@
 
 /* Summary Section */
 .summary-section {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .summary-section h2 {
   color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 .summary-cards {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .summary-card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   display: flex;
   align-items: center;
-  gap: var(--spacing-md);
+  gap: var(--spacing-sm);
 }
 
 .card-icon {
@@ -160,12 +160,12 @@
 
 /* Dashboard Section */
 .dashboard-section {
-  margin-bottom: var(--spacing-xl);
+  margin-bottom: var(--spacing-lg);
 }
 
 .dashboard-section h2 {
   color: var(--text-primary);
-  margin-bottom: var(--spacing-lg);
+  margin-bottom: var(--spacing-md);
 }
 
 /* Yearly/Monthly Metrics */
@@ -173,15 +173,15 @@
 .monthly-metrics {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
-  margin-bottom: var(--spacing-xl);
+  gap: var(--spacing-md);
+  margin-bottom: var(--spacing-lg);
 }
 
 .metric-card {
   background-color: var(--bg-secondary);
   border: 1px solid var(--border-color);
   border-radius: var(--border-radius);
-  padding: var(--spacing-lg);
+  padding: var(--spacing-md);
   text-align: center;
 }
 
@@ -260,7 +260,7 @@
 .indicators-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-  gap: var(--spacing-lg);
+  gap: var(--spacing-md);
 }
 
 .indicator-card {
@@ -295,8 +295,8 @@
 /* Button Styles */
 .btn {
   padding: var(--spacing-sm) var(--spacing-md);
-  border: none;
-  border-radius: var(--border-radius);
+  border: 1px solid transparent;
+  border-radius: var(--radius-md);
   cursor: pointer;
   font-size: var(--font-size-base);
   font-weight: 500;
@@ -313,6 +313,7 @@
 
 .btn-secondary:hover {
   background-color: var(--bg-tertiary);
+  border-color: var(--border-hover);
 }
 
 /* Responsive Design */

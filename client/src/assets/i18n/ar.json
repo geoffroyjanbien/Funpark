@@ -8,6 +8,7 @@
     "REVENUE": "الإيرادات",
     "EXPENSES": "المصروفات",
     "INVESTMENTS": "الاستثمارات",
+    "SALARIES": "الرواتب",
     "REPORTS": "التقارير",
     "SETTINGS": "الإعدادات"
   },
@@ -33,7 +34,9 @@
     "OPTIONAL": "اختياري",
     "ITEMS": "عناصر",
     "EXPAND_ALL": "توسيع الكل",
-    "COLLAPSE_ALL": "طي الكل"
+    "COLLAPSE_ALL": "طي الكل",
+    "ALL": "الكل",
+    "NOTES": "ملاحظات"
   },
   "FILTERS": {
     "VIEW_MODE": "وضع العرض",
@@ -73,7 +76,8 @@
     "SECOND_SHARE": "الحصة الثانية",
     "RECENT_REVENUE": "الإيرادات الأخيرة",
     "RECENT_EXPENSES": "المصروفات الأخيرة",
-    "VIEW_ALL": "عرض الكل"
+    "VIEW_ALL": "عرض الكل",
+    "SHARES": "الحصص"
   },
   "REVENUE": {
     "TITLE": "إدارة الإيرادات",
@@ -189,6 +193,45 @@
       "DELETE_ERROR": "فشل حذف قيد الاستثمار"
     }
   },
+  "SALARIES": {
+    "TITLE": "إدارة الرواتب",
+    "SUBTITLE": "إدارة الموظفين ودفعات الرواتب",
+    "EMPLOYEES": "الموظفون",
+    "PAYMENTS": "الدفعات",
+    "ADD_EMPLOYEE": "إضافة موظف",
+    "ADD_PAYMENT": "إضافة دفعة",
+    "EMPLOYEE": "الموظف",
+    "PAYMENT": "الدفعة",
+    "NAME": "الاسم",
+    "POSITION": "المنصب",
+    "MONTHLY_SALARY": "الراتب الشهري",
+    "HIRE_DATE": "تاريخ التوظيف",
+    "STATUS": "الحالة",
+    "ACTIVE": "نشط",
+    "INACTIVE": "غير نشط",
+    "TOTAL_EMPLOYEES": "إجمالي الموظفين",
+    "ACTIVE_EMPLOYEES": "الموظفون النشطون",
+    "MONTHLY_SALARIES": "الرواتب الشهرية",
+    "PAID_THIS_MONTH": "المدفوع هذا الشهر",
+    "EMPLOYEES_LIST": "قائمة الموظفين",
+    "PAYMENTS_LIST": "قائمة الدفعات",
+    "SEARCH_EMPLOYEES": "البحث عن الموظفين بالاسم أو المنصب...",
+    "PAYMENT_TYPE": "نوع الدفعة",
+    "FULL_PAYMENT": "دفعة كاملة",
+    "PARTIAL_PAYMENT": "دفعة جزئية",
+    "ADVANCE_PAYMENT": "سلفة",
+    "MONTH": "الشهر",
+    "TOTAL_SALARIES": "إجمالي الرواتب",
+    "MESSAGES": {
+      "EMPLOYEE_CREATED": "تم إنشاء الموظف بنجاح",
+      "EMPLOYEE_UPDATED": "تم تحديث الموظف بنجاح",
+      "EMPLOYEE_DELETED": "تم حذف الموظف بنجاح",
+      "PAYMENT_CREATED": "تم إنشاء الدفعة بنجاح",
+      "PAYMENT_UPDATED": "تم تحديث الدفعة بنجاح",
+      "PAYMENT_DELETED": "تم حذف الدفعة بنجاح",
+      "LOAD_ERROR": "فشل تحميل بيانات الرواتب"
+    }
+  },
   "REPORTS": {
     "TITLE": "التقارير المالية",
     "SUBTITLE": "بيانات شاملة للأرباح والخسائر والتحليلات",
@@ -203,6 +246,7 @@
     "SELECT_SOURCE": "اختر المصدر",
     "SELECT_CATEGORY": "اختر الفئة",
     "SELECT_TYPE": "اختر النوع",
+    "SELECT_EMPLOYEE": "اختر الموظف",
     "AMOUNT_PLACEHOLDER": "0.00",
     "DESCRIPTION_PLACEHOLDER": "وصف اختياري",
     "VALIDATION": {
@@ -217,6 +261,7 @@
     "REVENUE_CATEGORIES": "فئات الإيرادات",
     "EXPENSE_CATEGORIES": "فئات المصروفات",
     "INVESTMENT_TYPES": "أنواع الاستثمارات",
+    "EMPLOYEES": "الموظفون",
     "GENERAL_SETTINGS": "الإعدادات العامة",
     "ADD_CATEGORY": "إضافة فئة",
     "EDIT_CATEGORY": "تعديل الفئة",

@@ -100,9 +100,9 @@
 
 .main-content {
   flex: 1;
-  padding: var(--spacing-lg);
-  padding-top: 60px; /* Add extra top padding for language switcher */
-  margin-left: 250px; /* Account for fixed navigation */
+  padding: var(--spacing-md);
+  padding-top: 50px;
+  margin-left: 250px;
   overflow-x: hidden;
 }
 

@@ -22,6 +22,14 @@
     </div>
 
     <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.totalSalaries | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'SALARIES.TOTAL_SALARIES' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
       <div class="stat-icon">📈</div>
       <div class="stat-content">
         <h3 class="stat-value">${{ summary?.totalInvestments | number:'1.0-0' }}</h3>
@@ -64,17 +72,21 @@
       </div>
       <div class="card-content">
         <div class="quick-actions">
-          <a routerLink="/revenue" class="btn btn-primary">
-            <span>➕</span>
+          <a routerLink="/revenue" class="btn btn-add">
+            <span class="icon">➕</span>
             {{ 'REVENUE.ADD_REVENUE' | translate }}
           </a>
-          <a routerLink="/expenses" class="btn btn-danger">
-            <span>➕</span>
+          <a routerLink="/expenses" class="btn btn-add">
+            <span class="icon">➕</span>
             {{ 'EXPENSES.ADD_EXPENSE' | translate }}
           </a>
-          <a routerLink="/investments" class="btn btn-success">
-            <span>➕</span>
+          <a routerLink="/investments" class="btn btn-add">
+            <span class="icon">➕</span>
             {{ 'INVESTMENTS.ADD_INVESTMENT' | translate }}
+          </a>
+          <a routerLink="/salaries" class="btn btn-add">
+            <span class="icon">➕</span>
+            {{ 'SALARIES.ADD_PAYMENT' | translate }}
           </a>
         </div>
       </div>

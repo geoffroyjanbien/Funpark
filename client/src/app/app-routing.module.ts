@@ -7,6 +7,7 @@ const routes: Routes = [
   { path: 'revenue', loadChildren: () => import('./features/revenue/revenue.module').then(m => m.RevenueModule) },
   { path: 'expenses', loadChildren: () => import('./features/expenses/expenses.module').then(m => m.ExpensesModule) },
   { path: 'investments', loadChildren: () => import('./features/investments/investments.module').then(m => m.InvestmentsModule) },
+  { path: 'salaries', loadChildren: () => import('./features/salaries/salaries.module').then(m => m.SalariesModule) },
   { path: 'reports', loadChildren: () => import('./features/reports/reports.module').then(m => m.ReportsModule) },
   { path: 'settings', loadChildren: () => import('./features/settings/settings.module').then(m => m.SettingsModule) },
   { path: '**', redirectTo: '/dashboard' }

@@ -33,6 +33,12 @@
       </a>
     </li>
     <li class="nav-item">
+      <a routerLink="/salaries" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text">{{ 'NAV.SALARIES' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
       <a routerLink="/reports" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
         <span class="nav-icon">📋</span>
         <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>

@@ -8,6 +8,7 @@
     "REVENUE": "Revenue",
     "EXPENSES": "Expenses",
     "INVESTMENTS": "Investments",
+    "SALARIES": "Salaries",
     "REPORTS": "Reports",
     "SETTINGS": "Settings"
   },
@@ -33,7 +34,9 @@
     "OPTIONAL": "Optional",
     "ITEMS": "items",
     "EXPAND_ALL": "Expand All",
-    "COLLAPSE_ALL": "Collapse All"
+    "COLLAPSE_ALL": "Collapse All",
+    "ALL": "All",
+    "NOTES": "Notes"
   },
   "FILTERS": {
     "VIEW_MODE": "View Mode",
@@ -190,6 +193,45 @@
       "DELETE_ERROR": "Failed to delete investment item"
     }
   },
+  "SALARIES": {
+    "TITLE": "Salaries Management",
+    "SUBTITLE": "Manage employees and salary payments",
+    "EMPLOYEES": "Employees",
+    "PAYMENTS": "Payments",
+    "ADD_EMPLOYEE": "Add Employee",
+    "ADD_PAYMENT": "Add Payment",
+    "EMPLOYEE": "Employee",
+    "PAYMENT": "Payment",
+    "NAME": "Name",
+    "POSITION": "Position",
+    "MONTHLY_SALARY": "Monthly Salary",
+    "HIRE_DATE": "Hire Date",
+    "STATUS": "Status",
+    "ACTIVE": "Active",
+    "INACTIVE": "Inactive",
+    "TOTAL_EMPLOYEES": "Total Employees",
+    "ACTIVE_EMPLOYEES": "Active Employees",
+    "MONTHLY_SALARIES": "Monthly Salaries",
+    "PAID_THIS_MONTH": "Paid This Month",
+    "EMPLOYEES_LIST": "Employees List",
+    "PAYMENTS_LIST": "Payments List",
+    "SEARCH_EMPLOYEES": "Search employees by name or position...",
+    "PAYMENT_TYPE": "Payment Type",
+    "FULL_PAYMENT": "Full Payment",
+    "PARTIAL_PAYMENT": "Partial Payment",
+    "ADVANCE_PAYMENT": "Advance Payment",
+    "MONTH": "Month",
+    "TOTAL_SALARIES": "Total Salaries",
+    "MESSAGES": {
+      "EMPLOYEE_CREATED": "Employee created successfully",
+      "EMPLOYEE_UPDATED": "Employee updated successfully",
+      "EMPLOYEE_DELETED": "Employee deleted successfully",
+      "PAYMENT_CREATED": "Payment created successfully",
+      "PAYMENT_UPDATED": "Payment updated successfully",
+      "PAYMENT_DELETED": "Payment deleted successfully",
+      "LOAD_ERROR": "Failed to load salaries data"
+    }
+  },
   "REPORTS": {
     "TITLE": "Financial Reports",
     "SUBTITLE": "Comprehensive profit & loss statements and analytics",
@@ -204,6 +246,7 @@
     "SELECT_SOURCE": "Select source",
     "SELECT_CATEGORY": "Select category",
     "SELECT_TYPE": "Select type",
+    "SELECT_EMPLOYEE": "Select employee",
     "AMOUNT_PLACEHOLDER": "0.00",
     "DESCRIPTION_PLACEHOLDER": "Optional description",
     "VALIDATION": {

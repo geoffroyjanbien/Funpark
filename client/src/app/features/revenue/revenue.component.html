@@ -6,8 +6,8 @@
     </div>
     <div class="header-actions">
       <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
-      <button (click)="openAddForm()" class="btn btn-primary">
-        <span>➕</span>
+      <button (click)="openAddForm()" class="btn btn-add">
+        <span class="icon">➕</span>
         {{ 'REVENUE.ADD_REVENUE' | translate }}
       </button>
     </div>
@@ -178,7 +178,10 @@
         <div class="empty-icon">💰</div>
         <h3>{{ 'REVENUE.NO_ENTRIES' | translate }}</h3>
         <p>{{ searchTerm ? ('REVENUE.ADJUST_SEARCH' | translate) : ('REVENUE.ADD_FIRST' | translate) }}</p>
-        <button *ngIf="!searchTerm" (click)="openAddForm()" class="btn btn-primary">{{ 'COMMON.ADD' | translate }}</button>
+        <button *ngIf="!searchTerm" (click)="openAddForm()" class="btn btn-add">
+          <span class="icon">➕</span>
+          {{ 'COMMON.ADD' | translate }}
+        </button>
       </div>
 
       <div *ngIf="!loading && filteredItems.length > 0" class="table-responsive">
