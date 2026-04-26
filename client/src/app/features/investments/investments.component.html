@@ -1,0 +1,202 @@
+<div class="investments-page">
+  <div class="page-header">
+    <div>
+      <h1>{{ 'INVESTMENTS.TITLE' | translate }}</h1>
+      <p>{{ 'INVESTMENTS.SUBTITLE' | translate }}</p>
+    </div>
+    <div class="header-actions">
+      <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
+      <button (click)="openAddForm()" class="btn btn-add">
+        <span class="icon">➕</span>
+        {{ 'INVESTMENTS.ADD_INVESTMENT' | translate }}
+      </button>
+    </div>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="error" class="alert alert-error">
+    <span>⚠️</span>
+    {{ error }}
+    <button (click)="error = null" class="alert-close">×</button>
+  </div>
+
+  <!-- Stats Card -->
+  <div class="stats-card">
+    <div class="stat-item">
+      <div class="stat-label">{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</div>
+      <div class="stat-value">${{ getTotalInvestments() | number:'1.0-0' }}</div>
+    </div>
+    <div class="stat-item">
+      <div class="stat-label">{{ 'INVESTMENTS.FILTERED_ENTRIES' | translate }}</div>
+      <div class="stat-value">{{ filteredItems.length }}</div>
+    </div>
+  </div>
+
+  <!-- Search and Filters -->
+  <div class="filters-section">
+    <div class="search-box">
+      <input
+        type="text"
+        [placeholder]="'INVESTMENTS.SEARCH_PLACEHOLDER' | translate"
+        [(ngModel)]="searchTerm"
+        (input)="onSearch()"
+        class="form-input">
+      <span class="search-icon">🔍</span>
+    </div>
+
+    <div class="date-filters">
+      <div class="filter-group">
+        <label>{{ 'FILTERS.VIEW_MODE' | translate }}:</label>
+        <select [(ngModel)]="viewMode" (change)="onViewModeChange()" class="filter-select">
+          <option value="all">{{ 'FILTERS.ALL_TIME' | translate }}</option>
+          <option value="yearly">{{ 'FILTERS.YEARLY' | translate }}</option>
+          <option value="monthly">{{ 'FILTERS.MONTHLY' | translate }}</option>
+          <option value="daily">{{ 'FILTERS.DAILY' | translate }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="viewMode === 'yearly' || viewMode === 'monthly'">
+        <label>{{ 'FILTERS.YEAR' | translate }}:</label>
+        <select [(ngModel)]="selectedYear" (ngModelChange)="onYearChange()" class="filter-select">
+          <option *ngFor="let year of availableYears" [ngValue]="year">{{year}}</option>
+        </select>
+      </div>
+
+      <div class="filter-group" *ngIf="viewMode === 'monthly'">
+        <label>{{ 'FILTERS.MONTH' | translate }}:</label>
+        <select [(ngModel)]="selectedMonth" (ngModelChange)="onMonthChange()" class="filter-select">
+          <option *ngFor="let month of availableMonths; let i = index" [ngValue]="i">{{month}}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>{{ 'FILTERS.GROUP_BY' | translate }}:</label>
+        <select [(ngModel)]="groupByField" (ngModelChange)="onGroupByChange()" class="filter-select">
+          <option value="none">{{ 'FILTERS.NO_GROUPING' | translate }}</option>
+          <option value="type">{{ 'INVESTMENTS.TYPE' | translate }}</option>
+          <option value="date">{{ 'COMMON.DATE' | translate }}</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Investment Form Modal -->
+  <div *ngIf="showForm" class="modal-overlay" (click)="cancelForm()">
+    <div class="modal-content" (click)="$event.stopPropagation()">
+      <div class="modal-header">
+        <h2>{{ (editingItem ? 'COMMON.EDIT' : 'COMMON.ADD') | translate }} {{ 'INVESTMENTS.TITLE' | translate }}</h2>
+        <button (click)="cancelForm()" class="modal-close">×</button>
+      </div>
+
+      <form [formGroup]="investmentForm" (ngSubmit)="onSubmit()" class="investment-form">
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'COMMON.DATE' | translate }} *</label>
+            <input
+              type="date"
+              formControlName="date"
+              class="form-input"
+              [class.error]="getFormFieldError('date')">
+            <div *ngIf="getFormFieldError('date')" class="field-error">
+              {{ getFormFieldError('date') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'INVESTMENTS.TYPE' | translate }} *</label>
+            <select formControlName="type" class="form-select" [class.error]="getFormFieldError('type')">
+              <option value="">{{ 'FORM.SELECT_TYPE' | translate }}</option>
+              <option *ngFor="let type of investmentTypes" [value]="type.name_en">
+                {{ getCategoryName(type) }}
+              </option>
+            </select>
+            <div *ngIf="getFormFieldError('type')" class="field-error">
+              {{ getFormFieldError('type') }}
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <div class="form-group">
+            <label class="form-label">{{ 'COMMON.AMOUNT' | translate }} *</label>
+            <div class="amount-input">
+              <span class="currency-symbol">$</span>
+              <input
+                type="number"
+                formControlName="amount"
+                [placeholder]="'FORM.AMOUNT_PLACEHOLDER' | translate"
+                step="0.01"
+                min="0"
+                class="form-input amount-field"
+                [class.error]="getFormFieldError('amount')">
+            </div>
+            <div *ngIf="getFormFieldError('amount')" class="field-error">
+              {{ getFormFieldError('amount') }}
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">{{ 'COMMON.DESCRIPTION' | translate }}</label>
+            <input
+              type="text"
+              formControlName="description"
+              [placeholder]="'FORM.DESCRIPTION_PLACEHOLDER' | translate"
+              class="form-input">
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="button" (click)="cancelForm()" class="btn btn-secondary">{{ 'COMMON.CANCEL' | translate }}</button>
+          <button type="submit" [disabled]="!investmentForm.valid" class="btn btn-primary">
+            {{ (editingItem ? 'COMMON.UPDATE' : 'COMMON.ADD') | translate }}
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- Data Table -->
+  <div class="table-container" *ngIf="!loading">
+    <div class="group-controls" *ngIf="groupByField !== 'none' && groupedData.length > 1">
+      <button (click)="expandAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.EXPAND_ALL' | translate }}</button>
+      <button (click)="collapseAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.COLLAPSE_ALL' | translate }}</button>
+    </div>
+    <div *ngFor="let group of groupedData" class="group-section">
+      <div class="group-header" *ngIf="groupByField !== 'none'" (click)="toggleGroup(group)">
+        <div class="group-header-left">
+          <span class="group-toggle">{{ group.expanded ? '▼' : '▶' }}</span>
+          <h3>{{ group.groupValue }}</h3>
+          <span class="group-count">({{ group.items.length }} {{ 'COMMON.ITEMS' | translate }})</span>
+        </div>
+        <span class="group-total">${{ group.total | number:'1.2-2' }}</span>
+      </div>
+      <table class="data-table" *ngIf="group.items.length > 0 && group.expanded">
+        <thead>
+          <tr>
+            <th>{{ 'COMMON.DATE' | translate }}</th>
+            <th>{{ 'INVESTMENTS.TYPE' | translate }}</th>
+            <th>{{ 'COMMON.AMOUNT' | translate }}</th>
+            <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
+            <th>{{ 'COMMON.ACTIONS' | translate }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let item of group.items; trackBy: trackById" [class]="getTypeClass(item.type)">
+            <td>{{item.date | customDate}}</td>
+            <td>{{ 'INVESTMENTS.TYPES.' + item.type.replace(' ', '_').toUpperCase() | translate }}</td>
+            <td class="amount-cell">${{item.amount | number:'1.2-2'}}</td>
+            <td>{{item.description || '-'}}</td>
+            <td class="actions-cell">
+              <button class="btn btn-edit" (click)="editItem(item)">{{ 'COMMON.EDIT' | translate }}</button>
+              <button class="btn btn-delete" (click)="deleteItem(item)">{{ 'COMMON.DELETE' | translate }}</button>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="no-data" *ngIf="filteredItems.length === 0">
+      <p>{{ 'INVESTMENTS.NO_ENTRIES' | translate }}</p>
+    </div>
+  </div>
+</div>

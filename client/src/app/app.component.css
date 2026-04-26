@@ -1,0 +1,144 @@
+.app-container {
+  display: flex;
+  min-height: 100vh;
+  background-color: var(--primary-bg);
+  position: relative;
+}
+
+.mobile-menu-toggle {
+  display: none;
+  position: fixed;
+  top: 10px;
+  left: 10px;
+  z-index: 1002;
+  background-color: var(--secondary-bg);
+  border: 1px solid var(--border-color);
+  border-radius: var(--radius-md);
+  padding: var(--spacing-sm);
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  color: var(--primary-text);
+  font-size: 1.5rem;
+  width: 40px;
+  height: 40px;
+  align-items: center;
+  justify-content: center;
+}
+
+[dir="rtl"] .mobile-menu-toggle {
+  left: auto;
+  right: 10px;
+}
+
+.overlay {
+  display: none;
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 999;
+}
+
+.language-switcher {
+  position: fixed;
+  top: 10px;
+  right: 20px;
+  z-index: 1000;
+  display: flex;
+  gap: 8px;
+  background-color: var(--secondary-bg);
+  padding: 4px;
+  border-radius: var(--radius-md);
+  box-shadow: var(--shadow-md);
+}
+
+/* Adjust for navigation sidebar */
+.language-switcher {
+  right: 20px;
+  left: auto;
+}
+
+/* RTL Support */
+[dir="rtl"] .language-switcher {
+  right: auto;
+  left: 270px; /* Account for navigation width + margin */
+}
+
+[dir="ltr"] .language-switcher {
+  left: auto;
+  right: 20px;
+}
+
+.lang-btn {
+  padding: 6px 16px;
+  border: none;
+  background-color: transparent;
+  color: var(--secondary-text);
+  cursor: pointer;
+  border-radius: var(--radius-sm);
+  font-size: 0.875rem;
+  font-weight: 500;
+  transition: all 0.2s ease;
+}
+
+.lang-btn:hover {
+  background-color: var(--accent-bg);
+  color: var(--primary-text);
+}
+
+.lang-btn.active {
+  background-color: var(--primary-accent);
+  color: white;
+}
+
+[dir="rtl"] .main-content {
+  margin-left: 0;
+  margin-right: 250px;
+}
+
+.main-content {
+  flex: 1;
+  padding: var(--spacing-md);
+  padding-top: 50px;
+  margin-left: 250px;
+  overflow-x: hidden;
+}
+
+@media (max-width: 768px) {
+  .mobile-menu-toggle {
+    display: flex;
+  }
+  
+  .overlay {
+    display: block;
+  }
+  
+  .main-content {
+    margin-left: 0;
+    padding: var(--spacing-sm);
+    padding-top: 60px;
+    width: 100%;
+  }
+  
+  [dir="rtl"] .main-content {
+    margin-right: 0;
+  }
+  
+  .language-switcher {
+    top: 10px;
+    right: 10px;
+    left: auto;
+  }
+  
+  [dir="rtl"] .language-switcher {
+    left: auto;
+    right: 10px;
+  }
+  
+  .lang-btn {
+    padding: 4px 12px;
+    font-size: 0.75rem;
+  }
+}

@@ -1,0 +1,61 @@
+<nav class="navigation">
+  <div class="nav-header">
+    <img src="assets/funpark.jpg" alt="Funpark Logo" class="nav-logo">
+    <h1 class="nav-title">
+      <span class="letter-f">F</span><span class="letter-u">u</span><span class="letter-n">n</span><span class="letter-p">p</span><span class="letter-a">a</span><span class="letter-r">r</span><span class="letter-k">k</span>
+    </h1>
+    <p class="nav-subtitle">{{ 'APP.TITLE' | translate }}</p>
+  </div>
+
+  <ul class="nav-menu">
+    <li class="nav-item">
+      <a routerLink="/dashboard" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">📊</span>
+        <span class="nav-text">{{ 'NAV.DASHBOARD' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/revenue" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">💰</span>
+        <span class="nav-text">{{ 'NAV.REVENUE' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/expenses" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">💸</span>
+        <span class="nav-text">{{ 'NAV.EXPENSES' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/investments" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">📈</span>
+        <span class="nav-text">{{ 'NAV.INVESTMENTS' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/salaries" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">👥</span>
+        <span class="nav-text">{{ 'NAV.SALARIES' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/reports" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">📋</span>
+        <span class="nav-text">{{ 'NAV.REPORTS' | translate }}</span>
+      </a>
+    </li>
+    <li class="nav-item">
+      <a routerLink="/settings" routerLinkActive="active" class="nav-link" (click)="onLinkClick()">
+        <span class="nav-icon">⚙️</span>
+        <span class="nav-text">{{ 'NAV.SETTINGS' | translate }}</span>
+      </a>
+    </li>
+  </ul>
+
+  <div class="nav-footer">
+    <div class="nav-info">
+      <small class="nav-version">v1.0.0</small>
+      <small class="nav-date">{{ currentDate | date:'short' }}</small>
+    </div>
+  </div>
+</nav>

@@ -1,0 +1,24 @@
+<div class="app-container">
+  <button class="mobile-menu-toggle" (click)="toggleMobileMenu(); $event.stopPropagation()">
+    ☰
+  </button>
+  <div class="language-switcher">
+    <button 
+      (click)="switchLanguage('en')" 
+      [class.active]="currentLang === 'en'"
+      class="lang-btn">
+      EN
+    </button>
+    <button 
+      (click)="switchLanguage('ar')" 
+      [class.active]="currentLang === 'ar'"
+      class="lang-btn">
+      AR
+    </button>
+  </div>
+  <app-navigation [class.open]="mobileMenuOpen" (linkClicked)="closeMobileMenu()" (click)="$event.stopPropagation()"></app-navigation>
+  <div class="overlay" *ngIf="mobileMenuOpen" (click)="closeMobileMenu()"></div>
+  <main class="main-content">
+    <router-outlet></router-outlet>
+  </main>
+</div>

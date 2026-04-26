@@ -1,0 +1,149 @@
+<div class="dashboard">
+  <div class="dashboard-header">
+    <h1 class="dashboard-title">{{ 'DASHBOARD.TITLE' | translate }}</h1>
+    <p class="dashboard-subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+  </div>
+
+  <div class="dashboard-stats">
+    <div class="stat-card">
+      <div class="stat-icon">💰</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.totalRevenue | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💸</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.totalExpenses | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'DASHBOARD.TOTAL_EXPENSES' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">👥</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.totalSalaries | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'SALARIES.TOTAL_SALARIES' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">📈</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.totalInvestments | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</p>
+      </div>
+    </div>
+
+    <div class="stat-card">
+      <div class="stat-icon">💎</div>
+      <div class="stat-content">
+        <h3 class="stat-value">${{ summary?.netProfit | number:'1.0-0' }}</h3>
+        <p class="stat-label">{{ 'DASHBOARD.NET_PROFIT' | translate }}</p>
+      </div>
+    </div>
+  </div>
+
+  <div class="dashboard-grid">
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'DASHBOARD.SHARES' | translate }}</h2>
+        <a routerLink="/reports" class="btn btn-secondary btn-sm">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+      </div>
+      <div class="card-content">
+        <div class="profit-distribution">
+          <div class="profit-item">
+            <span class="profit-label">{{ 'DASHBOARD.FIRST_SHARE' | translate }} (70%)</span>
+            <span class="profit-value">${{ summary?.ownerShare | number:'1.0-0' }}</span>
+          </div>
+          <div class="profit-item">
+            <span class="profit-label">{{ 'DASHBOARD.SECOND_SHARE' | translate }} (30%)</span>
+            <span class="profit-value">${{ summary?.partnerShare | number:'1.0-0' }}</span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'COMMON.ACTIONS' | translate }}</h2>
+      </div>
+      <div class="card-content">
+        <div class="quick-actions">
+          <a routerLink="/revenue" class="btn btn-add">
+            <span class="icon">➕</span>
+            {{ 'REVENUE.ADD_REVENUE' | translate }}
+          </a>
+          <a routerLink="/expenses" class="btn btn-add">
+            <span class="icon">➕</span>
+            {{ 'EXPENSES.ADD_EXPENSE' | translate }}
+          </a>
+          <a routerLink="/investments" class="btn btn-add">
+            <span class="icon">➕</span>
+            {{ 'INVESTMENTS.ADD_INVESTMENT' | translate }}
+          </a>
+          <a routerLink="/salaries" class="btn btn-add">
+            <span class="icon">➕</span>
+            {{ 'SALARIES.ADD_PAYMENT' | translate }}
+          </a>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card full-width">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'DASHBOARD.RECENT_REVENUE' | translate }}</h2>
+        <a routerLink="/revenue" class="btn btn-secondary btn-sm">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{{ 'COMMON.DATE' | translate }}</th>
+                <th>{{ 'REVENUE.SOURCE' | translate }}</th>
+                <th>{{ 'COMMON.AMOUNT' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of recentRevenue">
+                <td>{{ item.date | customDate }}</td>
+                <td>{{ item.source }}</td>
+                <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+    <div class="dashboard-card full-width">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'DASHBOARD.RECENT_EXPENSES' | translate }}</h2>
+        <a routerLink="/expenses" class="btn btn-secondary btn-sm">{{ 'DASHBOARD.VIEW_ALL' | translate }}</a>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{{ 'COMMON.DATE' | translate }}</th>
+                <th>{{ 'EXPENSES.CATEGORY' | translate }}</th>
+                <th>{{ 'COMMON.AMOUNT' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr *ngFor="let item of recentExpenses">
+                <td>{{ item.date | customDate }}</td>
+                <td>{{ item.category }}</td>
+                <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

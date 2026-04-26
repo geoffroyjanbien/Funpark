@@ -1,0 +1,41 @@
+id,type,name_en,name_ar,parent_category,is_active
+1,revenue,Hookah,أراكيل,,true
+2,revenue,Drinks,مشروبات,,true
+3,revenue,Crepe,كريب,,true
+4,revenue,Games,ألعاب,,true
+5,revenue,Various,متنوع,,true
+6,expense,Staff,الموظفين,,true
+7,expense,Salaries,رواتب,Staff,true
+8,expense,Staff Advances,سلف موظفين,Staff,true
+9,expense,Supplies,اللوازم,,true
+10,expense,Food,الطعام,Supplies,true
+11,expense,Fruits,فواكهة,Supplies,true
+12,expense,Honey,عسل,Supplies,true
+13,expense,Nestle,نسلة,Supplies,true
+14,expense,Chocolate,شوكولا,Supplies,true
+15,expense,Milk,حليب,Supplies,true
+16,expense,Soft Drinks,مشروبات غازية,Supplies,true
+17,expense,Nescafe & Cappuccino,نيسكافيه و كابتشينو,Supplies,true
+18,expense,Machine Coffee,قهوة مكنة,Supplies,true
+19,expense,Cups,كبيايات,Supplies,true
+20,expense,Tissues,محارم,Supplies,true
+21,expense,Cleaning Materials,مواد تنظيف,Supplies,true
+22,expense,Other Supplies,لوازم أخرى,Supplies,true
+23,expense,Hookah Supplies,لوازم الأرجيلة,,true
+24,expense,Molasses,معسل,Hookah Supplies,true
+25,expense,Charcoal,فحم,Hookah Supplies,true
+26,expense,Hookah Accessories,نرابيج و لوازم,Hookah Supplies,true
+27,expense,Transportation,النقل,,true
+28,expense,Maintenance,الصيانة,Transportation,true
+29,expense,Transport,نقل,Transportation,true
+30,expense,Gasoline,بنزين,Transportation,true
+31,expense,Diesel,مازوت,Transportation,true
+32,expense,Marketing,التسويق,,true
+33,expense,Utilities,المرافق,,true
+34,expense,Entertainment,الترفيه,,true
+35,expense,Asset Acquisition,اقتناء أصول,,true
+36,expense,Other,أخرى,,true
+37,investment,Long Term,طويل الأجل,,true
+38,investment,Mid Term,متوسط الأجل,,true
+39,investment,Short Term,قصير الأجل,,true
+40,revenue,test,tajriba,,false
