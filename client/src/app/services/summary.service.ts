@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ApiResponse<T> {
   success: boolean;
@@ -43,7 +44,7 @@ export interface DailySummary {
   providedIn: 'root'
 })
 export class SummaryService {
-  private apiUrl = 'http://localhost:3000/api/summaries';
+  private apiUrl = `${environment.apiUrl}/summaries`;
 
   constructor(private http: HttpClient) {}
 

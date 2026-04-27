@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface InvestmentItem {
   id?: string;
@@ -22,7 +23,7 @@ export interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class InvestmentsService {
-  private apiUrl = 'http://localhost:3000/api/investments';
+  private apiUrl = `${environment.apiUrl}/investments`;
 
   constructor(private http: HttpClient) {}
 

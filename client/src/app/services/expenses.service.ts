@@ -2,6 +2,7 @@ import { Injectable } from '@angular/core';
 import { HttpClient, HttpParams } from '@angular/common/http';
 import { Observable, throwError } from 'rxjs';
 import { map, catchError } from 'rxjs/operators';
+import { environment } from '../../environments/environment';
 
 export interface ExpenseItem {
   id?: string;
@@ -22,7 +23,7 @@ export interface ApiResponse<T> {
   providedIn: 'root'
 })
 export class ExpensesService {
-  private apiUrl = 'http://localhost:3000/api/expenses';
+  private apiUrl = `${environment.apiUrl}/expenses`;
 
   constructor(private http: HttpClient) {}
 
