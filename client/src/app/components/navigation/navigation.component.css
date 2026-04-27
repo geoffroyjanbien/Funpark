@@ -227,6 +227,7 @@
   
   .nav-header {
     padding: var(--spacing-sm);
+    display: none;
   }
   
   .nav-logo {
