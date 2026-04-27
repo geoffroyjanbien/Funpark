@@ -1,5 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
+import { Router, NavigationEnd } from '@angular/router';
+import { filter } from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -10,8 +12,12 @@ export class AppComponent implements OnInit {
   title = 'Funpark Management';
   currentLang = 'en';
   mobileMenuOpen = false;
+  pageTitle = '';
 
-  constructor(private translate: TranslateService) {
+  constructor(
+    private translate: TranslateService,
+    private router: Router
+  ) {
     // Set default language
     this.translate.setDefaultLang('en');
     
@@ -28,7 +34,18 @@ export class AppComponent implements OnInit {
     // Subscribe to language changes
     this.translate.onLangChange.subscribe((event) => {
       this.setDirection(event.lang);
+      this.updatePageTitle();
     });
+    
+    // Subscribe to route changes
+    this.router.events.pipe(
+      filter(event => event instanceof NavigationEnd)
+    ).subscribe(() => {
+      this.updatePageTitle();
+    });
+    
+    // Set initial page title
+    this.updatePageTitle();
   }
 
   switchLanguage(lang: string): void {
@@ -55,5 +72,28 @@ export class AppComponent implements OnInit {
       htmlTag.setAttribute('dir', 'ltr');
       htmlTag.setAttribute('lang', 'en');
     }
+  }
+  
+  private updatePageTitle(): void {
+    const url = this.router.url;
+    let titleKey = 'NAV.DASHBOARD';
+    
+    if (url.includes('/revenue')) {
+      titleKey = 'NAV.REVENUE';
+    } else if (url.includes('/expenses')) {
+      titleKey = 'NAV.EXPENSES';
+    } else if (url.includes('/investments')) {
+      titleKey = 'NAV.INVESTMENTS';
+    } else if (url.includes('/salaries')) {
+      titleKey = 'NAV.SALARIES';
+    } else if (url.includes('/reports')) {
+      titleKey = 'NAV.REPORTS';
+    } else if (url.includes('/settings')) {
+      titleKey = 'NAV.SETTINGS';
+    }
+    
+    this.translate.get(titleKey).subscribe((text: string) => {
+      this.pageTitle = text;
+    });
   }
 }

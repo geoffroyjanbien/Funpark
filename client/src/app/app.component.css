@@ -94,6 +94,10 @@
     display: block;
   }
   
+  .language-switcher {
+    display: none;
+  }
+  
   .main-content {
     margin-left: 0;
     padding: var(--spacing-sm);
@@ -103,21 +107,5 @@
   
   [dir="rtl"] .main-content {
     margin-right: 0;
-  }
-  
-  .language-switcher {
-    top: 55px;
-    right: 10px;
-    left: auto;
-  }
-  
-  [dir="rtl"] .language-switcher {
-    left: 10px;
-    right: auto;
-  }
-  
-  .lang-btn {
-    padding: 4px 12px;
-    font-size: 0.75rem;
   }
 }

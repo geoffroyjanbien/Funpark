@@ -1,3 +1,35 @@
+<!-- Mobile Header (visible only on mobile) -->
+<div class="mobile-header">
+  <div class="mobile-header-left">
+    <button class="menu-toggle" (click)="toggleMenu()">
+      <span class="hamburger-icon">☰</span>
+    </button>
+    <img src="assets/funpark.jpg" alt="Funpark Logo" class="mobile-logo">
+    <h1 class="mobile-title">
+      <span class="letter-f">F</span><span class="letter-u">u</span><span class="letter-n">n</span><span class="letter-p">p</span><span class="letter-a">a</span><span class="letter-r">r</span><span class="letter-k">k</span>
+    </h1>
+  </div>
+  <div class="mobile-header-center">
+    <span class="page-title">{{ pageTitle }}</span>
+  </div>
+  <div class="mobile-header-right">
+    <div class="language-switcher-mobile">
+      <button 
+        (click)="switchLanguage('en')" 
+        [class.active]="currentLang === 'en'"
+        class="lang-btn">
+        EN
+      </button>
+      <button 
+        (click)="switchLanguage('ar')" 
+        [class.active]="currentLang === 'ar'"
+        class="lang-btn">
+        AR
+      </button>
+    </div>
+  </div>
+</div>
+
 <nav class="navigation">
   <div class="nav-header">
     <img src="assets/funpark.jpg" alt="Funpark Logo" class="nav-logo">
