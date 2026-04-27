@@ -50,7 +50,7 @@ if (NODE_ENV !== 'production') {
 
 // Middleware
 app.use(cors({
-  origin: process.env.CORS_ORIGIN || ['http://localhost:4200', 'https://funpark.vercel.app'],
+  origin: process.env.CORS_ORIGIN ? process.env.CORS_ORIGIN.split(',') : ['http://localhost:4200', 'https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app'],
   credentials: true
 }));
 
