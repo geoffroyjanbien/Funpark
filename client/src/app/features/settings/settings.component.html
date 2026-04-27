@@ -238,13 +238,14 @@
 
       <!-- Categories List -->
       <div class="categories-list" *ngIf="!showForm">
+        <!-- Parent Categories with Children -->
         <div class="category-group" *ngFor="let category of filteredCategories">
-          <div class="category-item" *ngIf="isParentCategory(category)" [class.parent]="true" [class.has-children]="hasChildren(category)">
+          <div class="category-item" *ngIf="isParentCategory(category) && hasChildren(category)" [class.parent]="true" [class.has-children]="true">
             <div class="category-info">
               <span class="category-icon">📁</span>
               <span class="category-name">{{ getCategoryName(category) }}</span>
               <span class="category-badge">{{ 'SETTINGS.PARENT' | translate }}</span>
-              <span class="children-count" *ngIf="hasChildren(category)">
+              <span class="children-count">
                 {{ getChildCategories(category).length }} {{ 'SETTINGS.SUBCATEGORIES' | translate }}
               </span>
             </div>
@@ -277,9 +278,9 @@
           </div>
         </div>
 
-        <!-- Standalone Categories -->
+        <!-- Standalone Categories (no parent, no children) -->
         <div class="category-item standalone" *ngFor="let category of filteredCategories" 
-             [hidden]="isParentCategory(category) || category.parent_category">
+             [hidden]="hasChildren(category) || category.parent_category">
           <div class="category-info">
             <span class="category-icon">📄</span>
             <span class="category-name">{{ getCategoryName(category) }}</span>
