@@ -48,9 +48,9 @@ if (NODE_ENV !== 'production') {
   }));
 }
 
-// CORS configuration - accept all Vercel deployments
+// CORS configuration - accept Vercel deployments and localhost
 app.use(cors({
-  origin: true,  // Allow all origins temporarily to fix the issue
+  origin: ['http://localhost:4200', /\.vercel\.app$/],
   credentials: true,
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization']
