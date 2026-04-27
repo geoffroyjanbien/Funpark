@@ -48,34 +48,20 @@ if (NODE_ENV !== 'production') {
   }));
 }
 
-// CORS configuration - accept Vercel preview URLs and production
-const allowedOrigins = process.env.CORS_ORIGIN 
-  ? process.env.CORS_ORIGIN.split(',')
-  : [
-      'http://localhost:4200',
-      /^https:\/\/.*\.vercel\.app$/,  // Match all Vercel deployments
-    ];
-
+// CORS configuration - accept all Vercel deployments
 app.use(cors({
   origin: function (origin, callback) {
     // Allow requests with no origin (like mobile apps or curl requests)
     if (!origin) return callback(null, true);
     
-    // Check if origin matches any allowed pattern
-    const isAllowed = allowedOrigins.some(allowed => {
-      if (typeof allowed === 'string') {
-        return allowed === origin;
-      } else if (allowed instanceof RegExp) {
-        return allowed.test(origin);
-      }
-      return false;
-    });
+    // Allow localhost for development
+    if (origin.includes('localhost')) return callback(null, true);
     
-    if (isAllowed) {
-      callback(null, true);
-    } else {
-      callback(new Error('Not allowed by CORS'));
-    }
+    // Allow all Vercel deployments
+    if (origin.endsWith('.vercel.app')) return callback(null, true);
+    
+    // Reject all others
+    callback(new Error('Not allowed by CORS'));
   },
   credentials: true
 }));
