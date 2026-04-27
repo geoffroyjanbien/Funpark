@@ -239,8 +239,8 @@
       <!-- Categories List -->
       <div class="categories-list" *ngIf="!showForm">
         <!-- Parent Categories with Children -->
-        <div class="category-group" *ngFor="let category of filteredCategories">
-          <div class="category-item" *ngIf="isParentCategory(category) && hasChildren(category)" [class.parent]="true" [class.has-children]="true">
+        <div class="category-group" *ngFor="let category of filteredCategories" [hidden]="!isParentCategory(category) || !hasChildren(category)">
+          <div class="category-item" [class.parent]="true" [class.has-children]="true">
             <div class="category-info">
               <span class="category-icon">📁</span>
               <span class="category-name">{{ getCategoryName(category) }}</span>
@@ -260,7 +260,7 @@
           </div>
 
           <!-- Child Categories -->
-          <div class="child-categories" *ngIf="isParentCategory(category) && hasChildren(category)">
+          <div class="child-categories">
             <div class="category-item child" *ngFor="let child of getChildCategories(category)">
               <div class="category-info">
                 <span class="category-icon">📄</span>
