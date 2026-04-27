@@ -4,8 +4,10 @@
 
 ### Frontend (Vercel)
 ```
-https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app
+https://funpark-ekb5vo6ny-geoffroyjanbien-4204s-projects.vercel.app (latest)
+https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app (previous)
 ```
+**Note**: Vercel creates unique URLs for each deployment. All URLs matching `https://funpark*.vercel.app` are accepted by CORS.
 
 ### Backend (Render)
 ```
@@ -26,15 +28,10 @@ Make sure these are set in your Render dashboard:
 
 ```
 NODE_ENV = production
-CORS_ORIGIN = https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app
+CORS_ORIGIN = http://localhost:4200
 ```
 
-**To verify/update:**
-1. Go to: https://dashboard.render.com
-2. Select: **funpark-api** service
-3. Click: **Environment** tab
-4. Verify `CORS_ORIGIN` matches your Vercel URL exactly
-5. If changed, click **Save Changes** (auto-redeploys)
+**Note**: The CORS configuration now accepts all Vercel deployment URLs automatically using regex pattern matching (`https://funpark*.vercel.app`). You only need to add localhost for local development.
 
 ---
 
