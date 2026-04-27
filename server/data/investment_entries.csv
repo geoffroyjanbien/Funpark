@@ -1,4 +1,28 @@
-date,investment_type,description,amount_ll,amount_usd,owner_allocation
-2026-04-19,Long Term,New playground equipment,15000.00,0.00,Both
-2026-04-19,Mid Term,Marketing campaign,5000.00,0.00,Owner2
-2026-04-19,Short Term,Staff training,2000.00,0.00,Owner1
+id,date,type,amount,description
+1,2026-01-01,Long Term,10100,الطاقة الشمسية
+2,2026-01-01,Long Term,750,كراسي
+3,2026-01-01,Long Term,947,اشجار
+4,2026-01-01,Long Term,3900,حداد
+5,2026-01-01,Long Term,110,خزان مياه 
+6,2026-01-01,Long Term,95,لعبة
+7,2026-01-01,Long Term,150,ورد صناعي
+8,2026-01-01,Long Term,95,مراجيح
+9,2026-01-01,Long Term,176.5,ارمات و فلكس
+10,2026-01-01,Long Term,1484,شحن العاب
+11,2026-01-01,Long Term,150,خزان مازوت
+12,2026-01-01,Long Term,200,جورة صحية
+13,2026-01-01,Long Term,920,صالة خارجية
+14,2026-01-01,Long Term,350,كاميرات
+15,2026-01-01,Long Term,3473,شلال
+16,2026-01-01,Long Term,326,خشب واجهة
+17,2026-01-01,Long Term,110,مكتب
+18,2026-01-01,Long Term,500,قعدات خشب
+19,2026-01-01,Long Term,7415,حيدر مدفوعات
+20,2026-01-01,Long Term,2660,صوب مازوت
+21,2026-01-01,Long Term,696,بيسكلات كهربا
+22,2026-01-01,Long Term,2896,السقف
+23,2026-01-01,Long Term,550,شومينه
+24,2026-01-01,Long Term,6085,عفش - كراسي و طاولات
+25,2026-01-01,Long Term,183,الحيط الخلفي
+26,2026-01-01,Long Term,40,سجادة
+27,2026-01-01,Long Term,270,بحرة
