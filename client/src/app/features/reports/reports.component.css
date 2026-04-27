@@ -319,43 +319,155 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .reports-container {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
 
   .header {
     flex-direction: column;
-    gap: var(--spacing-md);
+    gap: var(--spacing-sm);
     align-items: stretch;
+  }
+  
+  .header h1 {
+    font-size: 1.5rem;
   }
 
   .controls-section {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
+  }
+  
+  .control-group {
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .control-group label {
+    font-size: 0.7rem;
+    margin-bottom: 2px;
+  }
+  
+  .control-select {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    min-width: 0;
+    width: 100%;
   }
 
   .summary-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .summary-card {
+    padding: var(--spacing-xs);
+    flex-direction: column;
+    text-align: center;
+  }
+  
+  .card-icon {
+    width: 35px;
+    height: 35px;
+    font-size: 1.25rem;
+    margin: 0 auto var(--spacing-xs);
+  }
+  
+  .card-title {
+    font-size: 0.65rem;
+  }
+  
+  .card-value {
+    font-size: 1rem;
   }
 
   .distribution-cards {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .distribution-card {
+    padding: var(--spacing-xs);
+  }
+  
+  .distribution-label {
+    font-size: 0.65rem;
+  }
+  
+  .distribution-value {
+    font-size: 0.95rem;
   }
 
   .yearly-metrics,
   .monthly-metrics {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .metric-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .metric-card h3 {
+    font-size: 0.7rem;
+  }
+  
+  .metric-value {
+    font-size: 1.125rem;
   }
 
   .indicators-grid {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+  }
+  
+  .indicator-card {
+    padding: var(--spacing-sm);
+  }
+  
+  .indicator-label {
+    font-size: 0.7rem;
+  }
+  
+  .indicator-value {
+    font-size: 1rem;
+  }
+  
+  .indicator-desc {
+    font-size: 0.65rem;
   }
 
   .monthly-table {
-    font-size: var(--font-size-sm);
+    font-size: 0.7rem;
   }
 
   .monthly-table th,
   .monthly-table td {
-    padding: var(--spacing-sm);
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .monthly-table th {
+    font-size: 0.65rem;
+  }
+  
+  /* Hide less important columns on mobile */
+  .monthly-table th:nth-child(3),
+  .monthly-table td:nth-child(3),
+  .monthly-table th:nth-child(4),
+  .monthly-table td:nth-child(4) {
+    display: none;
+  }
+  
+  .dashboard-section h2,
+  .summary-section h2 {
+    font-size: 1.125rem;
+  }
+  
+  .dashboard-section h3,
+  .summary-section h3,
+  .performance-section h3,
+  .monthly-table-section h3 {
+    font-size: 1rem;
   }
 }

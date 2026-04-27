@@ -1,10 +1,11 @@
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { CustomDatePipe } from '../pipes/custom-date.pipe';
+import { NormalizeKeyPipe } from '../pipes/normalize-key.pipe';
 
 @NgModule({
-  declarations: [CustomDatePipe],
+  declarations: [CustomDatePipe, NormalizeKeyPipe],
   imports: [CommonModule],
-  exports: [CustomDatePipe]
+  exports: [CustomDatePipe, NormalizeKeyPipe]
 })
 export class SharedModule { }

@@ -398,47 +398,118 @@ select option:checked {
 /* Responsive Design */
 @media (max-width: 768px) {
   html {
-    font-size: 14px;
+    font-size: 13px;
   }
   
   .card {
-    padding: var(--spacing-sm);
+    padding: var(--spacing-xs);
   }
 
   .table th,
   .table td {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem;
+    padding: 6px 8px;
+    font-size: 0.7rem;
+    white-space: nowrap;
   }
   
   .table th {
-    font-size: 0.7rem;
+    font-size: 0.65rem;
+    font-weight: 600;
   }
 
   .btn {
-    padding: var(--spacing-xs) var(--spacing-sm);
-    font-size: 0.75rem;
+    padding: 6px 10px;
+    font-size: 0.7rem;
+    gap: 4px;
   }
   
   .btn-sm {
     padding: 4px 8px;
+    font-size: 0.65rem;
+  }
+  
+  .btn-add {
+    padding: 6px 10px;
     font-size: 0.7rem;
+  }
+  
+  .btn-add .icon {
+    font-size: 0.85rem;
   }
   
   .form-input,
   .form-select,
   .form-textarea,
   .filter-select {
-    font-size: 0.875rem;
-    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    padding: 6px 10px;
   }
   
   /* Improve touch targets */
   button, a, input, select, textarea {
-    min-height: 44px;
+    min-height: 40px;
   }
   
   .btn-sm, .lang-btn {
-    min-height: 36px;
+    min-height: 32px;
+  }
+  
+  /* Table action buttons - smaller icons */
+  .btn-action {
+    font-size: 0.85rem;
+    padding: 4px;
+  }
+  
+  /* Smaller badges and labels */
+  .source-badge,
+  .status-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+  
+  /* Compact table layout */
+  .table-responsive {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  
+  /* Smaller stat cards */
+  .stat-value {
+    font-size: 1.25rem !important;
+  }
+  
+  .stat-label {
+    font-size: 0.7rem !important;
+  }
+  
+  /* Compact page headers */
+  .page-header h1 {
+    font-size: 1.5rem !important;
+  }
+  
+  .page-header p {
+    font-size: 0.75rem !important;
+  }
+  
+  /* Smaller card titles */
+  .card-title {
+    font-size: 1rem !important;
+  }
+  
+  /* Compact group headers */
+  .group-header h3 {
+    font-size: 0.85rem !important;
+  }
+  
+  .group-count {
+    font-size: 0.7rem !important;
+  }
+  
+  .group-total {
+    font-size: 0.9rem !important;
+  }
+  
+  .group-toggle {
+    font-size: 0.75rem !important;
   }
 }

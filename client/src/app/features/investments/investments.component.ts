@@ -167,8 +167,8 @@ export class InvestmentsComponent implements OnInit {
     // Translate group values
     if (this.groupByField === 'type') {
       this.groupedData.forEach(group => {
-        const translationKey = 'INVESTMENTS.TYPES.' + group.groupKey.replace(' ', '_').toUpperCase();
-        group.groupValue = this.translate.instant(translationKey);
+        const normalizedKey = group.groupKey.toUpperCase().replace(/\s+/g, '_');
+        group.groupValue = this.translate.instant('INVESTMENTS.TYPES.' + normalizedKey);
       });
     } else if (this.groupByField === 'date') {
       this.groupedData.forEach(group => {

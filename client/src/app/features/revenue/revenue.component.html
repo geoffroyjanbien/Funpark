@@ -213,7 +213,7 @@
                 <td>{{ item.date | customDate }}</td>
                 <td>
                   <span class="source-badge" [ngClass]="getSourceClass(item.source)">
-                    {{ 'REVENUE.SOURCES.' + item.source.toUpperCase() | translate }}
+                    {{ 'REVENUE.SOURCES.' + (item.source | normalizeKey) | translate }}
                   </span>
                 </td>
                 <td>{{ item.description || '-' }}</td>

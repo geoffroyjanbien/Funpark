@@ -489,45 +489,146 @@
 /* Responsive Design */
 @media (max-width: 768px) {
   .investments-container {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
+  }
+  
+  .page-header {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 0.75rem;
   }
 
-  .header {
-    flex-direction: column;
-    gap: var(--spacing-md);
-    align-items: stretch;
+  .header-actions {
+    width: 100%;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .header-actions .btn {
+    flex: 1;
+    min-width: 120px;
+  }
+  
+  .stats-card {
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .stat-item {
+    padding: var(--spacing-xs);
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
   }
 
   .filters-section {
     flex-direction: column;
     align-items: stretch;
+    gap: var(--spacing-sm);
+  }
+  
+  .search-box {
+    min-width: auto;
   }
 
   .date-filters {
-    flex-direction: column;
-    align-items: stretch;
+    gap: var(--spacing-sm);
   }
-
-  .summary-card {
-    flex-direction: column;
-    gap: var(--spacing-md);
+  
+  .filter-group {
+    flex: 1;
+    min-width: 100px;
+  }
+  
+  .filter-group label {
+    font-size: 0.7rem;
+  }
+  
+  .filter-select {
+    font-size: 0.75rem;
+    padding: 6px 8px;
+    min-width: auto;
   }
 
   .modal-content {
     width: 95%;
-    margin: var(--spacing-md);
+    margin: var(--spacing-sm);
+    max-height: calc(100vh - 1rem);
+  }
+  
+  .modal-header h2 {
+    font-size: 1rem;
+  }
+
+  .form-row {
+    grid-template-columns: 1fr;
   }
 
   .form-actions {
-    flex-direction: column;
+    flex-direction: row;
   }
 
   .data-table {
-    font-size: var(--font-size-sm);
+    font-size: 0.7rem;
   }
 
   .data-table th,
   .data-table td {
-    padding: var(--spacing-sm);
+    padding: 6px 8px;
+    font-size: 0.7rem;
+  }
+  
+  .data-table th {
+    font-size: 0.65rem;
+  }
+  
+  /* Hide description column on mobile */
+  .data-table th:nth-child(3),
+  .data-table td:nth-child(3) {
+    display: none;
+  }
+  
+  .btn-edit,
+  .btn-delete {
+    padding: 4px 8px;
+    font-size: 0.65rem;
+    margin-right: 4px;
+  }
+  
+  .group-header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .group-header h3 {
+    font-size: 0.85rem;
+  }
+  
+  .group-count {
+    font-size: 0.7rem;
+  }
+  
+  .group-total {
+    font-size: 0.9rem;
+  }
+  
+  .group-toggle {
+    font-size: 0.75rem;
+  }
+  
+  .group-controls {
+    padding: 0 var(--spacing-sm);
   }
 }

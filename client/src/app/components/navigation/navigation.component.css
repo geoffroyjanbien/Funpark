@@ -120,6 +120,7 @@
     transform: translateX(-100%);
     transition: transform 0.3s ease;
     box-shadow: var(--shadow-lg);
+    width: 220px;
   }
   
   [dir="rtl"] .navigation {
@@ -139,29 +140,44 @@
   }
   
   .nav-header {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
   }
   
   .nav-logo {
-    width: 60px;
-    height: 60px;
+    width: 50px;
+    height: 50px;
+    border-width: 2px;
   }
   
   .nav-title {
-    font-size: 1.25rem;
+    font-size: 1.125rem;
+  }
+  
+  .nav-subtitle {
+    font-size: 0.7rem;
   }
 
   .nav-link {
-    padding: var(--spacing-sm) var(--spacing-md);
-    font-size: 0.875rem;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.8rem;
+    gap: var(--spacing-xs);
   }
 
   .nav-icon {
-    font-size: 1rem;
-    min-width: 1rem;
+    font-size: 0.9rem;
+    min-width: 0.9rem;
+  }
+  
+  .nav-text {
+    font-size: 0.8rem;
   }
   
   .nav-footer {
-    padding: var(--spacing-md);
+    padding: var(--spacing-sm);
+  }
+  
+  .nav-version,
+  .nav-date {
+    font-size: 0.65rem;
   }
 }

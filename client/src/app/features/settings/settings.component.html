@@ -71,21 +71,23 @@
         <div class="settings-section">
           <h3>{{ 'SETTINGS.COMPANY_INFO' | translate }}</h3>
           
-          <div class="form-group">
-            <label>{{ 'SETTINGS.COMPANY_NAME' | translate }} (English)</label>
-            <input 
-              type="text" 
-              [(ngModel)]="generalSettings.companyName" 
-              class="form-control">
-          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label>{{ 'SETTINGS.COMPANY_NAME' | translate }} (English)</label>
+              <input 
+                type="text" 
+                [(ngModel)]="generalSettings.companyName" 
+                class="form-control">
+            </div>
 
-          <div class="form-group">
-            <label>{{ 'SETTINGS.COMPANY_NAME' | translate }} (العربية)</label>
-            <input 
-              type="text" 
-              [(ngModel)]="generalSettings.companyNameAr" 
-              class="form-control"
-              dir="rtl">
+            <div class="form-group">
+              <label>{{ 'SETTINGS.COMPANY_NAME' | translate }} (العربية)</label>
+              <input 
+                type="text" 
+                [(ngModel)]="generalSettings.companyNameAr" 
+                class="form-control"
+                dir="rtl">
+            </div>
           </div>
         </div>
 

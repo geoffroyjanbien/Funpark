@@ -175,7 +175,8 @@ export class ExpensesComponent implements OnInit {
     // Translate group values
     if (this.groupByField === 'category') {
       this.groupedData.forEach(group => {
-        group.groupValue = this.translate.instant('EXPENSES.CATEGORIES.' + group.groupKey.toUpperCase());
+        const normalizedKey = group.groupKey.toUpperCase().replace(/\s+/g, '_');
+        group.groupValue = this.translate.instant('EXPENSES.CATEGORIES.' + normalizedKey);
       });
     } else if (this.groupByField === 'date') {
       this.groupedData.forEach(group => {

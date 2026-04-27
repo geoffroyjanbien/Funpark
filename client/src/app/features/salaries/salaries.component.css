@@ -467,24 +467,80 @@
   .page-header {
     flex-direction: column;
     align-items: flex-start;
+    gap: var(--spacing-sm);
+  }
+  
+  .page-header h1 {
+    font-size: 1.5rem;
+  }
+  
+  .page-header p {
+    font-size: 0.75rem;
   }
 
   .header-actions {
     width: 100%;
-    justify-content: flex-end;
+    justify-content: space-between;
+    flex-wrap: wrap;
+  }
+  
+  .header-actions .btn {
+    flex: 1;
+    min-width: 120px;
   }
 
   .stats-card {
-    grid-template-columns: 1fr;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xs);
+  }
+  
+  .stat-item {
+    padding: var(--spacing-xs);
+  }
+  
+  .stat-label {
+    font-size: 0.65rem;
+  }
+  
+  .stat-value {
+    font-size: 1rem;
+  }
+  
+  .tabs {
+    gap: var(--spacing-xs);
+    overflow-x: auto;
+  }
+  
+  .tab-button {
+    padding: var(--spacing-xs) var(--spacing-sm);
+    font-size: 0.75rem;
+    white-space: nowrap;
   }
 
   .filters-section {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-end;
+    gap: var(--spacing-xs);
   }
 
   .search-box {
-    max-width: none;
+    flex: 1;
+    min-width: 0;
+  }
+  
+  .filter-group {
+    flex: 0 0 auto;
+    min-width: 100px;
+  }
+  
+  .filter-group label {
+    font-size: 0.7rem;
+    margin-bottom: 2px;
+  }
+  
+  .filter-select {
+    font-size: 0.75rem;
+    padding: 6px 8px;
   }
 
   .form-row {
@@ -492,13 +548,53 @@
   }
 
   .modal-content {
-    margin: var(--spacing-md);
-    max-height: calc(100vh - 2rem);
+    margin: var(--spacing-sm);
+    max-height: calc(100vh - 1rem);
+  }
+  
+  .modal-header h2 {
+    font-size: 1rem;
+  }
+  
+  .card-header {
+    padding: var(--spacing-xs) var(--spacing-sm);
+  }
+  
+  .card-title {
+    font-size: 0.85rem;
+  }
+  
+  .card-content {
+    padding: var(--spacing-xs);
   }
 
   .table th,
   .table td {
-    padding: var(--spacing-xs);
-    font-size: 0.875rem;
+    padding: 4px 6px;
+    font-size: 0.65rem;
+  }
+  
+  .table th {
+    font-size: 0.6rem;
+  }
+  
+  .btn-action {
+    margin: 0 2px;
+    padding: 4px;
+    font-size: 0.85rem;
+  }
+  
+  .status-badge,
+  .payment-type-badge {
+    font-size: 0.65rem;
+    padding: 2px 6px;
+  }
+  
+  .progress-bar-container {
+    height: 20px;
+  }
+  
+  .progress-text {
+    font-size: 0.65rem;
   }
 }

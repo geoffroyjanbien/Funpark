@@ -189,7 +189,7 @@
         <tbody>
           <tr *ngFor="let item of group.items; trackBy: trackById" [class]="getCategoryClass(item.category)">
             <td>{{item.date | customDate}}</td>
-            <td>{{ 'EXPENSES.CATEGORIES.' + item.category.toUpperCase() | translate }}</td>
+            <td>{{ 'EXPENSES.CATEGORIES.' + (item.category | normalizeKey) | translate }}</td>
             <td class="amount-cell">${{item.amount | number:'1.2-2'}}</td>
             <td>{{item.description || '-'}}</td>
             <td class="actions-cell">
