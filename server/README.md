@@ -7,20 +7,28 @@ A comprehensive REST API for managing Funpark financial operations including rev
 - **Revenue Management**: Track ticket sales, food & beverage, merchandise, games, and parking revenue
 - **Expense Tracking**: Monitor operational costs and categorize spending
 - **Investment Monitoring**: Track capital projects and long-term investments
+- **Salary Management**: Employee database and salary payment tracking
+- **Category Management**: Bilingual category system (English/Arabic)
 - **Profit Calculations**: Automatic profit distribution (70% owner, 30% partner)
 - **CSV Data Storage**: Atomic read/write operations for data persistence
 - **Excel Import/Export**: Bulk data operations with Excel file support
 - **RESTful API**: Complete CRUD operations for all data entities
-- **CORS Enabled**: Ready for frontend integration
+- **CORS Enabled**: Flexible CORS with regex pattern matching for Vercel URLs
+- **Winston Logging**: Comprehensive logging with file rotation
+- **Health Check**: API status endpoint for monitoring
 
 ## 🛠️ Tech Stack
 
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Data Storage**: CSV files (revenue.csv, expenses.csv, investments.csv, summaries.csv)
-- **File Processing**: xlsx library for Excel operations
-- **Validation**: Input validation and error handling
-- **CORS**: Cross-origin resource sharing support
+- **Runtime**: Node.js 16+
+- **Framework**: Express.js 4.22+
+- **Data Storage**: CSV files with atomic operations
+- **File Processing**: xlsx, xlsx-populate
+- **Logging**: Winston with file rotation
+- **Validation**: Custom middleware and input validation
+- **CORS**: Flexible origin validation with regex patterns
+- **UUID**: Unique identifier generation
+- **Environment**: dotenv for configuration
+- **Deployment**: Render (free tier) with automatic deployments
 
 ## 📁 Project Structure
 
@@ -65,13 +73,15 @@ server/
 ### Development Mode
 ```bash
 npm start
+# or with auto-reload
+npm run dev
 ```
 Server starts on `http://localhost:3000`
 
-### Production Mode
-```bash
-npm run prod
-```
+### Production Deployment
+Deployed on Render: `https://funpark-api.onrender.com`
+
+**Note**: Render free tier spins down after 15 minutes of inactivity. First request after spin-down takes ~30 seconds.
 
 ## 📡 API Endpoints
 
@@ -105,13 +115,44 @@ DELETE /api/investments/:id   # Delete investment
 
 ### Financial Summary
 ```
-GET    /api/summary           # Get financial overview
+GET    /api/summaries         # Get financial overview
 ```
 
-### Excel Operations
+### Category Management
 ```
-POST   /api/excel/import      # Import data from Excel file
-GET    /api/excel/export      # Export data to Excel file
+GET    /api/categories        # Get all categories
+GET    /api/categories/type/:type  # Get categories by type
+GET    /api/categories/:id    # Get specific category
+POST   /api/categories        # Create new category
+PUT    /api/categories/:id    # Update category
+DELETE /api/categories/:id    # Soft delete category
+DELETE /api/categories/:id/permanent  # Permanently delete
+```
+
+### Salary Management
+```
+# Employees
+GET    /api/salaries/employees     # Get all employees
+GET    /api/salaries/employees/:id # Get specific employee
+POST   /api/salaries/employees     # Create employee
+PUT    /api/salaries/employees/:id # Update employee
+DELETE /api/salaries/employees/:id # Delete employee
+
+# Payments
+GET    /api/salaries/payments      # Get all payments
+GET    /api/salaries/payments/employee/:id  # Get employee payments
+GET    /api/salaries/payments/month  # Get monthly payments
+POST   /api/salaries/payments      # Create payment
+PUT    /api/salaries/payments/:id  # Update payment
+DELETE /api/salaries/payments/:id  # Delete payment
+
+# Summary
+GET    /api/salaries/summary       # Get salary summary
+```
+
+### Health Check
+```
+GET    /health                # API health status
 ```
 
 ## 📊 Data Formats
@@ -172,10 +213,20 @@ const PORT = process.env.PORT || 3000;
 ## 📁 Data Storage
 
 All data is stored in CSV format in the `data/` directory:
-- `revenue.csv`: Revenue entries
-- `expenses.csv`: Expense entries
-- `investments.csv`: Investment entries
-- `summaries.csv`: Calculated financial summaries
+- `revenue.csv`: Revenue entries with UUID, date, source, amount, description
+- `expense_entries.csv`: Expense entries with UUID, date, category, amount, description
+- `investment_entries.csv`: Investment entries with UUID, date, type, amount, description
+- `categories.csv`: Bilingual categories (English/Arabic) for revenue, expenses, investments
+- `employees.csv`: Employee information with UUID, name, position, salary, hire date, status
+- `salary_payments.csv`: Salary payment records with employee references
+- `daily_summary.csv`: Computed daily financial summaries
+- `summary_views.csv`: Monthly and yearly aggregated summaries
+
+**Data Integrity:**
+- Atomic write operations (temp file → rename)
+- UUID-based unique identifiers
+- Referential integrity for employee-payment relationships
+- Winston logging for all operations
 
 ## 🧪 Testing the API
 
@@ -191,21 +242,32 @@ curl -X GET http://localhost:3000/api/summary
 
 ## 🚀 Deployment
 
-1. **Build for production**
-   ```bash
-   npm run build
-   ```
+### Production Deployment
+Deployed on Render with automatic deployments on git push.
 
-2. **Set environment variables**
-   ```bash
-   export PORT=3000
-   export NODE_ENV=production
-   ```
+**Live URL**: https://funpark-api.onrender.com
 
-3. **Start the server**
-   ```bash
-   npm run prod
-   ```
+### Render Configuration
+- Build Command: `npm install`
+- Start Command: `npm start`
+- Environment Variables:
+  - `NODE_ENV=production`
+  - `CORS_ORIGIN=http://localhost:4200` (optional, regex handles Vercel URLs)
+
+### CORS Configuration
+The API accepts requests from:
+- `http://localhost:4200` (development)
+- All Vercel deployment URLs matching `https://funpark*.vercel.app` (production)
+- Uses regex pattern matching for flexible origin validation
+
+### Environment Variables
+```bash
+PORT=3000
+NODE_ENV=production
+CORS_ORIGIN=http://localhost:4200
+CSV_DATA_PATH=./data
+LOG_LEVEL=info
+```
 
 ## 🤝 Contributing
 

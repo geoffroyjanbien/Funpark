@@ -1,11 +1,11 @@
 # API Specification Document
 
 ## Overview
-The Funpark Management API provides RESTful endpoints for managing daily revenue, expenses, investments, and profit summaries. All endpoints return JSON responses with a standard format.
+The Funpark Management API provides RESTful endpoints for managing daily revenue, expenses, investments, salaries, categories, and profit summaries. All endpoints return JSON responses with a standard format.
 
 ## Base URL
 - Development: `http://localhost:3000`
-- Production: To be determined
+- Production: `https://funpark-api.onrender.com`
 
 ## Authentication
 None required (single-user application)
@@ -15,17 +15,31 @@ All responses follow this structure:
 ```json
 {
   "success": true|false,
-  "data": { ... } | null,
-  "error": "error message" | null
+  "data": { ... } | [],
+  "message": "success message" | null,
+  "count": number | null
 }
 ```
 
 ## Endpoints
 
+### Health Check
+**GET /health**
+- Check API server status
+- Response:
+```json
+{
+  "status": "healthy",
+  "timestamp": "2024-12-01T10:00:00.000Z",
+  "environment": "production",
+  "version": "1.0.0"
+}
+```
+
 ### Revenue Management
 **GET /api/revenue**
 - Get all revenue entries
-- Query params: date (YYYY-MM-DD), category
+- Query params: `limit` (optional, number)
 - Response: Array of revenue objects
 
 **GET /api/revenue/:id**
@@ -37,13 +51,13 @@ All responses follow this structure:
 - Body:
 ```json
 {
-  "date": "2026-04-19",
-  "category": "Hookah|Drinks|Crepe|Games|Various",
-  "amount_ll": 1000.00,
-  "amount_usd": 0.00
+  "date": "2024-12-01",
+  "source": "Tickets",
+  "amount": 1000.00,
+  "description": "Weekend ticket sales"
 }
 ```
-- Validation: date required, category required, amounts >= 0, 2 decimal places
+- Validation: date required, source required, amount >= 0
 
 **PUT /api/revenue/:id**
 - Update revenue entry
@@ -55,7 +69,7 @@ All responses follow this structure:
 ### Expense Management
 **GET /api/expenses**
 - Get all expense entries
-- Query params: date, main_category, subcategory, investment_type
+- Query params: `limit` (optional, number)
 - Response: Array of expense objects
 
 **GET /api/expenses/:id**
@@ -66,15 +80,13 @@ All responses follow this structure:
 - Body:
 ```json
 {
-  "date": "2026-04-19",
-  "main_category": "string",
-  "subcategory": "string",
-  "investment_type": "Long Term|Mid Term|Short Term",
-  "amount_ll": 500.00,
-  "amount_usd": 0.00
+  "date": "2024-12-01",
+  "category": "Maintenance",
+  "amount": 500.00,
+  "description": "Ride maintenance"
 }
 ```
-- Validation: date required, amounts >= 0, 2 decimal places
+- Validation: date required, category required, amount >= 0
 
 **PUT /api/expenses/:id**
 - Update expense entry
@@ -85,7 +97,7 @@ All responses follow this structure:
 ### Investment Management
 **GET /api/investments**
 - Get all investment entries
-- Query params: date, investment_type
+- Query params: `limit` (optional, number)
 - Response: Array of investment objects
 
 **GET /api/investments/:id**
@@ -96,15 +108,13 @@ All responses follow this structure:
 - Body:
 ```json
 {
-  "date": "2026-04-19",
-  "investment_type": "Long Term|Mid Term|Short Term",
-  "description": "string",
-  "amount_ll": 10000.00,
-  "amount_usd": 0.00,
-  "owner_allocation": "Owner1|Owner2|Both"
+  "date": "2024-12-01",
+  "type": "Equipment",
+  "amount": 10000.00,
+  "description": "New roller coaster"
 }
 ```
-- Validation: date required, type required, amounts >= 0, 2 decimal places
+- Validation: date required, type required, amount >= 0
 
 **PUT /api/investments/:id**
 - Update investment entry
@@ -112,49 +122,157 @@ All responses follow this structure:
 **DELETE /api/investments/:id**
 - Delete investment entry
 
-### Summary Endpoints
-**GET /api/summaries/daily**
-- Get daily summary for specific date
-- Query params: date (required, YYYY-MM-DD)
-- Response:
+### Category Management
+**GET /api/categories**
+- Get all categories
+- Response: Array of category objects
+
+**GET /api/categories/type/:type**
+- Get categories by type (revenue, expense, investment)
+- Response: Array of category objects
+
+**GET /api/categories/:id**
+- Get specific category by ID
+
+**POST /api/categories**
+- Create new category
+- Body:
 ```json
 {
-  "date": "2026-04-19",
-  "daily_revenue_ll": 5000.00,
-  "daily_expenses_ll": 3000.00,
-  "daily_balance_ll": 2000.00,
-  "owner1_share_ll": 600.00,
-  "owner2_share_ll": 1400.00,
-  "revenue_items": [...],
-  "expense_items": [...]
+  "type": "revenue",
+  "name_en": "Tickets",
+  "name_ar": "تذاكر",
+  "is_active": "1"
 }
 ```
 
-**GET /api/summaries/monthly**
-- Get monthly summary
-- Query params: month (MM), year (YYYY)
-- Response: Aggregated monthly data with owner shares
+**PUT /api/categories/:id**
+- Update category
 
-**GET /api/summaries/yearly**
-- Get yearly summary
-- Query params: year (YYYY)
-- Response: Aggregated yearly data with owner shares
+**DELETE /api/categories/:id**
+- Soft delete category (sets is_active to 0)
+
+**DELETE /api/categories/:id/permanent**
+- Permanently delete category
+
+### Salary Management
+
+#### Employees
+**GET /api/salaries/employees**
+- Get all employees
+- Response: Array of employee objects
+
+**GET /api/salaries/employees/:id**
+- Get specific employee
+
+**POST /api/salaries/employees**
+- Create new employee
+- Body:
+```json
+{
+  "name": "John Doe",
+  "position": "Manager",
+  "monthly_salary": 2000.00,
+  "hire_date": "2024-01-01",
+  "status": "active"
+}
+```
+
+**PUT /api/salaries/employees/:id**
+- Update employee
+
+**DELETE /api/salaries/employees/:id**
+- Delete employee
+
+#### Salary Payments
+**GET /api/salaries/payments**
+- Get all salary payments
+- Response: Array of payment objects
+
+**GET /api/salaries/payments/employee/:employeeId**
+- Get payments for specific employee
+
+**GET /api/salaries/payments/month**
+- Get payments for specific month
+- Query params: `year` (YYYY), `month` (1-12)
+
+**POST /api/salaries/payments**
+- Create new salary payment
+- Body:
+```json
+{
+  "employee_id": "emp-123",
+  "amount": 2000.00,
+  "payment_date": "2024-12-01",
+  "payment_type": "full",
+  "month": "December",
+  "year": 2024,
+  "notes": "Monthly salary"
+}
+```
+
+**PUT /api/salaries/payments/:id**
+- Update payment
+
+**DELETE /api/salaries/payments/:id**
+- Delete payment
+
+**GET /api/salaries/summary**
+- Get salary summary
+- Query params: `year` (optional), `month` (optional)
+- Response:
+```json
+{
+  "totalEmployees": 10,
+  "activeEmployees": 8,
+  "totalMonthlySalaries": 20000.00,
+  "totalPaidThisMonth": 18000.00,
+  "pendingPayments": 2000.00
+}
+```
+
+### Summary Endpoints
+**GET /api/summaries**
+- Get financial summary
+- Response:
+```json
+{
+  "totalRevenue": 50000.00,
+  "totalExpenses": 25000.00,
+  "totalInvestments": 30000.00,
+  "netProfit": 25000.00,
+  "ownerShare": 17500.00,
+  "partnerShare": 7500.00
+}
+```
 
 ## Error Codes
-- 200: Success
-- 201: Created
+- 200: Success (GET, PUT, DELETE)
+- 201: Created (POST)
 - 400: Bad Request (validation error)
 - 404: Not Found
 - 500: Internal Server Error
 
 ## Data Types
 - Dates: YYYY-MM-DD format
-- Amounts: Decimal with 2 places (e.g., 1234.56)
-- Categories: Predefined strings as listed
-- IDs: Auto-generated unique identifiers
+- Amounts: Decimal numbers (e.g., 1234.56)
+- IDs: Auto-generated UUIDs
+- Status: "active" | "inactive"
+- Payment Type: "full" | "partial" | "advance"
+
+## CORS Configuration
+- Accepts all Vercel deployment URLs: `https://funpark*.vercel.app`
+- Accepts localhost: `http://localhost:4200`
+- Uses regex pattern matching for flexible origin validation
 
 ## Rate Limiting
 None implemented (single-user application)
 
 ## Versioning
 API version 1.0 - no versioning in URLs
+
+## Logging
+- Winston logger with file rotation
+- Error logs: `logs/error.log`
+- Combined logs: `logs/combined.log`
+- Request logging with IP and User-Agent

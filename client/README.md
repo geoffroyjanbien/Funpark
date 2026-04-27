@@ -6,27 +6,32 @@ A modern, responsive web application for managing Funpark financial operations w
 
 - **Dark Theme UI**: Professional dark-themed interface optimized for business use
 - **Responsive Design**: Mobile-first design that works on all devices
+- **Internationalization**: Full English and Arabic support with RTL layout
 - **Revenue Management**: Complete CRUD operations for tracking all revenue sources
 - **Expense Tracking**: Monitor and categorize operational expenses
 - **Investment Monitoring**: Track capital projects and long-term investments
+- **Salary Management**: Employee database and salary payment tracking
+- **Category Management**: Bilingual category system for all data types
 - **Financial Dashboard**: Real-time overview of key financial metrics
 - **Reports & Analytics**: Comprehensive financial reporting and profit distribution
 - **Real-time Updates**: Live data synchronization with backend API
-- **Search & Filtering**: Advanced search and filtering capabilities
+- **Search & Filtering**: Advanced search, filtering, and grouping capabilities
 - **Data Validation**: Client-side and server-side validation
-- **Excel Integration**: Import/export functionality for bulk operations
+- **Table Grouping**: Group data by date, category, or custom fields
 
 ## 🛠️ Tech Stack
 
 - **Framework**: Angular 16+
-- **Language**: TypeScript
+- **Language**: TypeScript 5.0+
 - **Styling**: CSS with CSS Variables (Dark Theme)
 - **HTTP Client**: Angular HttpClient
 - **Forms**: Reactive Forms with validation
 - **Routing**: Angular Router with lazy loading
+- **Internationalization**: @ngx-translate/core and @ngx-translate/http-loader
 - **Build Tool**: Angular CLI
-- **State Management**: Component-based state
+- **State Management**: Component-based state with services
 - **UI Components**: Custom components with consistent theming
+- **Deployment**: Vercel with automatic deployments
 
 ## 📁 Project Structure
 
@@ -125,12 +130,25 @@ Build artifacts will be stored in the `dist/` directory.
 ## 🔧 Configuration
 
 ### API Configuration
-The frontend connects to the backend API at `http://localhost:3000`. Update service files if needed:
+The frontend connects to the backend API using environment-based configuration:
 
+**Development** (`src/environments/environment.ts`):
 ```typescript
-// In services/*.service.ts
-private apiUrl = 'http://localhost:3000/api/revenue';
+export const environment = {
+  production: false,
+  apiUrl: 'http://localhost:3000/api'
+};
 ```
+
+**Production** (`src/environments/environment.prod.ts`):
+```typescript
+export const environment = {
+  production: true,
+  apiUrl: 'https://funpark-api.onrender.com/api'
+};
+```
+
+All services use `environment.apiUrl` for API calls, ensuring proper environment switching.
 
 ### Theme Customization
 Modify theme variables in `src/styles.css`:
@@ -176,23 +194,30 @@ feature-name/
 
 ## 🚀 Deployment
 
+### Production Deployment
+The application is deployed on Vercel with automatic deployments on git push.
+
+**Live URLs:**
+- Branch (master): https://funpark-git-master-geoffroyjanbien-4204s-projects.vercel.app
+- Latest: https://funpark-ekb5vo6ny-geoffroyjanbien-4204s-projects.vercel.app
+
 ### Build for Production
 ```bash
-ng build --configuration production --output-path docs
+ng build --configuration production
+# or
+npm run build:vercel
 ```
 
-### Serve Static Files
-The built files can be served by any static file server:
-- Nginx
-- Apache
-- Firebase Hosting
-- Netlify
-- GitHub Pages
+### Vercel Configuration
+The project includes `vercel.json` with:
+- Build command: `npm run build:vercel`
+- Output directory: `dist/funpark-client`
+- SPA rewrites for Angular routing
 
 ### Environment Configuration
-Create environment files for different deployments:
-- `src/environments/environment.ts` (development)
-- `src/environments/environment.prod.ts` (production)
+- Development: Uses `environment.ts` (localhost:3000)
+- Production: Uses `environment.prod.ts` (Render API)
+- File replacement configured in `angular.json`
 
 ## 🔍 Testing
 

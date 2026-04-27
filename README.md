@@ -22,69 +22,101 @@ A complete full-stack web application for managing Funpark financial operations 
 
 ## 🎯 Overview
 
-The Funpark Management System is a comprehensive solution for tracking and managing all financial aspects of amusement park operations. From ticket sales and food revenue to operational expenses and capital investments, this system provides real-time insights and automated profit calculations with owner-partner distribution.
+The Funpark Management System is a comprehensive full-stack solution for tracking and managing all financial aspects of amusement park operations. From ticket sales and food revenue to operational expenses and capital investments, this system provides real-time insights and automated profit calculations with owner-partner distribution.
 
 ### Key Highlights
 - **Real-time Financial Tracking**: Live updates of revenue, expenses, and profits
 - **Automated Profit Sharing**: 70% owner / 30% partner distribution calculations
+- **Multi-language Support**: English and Arabic (RTL) with @ngx-translate
+- **Salary Management**: Employee tracking and salary payment system
+- **Category Management**: Flexible revenue/expense categorization
 - **Excel Integration**: Import/export capabilities for bulk data operations
 - **Responsive Dark Theme**: Professional UI optimized for business use
 - **RESTful API**: Complete backend API for all operations
 - **CSV Data Storage**: Reliable file-based data persistence
+- **Cloud Deployment**: Production-ready on Vercel (frontend) and Render (backend)
 
 ## ✨ Features
 
 ### 💰 Revenue Management
-- Track multiple revenue streams (tickets, food, merchandise, games, parking)
+- Track multiple revenue streams (tickets, food & beverage, merchandise, games, parking)
+- Flexible category system with bilingual support
 - Real-time revenue calculations and totals
-- Search and filter capabilities
-- Add, edit, delete revenue entries
+- Advanced search, filter, and grouping capabilities
+- Date-based filtering (daily, monthly, yearly)
+- Add, edit, delete revenue entries with validation
 
 ### 💸 Expense Tracking
-- Categorize operational expenses
-- Monitor spending patterns
+- Categorize operational expenses with custom categories
+- Monitor spending patterns by category and date
 - Cost analysis and reporting
 - Expense history and trends
+- Grouping by category, date, or custom fields
 
 ### 📈 Investment Monitoring
 - Track capital projects and equipment purchases
-- ROI calculations and projections
+- Investment type categorization
 - Investment history and planning
 - Long-term financial planning
+- Grouping and filtering by type and date
 
 ### 📊 Financial Dashboard
-- Real-time financial overview
-- Key performance indicators
-- Profit distribution visualization
+- Real-time financial overview with live data
+- Key performance indicators (KPIs)
+- Profit distribution visualization (70%/30%)
+- Recent activity tracking
 - Quick access to all features
+- Responsive card-based layout
 
 ### 📋 Reports & Analytics
 - Comprehensive profit & loss statements
-- Owner/partner share calculations
+- Owner/partner share calculations (70%/30%)
 - Financial trend analysis
-- Exportable reports
+- Daily, monthly, and yearly summaries
+- Exportable reports (CSV, Excel)
+- Visual charts and graphs
 
 ### 🔄 Data Management
 - Excel import/export functionality
-- CSV data persistence
-- Data validation and integrity
+- CSV data persistence with atomic operations
+- Data validation and integrity checks
 - Backup and recovery options
+- Audit logging with Winston
+
+### 👥 Salary Management
+- Employee database with status tracking
+- Salary payment recording
+- Payment history by employee
+- Monthly salary summaries
+- Payment type tracking (full, partial, advance)
+
+### 🌍 Internationalization
+- English and Arabic language support
+- RTL (Right-to-Left) layout for Arabic
+- Bilingual category names
+- Date and number formatting per locale
+- Language switcher in settings
 
 ## 🛠️ Tech Stack
 
 ### Frontend
 - **Framework**: Angular 16+
-- **Language**: TypeScript
+- **Language**: TypeScript 5.0+
 - **Styling**: CSS with Dark Theme Variables
-- **State Management**: Component-based
+- **Internationalization**: @ngx-translate/core
+- **State Management**: Component-based with services
 - **Build Tool**: Angular CLI
+- **Deployment**: Vercel
 
 ### Backend
-- **Runtime**: Node.js
-- **Framework**: Express.js
-- **Data Storage**: CSV files
-- **File Processing**: xlsx library
-- **API**: RESTful endpoints
+- **Runtime**: Node.js 16+
+- **Framework**: Express.js 4.22+
+- **Data Storage**: CSV files with atomic operations
+- **File Processing**: xlsx, xlsx-populate
+- **Logging**: Winston
+- **Validation**: Custom middleware
+- **API**: RESTful endpoints with CORS
+- **Deployment**: Render (free tier)
 
 ### Development Tools
 - **Version Control**: Git
@@ -100,24 +132,57 @@ funpark-management/
 │   ├── src/
 │   │   ├── app/
 │   │   │   ├── components/    # Shared components
+│   │   │   │   └── navigation/  # Main navigation
 │   │   │   ├── features/      # Feature modules
+│   │   │   │   ├── dashboard/   # Main dashboard
+│   │   │   │   ├── revenue/     # Revenue management
+│   │   │   │   ├── expenses/    # Expense tracking
+│   │   │   │   ├── investments/ # Investment monitoring
+│   │   │   │   ├── salaries/    # Salary management
+│   │   │   │   ├── reports/     # Financial reports
+│   │   │   │   └── settings/    # App settings
 │   │   │   ├── services/      # API services
-│   │   │   └── core/          # Core functionality
+│   │   │   ├── pipes/         # Custom pipes
+│   │   │   └── shared/        # Shared utilities
 │   │   ├── assets/            # Static assets
+│   │   │   └── i18n/          # Translation files
 │   │   ├── environments/      # Environment configs
 │   │   └── styles.css         # Global styles
 │   ├── angular.json           # Angular config
+│   ├── vercel.json            # Vercel deployment config
 │   ├── package.json           # Frontend dependencies
 │   └── README.md              # Frontend documentation
 ├── server/                    # Express backend
 │   ├── src/
 │   │   ├── controllers/       # API route handlers
+│   │   ├── routes/            # API routes
+│   │   ├── models/            # Data models
+│   │   ├── middleware/        # Custom middleware
 │   │   ├── utils/             # Utility functions
 │   │   └── index.js           # Server entry point
 │   ├── data/                  # CSV data files
+│   │   ├── revenue.csv
+│   │   ├── expense_entries.csv
+│   │   ├── investment_entries.csv
+│   │   ├── categories.csv
+│   │   ├── employees.csv
+│   │   ├── salary_payments.csv
+│   │   └── daily_summary.csv
+│   ├── logs/                  # Winston logs
+│   ├── render.yaml            # Render deployment config
 │   ├── package.json           # Backend dependencies
 │   └── README.md              # Backend documentation
+├── copilot/                   # Development documentation
+│   ├── api-spec.md            # API specifications
+│   ├── csv-schema.md          # CSV file schemas
+│   ├── excel-import.md        # Excel import guide
+│   ├── instructions.md        # Implementation guide
+│   ├── plan.md                # Project plan
+│   └── progress.md            # Development progress
 ├── .gitignore                 # Git ignore rules
+├── DEPLOYMENT.md              # Deployment guide
+├── DEPLOYMENT_URLS.md         # Live URLs
+├── GLOBALIZATION_GUIDE.md     # i18n documentation
 └── README.md                  # Main project README
 ```
 
@@ -131,8 +196,8 @@ funpark-management/
 ### One-Command Setup
 ```bash
 # Clone the repository
-git clone <repository-url>
-cd funpark-management
+git clone https://github.com/geoffroyjanbien/Funpark.git
+cd Funpark
 
 # Install backend dependencies
 cd server
@@ -153,6 +218,11 @@ npm start
 ```
 
 Navigate to `http://localhost:4200` to access the application!
+
+### Live Demo
+- **Frontend**: https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app
+- **Backend API**: https://funpark-api.onrender.com
+- **API Health**: https://funpark-api.onrender.com/health
 
 ## 📦 Installation
 
