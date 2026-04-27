@@ -53,7 +53,7 @@ const allowedOrigins = process.env.CORS_ORIGIN
   ? process.env.CORS_ORIGIN.split(',')
   : [
       'http://localhost:4200',
-      /^https:\/\/funpark.*\.vercel\.app$/,  // Match all Vercel deployments
+      /^https:\/\/.*\.vercel\.app$/,  // Match all Vercel deployments
     ];
 
 app.use(cors({
