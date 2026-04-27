@@ -457,7 +457,7 @@
 }
 
 .source-tickets { background-color: rgba(74, 158, 255, 0.1); color: var(--primary-accent); }
-.source-food-&-beverage { background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); }
+.source-food-beverage { background-color: rgba(16, 185, 129, 0.1); color: var(--success-color); }
 .source-merchandise { background-color: rgba(245, 158, 11, 0.1); color: var(--warning-color); }
 .source-games { background-color: rgba(139, 92, 246, 0.1); color: #8b5cf6; }
 .source-parking { background-color: rgba(236, 72, 153, 0.1); color: #ec4899; }
