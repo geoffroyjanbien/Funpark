@@ -8,7 +8,7 @@ import { SalariesService, Employee, SalaryPayment } from '../../services/salarie
   styleUrls: ['./salaries.component.css']
 })
 export class SalariesComponent implements OnInit {
-  activeTab: 'employees' | 'payments' = 'employees';
+  activeTab: 'employees' | 'payments' | 'summary' = 'employees';
   
   // Employees
   employees: Employee[] = [];
@@ -42,6 +42,8 @@ export class SalariesComponent implements OnInit {
     totalPaidThisMonth: 0,
     pendingPayments: 0
   };
+
+  employeePaymentSummary: any = null;
 
   availableYears: number[] = [];
   availableMonths = [
@@ -149,6 +151,17 @@ export class SalariesComponent implements OnInit {
           totalPaidThisMonth: 0,
           pendingPayments: 0
         };
+      }
+    });
+
+    // Load detailed employee payment summary
+    this.salariesService.getEmployeePaymentSummary(this.selectedYear, this.selectedMonth + 1).subscribe({
+      next: (data) => {
+        this.employeePaymentSummary = data;
+      },
+      error: (error) => {
+        console.error('Failed to load employee payment summary:', error);
+        this.employeePaymentSummary = null;
       }
     });
   }
@@ -320,7 +333,7 @@ export class SalariesComponent implements OnInit {
     }
   }
 
-  switchTab(tab: 'employees' | 'payments'): void {
+  switchTab(tab: 'employees' | 'payments' | 'summary'): void {
     this.activeTab = tab;
     this.searchTerm = '';
   }

@@ -11,7 +11,7 @@ const { updateDailySummary } = require('../utils/profitCalculator');
  */
 const getAllRevenue = async (req, res) => {
   try {
-    const { date, category } = req.query;
+    const { date, category, limit } = req.query;
     let revenues = await readCSV('REVENUE');
 
     // Apply filters
@@ -19,15 +19,20 @@ const getAllRevenue = async (req, res) => {
       revenues = revenues.filter(r => r.date === date);
     }
     if (category) {
-      revenues = revenues.filter(r => r.category === category);
+      revenues = revenues.filter(r => (r.source || r.category) === category);
     }
 
-    // Add IDs for frontend (using index as simple ID)
-    const revenuesWithIds = revenues.map((revenue, index) => ({
-      id: index + 1,
+    // Apply limit if specified
+    if (limit) {
+      revenues = revenues.slice(0, parseInt(limit));
+    }
+
+    // Map to frontend format
+    const revenuesWithIds = revenues.map((revenue) => ({
+      id: revenue.id || Date.now().toString(),
       date: revenue.date,
-      source: revenue.category, // Map category back to source for frontend
-      amount: parseFloat(revenue.amount_ll || revenue.amount_usd || 0), // Use amount_ll or amount_usd
+      source: revenue.source || revenue.category,
+      amount: parseFloat(revenue.amount || revenue.amount_ll || revenue.amount_usd || 0),
       description: revenue.description || ''
     }));
 
@@ -92,12 +97,18 @@ const createRevenue = async (req, res) => {
       });
     }
 
-    // Convert to CSV format (amount_ll and amount_usd both set to the same amount)
+    // Get current max ID
+    const revenues = await readCSV('REVENUE');
+    const maxId = revenues.reduce((max, r) => Math.max(max, parseInt(r.id) || 0), 0);
+    const newId = maxId + 1;
+
+    // Create revenue data
     const revenueData = {
+      id: newId,
       date,
-      category: source, // Map source to category for CSV
-      amount_ll: parseFloat(amount).toFixed(2),
-      amount_usd: parseFloat(amount).toFixed(2)
+      source,
+      amount: parseFloat(amount),
+      description: description || ''
     };
 
     await appendToCSV('REVENUE', revenueData);
@@ -107,13 +118,7 @@ const createRevenue = async (req, res) => {
 
     res.status(201).json({
       success: true,
-      data: {
-        id: Date.now().toString(), // Simple ID generation
-        date,
-        source,
-        amount: parseFloat(amount),
-        description
-      },
+      data: revenueData,
       message: 'Revenue entry created successfully'
     });
   } catch (error) {

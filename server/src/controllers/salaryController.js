@@ -406,3 +406,87 @@ exports.getSalarySummary = async (req, res) => {
     });
   }
 };
+
+// Detailed employee payment summary
+exports.getEmployeePaymentSummary = async (req, res) => {
+  try {
+    const { year, month } = req.query;
+    
+    if (!year || !month) {
+      return res.status(400).json({
+        success: false,
+        message: 'Year and month are required'
+      });
+    }
+    
+    const employees = await readCSV(EMPLOYEES_FILE);
+    const payments = await readCSV(PAYMENTS_FILE);
+    
+    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
+                       'July', 'August', 'September', 'October', 'November', 'December'];
+    const monthName = monthNames[parseInt(month) - 1];
+    
+    // Calculate summary for each employee
+    const employeeSummaries = employees.map(employee => {
+      const employeePayments = payments.filter(p => 
+        p.employee_id === employee.id && 
+        p.year === year && 
+        p.month === monthName
+      );
+      
+      const totalPaid = employeePayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+      const monthlySalary = parseFloat(employee.monthly_salary || 0);
+      const remaining = monthlySalary - totalPaid;
+      const isPaid = remaining <= 0;
+      const paymentPercentage = monthlySalary > 0 ? (totalPaid / monthlySalary * 100).toFixed(2) : 0;
+      
+      return {
+        employee_id: employee.id,
+        employee_name: employee.name,
+        position: employee.position,
+        status: employee.status,
+        monthly_salary: monthlySalary,
+        total_paid: totalPaid,
+        remaining: remaining,
+        is_fully_paid: isPaid,
+        payment_percentage: parseFloat(paymentPercentage),
+        payment_count: employeePayments.length,
+        payments: employeePayments.map(p => ({
+          id: p.id,
+          amount: parseFloat(p.amount),
+          payment_date: p.payment_date,
+          payment_type: p.payment_type,
+          notes: p.notes
+        }))
+      };
+    });
+    
+    // Calculate totals
+    const totals = {
+      total_employees: employees.length,
+      active_employees: employees.filter(e => e.status === 'active').length,
+      total_monthly_salaries: employees.reduce((sum, e) => sum + parseFloat(e.monthly_salary || 0), 0),
+      total_paid: employeeSummaries.reduce((sum, e) => sum + e.total_paid, 0),
+      total_remaining: employeeSummaries.reduce((sum, e) => sum + Math.max(0, e.remaining), 0),
+      fully_paid_count: employeeSummaries.filter(e => e.is_fully_paid).length
+    };
+    
+    res.json({
+      success: true,
+      data: {
+        year: parseInt(year),
+        month: parseInt(month),
+        month_name: monthName,
+        employees: employeeSummaries,
+        totals
+      }
+    });
+  } catch (error) {
+    console.error('Error calculating employee payment summary:', error);
+    res.status(500).json({
+      success: false,
+      message: 'Failed to calculate employee payment summary',
+      error: error.message
+    });
+  }
+};

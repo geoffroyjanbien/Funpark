@@ -19,5 +19,6 @@ router.delete('/payments/:id', salaryController.deletePayment);
 
 // Summary route
 router.get('/summary', salaryController.getSalarySummary);
+router.get('/employee-summary', salaryController.getEmployeePaymentSummary);
 
 module.exports = router;

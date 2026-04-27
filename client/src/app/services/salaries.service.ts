@@ -169,4 +169,18 @@ export class SalariesService {
       })
     );
   }
+
+  getEmployeePaymentSummary(year: number, month: number): Observable<any> {
+    const params = new HttpParams()
+      .set('year', year.toString())
+      .set('month', month.toString());
+    
+    return this.http.get<ApiResponse<any>>(`${this.apiUrl}/employee-summary`, { params }).pipe(
+      map(response => response.data),
+      catchError(error => {
+        console.error('Salaries API error:', error);
+        return throwError(() => error);
+      })
+    );
+  }
 }

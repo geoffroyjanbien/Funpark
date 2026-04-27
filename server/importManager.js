@@ -81,7 +81,7 @@ async function importInvestments() {
           id: id++,
           date: '2026-01-01', // Default date since not in file
           type: type === 'شراكة' ? 'Long Term' : 'Long Term',
-          amount: parseFloat(total),
+          amount: Math.round(parseFloat(total) / 90000), // Convert LL to USD
           description: description
         });
       }
@@ -157,13 +157,13 @@ async function importFunPark() {
       for (const cat of revenueCategories) {
         const row = data[cat.row];
         if (row && row[2]) {
-          const amount = parseFloat(row[2]) || 0;
-          if (amount > 0) {
+          const amountLL = parseFloat(row[2]) || 0;
+          if (amountLL > 0) {
             revenueData.push({
               id: revenueId++,
               date,
               source: cat.source,
-              amount: Math.round(amount),
+              amount: Math.round(amountLL / 90000), // Convert LL to USD
               description: ''
             });
           }
@@ -201,14 +201,14 @@ async function importFunPark() {
         const row = data[i];
         if (row && row[1] && row[2]) {
           const arabicName = row[1].toString().trim();
-          const amount = parseFloat(row[2]) || 0;
+          const amountLL = parseFloat(row[2]) || 0;
           
-          if (amount > 0 && expenseMapping[arabicName]) {
+          if (amountLL > 0 && expenseMapping[arabicName]) {
             expenseData.push({
               id: expenseId++,
               date,
               category: expenseMapping[arabicName],
-              amount: Math.round(amount),
+              amount: Math.round(amountLL / 90000), // Convert LL to USD
               description: ''
             });
           }

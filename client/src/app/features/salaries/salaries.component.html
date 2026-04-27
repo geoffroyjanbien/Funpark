@@ -58,6 +58,12 @@
       (click)="switchTab('payments')">
       💰 {{ 'SALARIES.PAYMENTS' | translate }}
     </button>
+    <button 
+      class="tab-button" 
+      [class.active]="activeTab === 'summary'"
+      (click)="switchTab('summary')">
+      📊 {{ 'SALARIES.PAYMENT_SUMMARY' | translate }}
+    </button>
   </div>
 
   <!-- Employees Tab -->
@@ -110,7 +116,7 @@
                 <td>{{ employee.hire_date | customDate }}</td>
                 <td>
                   <span class="status-badge" [class.active]="employee.status === 'active'">
-                    {{ employee.status }}
+                    {{ 'SALARIES.' + employee.status.toUpperCase() | translate }}
                   </span>
                 </td>
                 <td class="text-center">
@@ -187,6 +193,95 @@
                     🗑️
                   </button>
                 </td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Payment Summary Tab -->
+  <div *ngIf="activeTab === 'summary'">
+    <!-- Filters -->
+    <div class="filters-section">
+      <div class="filter-group">
+        <label>{{ 'FILTERS.YEAR' | translate }}:</label>
+        <select [(ngModel)]="selectedYear" (change)="onFilterChange()" class="filter-select">
+          <option *ngFor="let year of availableYears" [ngValue]="year">{{ year }}</option>
+        </select>
+      </div>
+
+      <div class="filter-group">
+        <label>{{ 'FILTERS.MONTH' | translate }}:</label>
+        <select [(ngModel)]="selectedMonth" (change)="onFilterChange()" class="filter-select">
+          <option *ngFor="let month of availableMonths; let i = index" [ngValue]="i">{{ month }}</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Summary Totals -->
+    <div *ngIf="employeePaymentSummary" class="stats-card">
+      <div class="stat-item">
+        <div class="stat-label">{{ 'SALARIES.TOTAL_MONTHLY_SALARIES' | translate }}</div>
+        <div class="stat-value">${{ employeePaymentSummary.totals.total_monthly_salaries | number:'1.0-0' }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">{{ 'SALARIES.TOTAL_PAID' | translate }}</div>
+        <div class="stat-value">${{ employeePaymentSummary.totals.total_paid | number:'1.0-0' }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">{{ 'SALARIES.TOTAL_REMAINING' | translate }}</div>
+        <div class="stat-value">${{ employeePaymentSummary.totals.total_remaining | number:'1.0-0' }}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">{{ 'SALARIES.FULLY_PAID' | translate }}</div>
+        <div class="stat-value">{{ employeePaymentSummary.totals.fully_paid_count }} / {{ employeePaymentSummary.totals.total_employees }}</div>
+      </div>
+    </div>
+
+    <!-- Employee Payment Details -->
+    <div class="card">
+      <div class="card-header">
+        <h2 class="card-title">{{ 'SALARIES.PAYMENT_DETAILS' | translate }} - {{ availableMonths[selectedMonth] }} {{ selectedYear }}</h2>
+      </div>
+      <div class="card-content">
+        <div class="table-responsive">
+          <table class="table">
+            <thead>
+              <tr>
+                <th>{{ 'SALARIES.EMPLOYEE' | translate }}</th>
+                <th>{{ 'SALARIES.POSITION' | translate }}</th>
+                <th>{{ 'SALARIES.MONTHLY_SALARY' | translate }}</th>
+                <th>{{ 'SALARIES.TOTAL_PAID' | translate }}</th>
+                <th>{{ 'SALARIES.REMAINING' | translate }}</th>
+                <th>{{ 'SALARIES.PROGRESS' | translate }}</th>
+                <th>{{ 'SALARIES.STATUS' | translate }}</th>
+                <th>{{ 'SALARIES.PAYMENTS' | translate }}</th>
+              </tr>
+            </thead>
+            <tbody *ngIf="employeePaymentSummary">
+              <tr *ngFor="let emp of employeePaymentSummary.employees">
+                <td>{{ emp.employee_name }}</td>
+                <td>{{ emp.position }}</td>
+                <td class="text-right">${{ emp.monthly_salary | number:'1.0-0' }}</td>
+                <td class="text-right">${{ emp.total_paid | number:'1.0-0' }}</td>
+                <td class="text-right" [class.text-danger]="emp.remaining > 0">
+                  ${{ emp.remaining | number:'1.0-0' }}
+                </td>
+                <td>
+                  <div class="progress-bar-container">
+                    <div class="progress-bar" [style.width.%]="emp.payment_percentage"
+                         [class.complete]="emp.is_fully_paid"></div>
+                    <span class="progress-text">{{ emp.payment_percentage }}%</span>
+                  </div>
+                </td>
+                <td>
+                  <span class="status-badge" [class.active]="emp.is_fully_paid">
+                    {{ emp.is_fully_paid ? ('✓ ' + ('SALARIES.PAID' | translate)) : ('⚠️ ' + ('SALARIES.PENDING' | translate)) }}
+                  </span>
+                </td>
+                <td class="text-center">{{ emp.payment_count }}</td>
               </tr>
             </tbody>
           </table>

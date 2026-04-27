@@ -21,28 +21,22 @@ const CSV_FILES = {
 // Schema definitions for validation
 const SCHEMAS = {
   REVENUE: {
-    headers: ['date', 'category', 'amount_ll', 'amount_usd'],
-    required: ['date', 'category', 'amount_ll', 'amount_usd'],
+    headers: ['id', 'date', 'source', 'amount', 'description'],
+    required: ['date', 'source', 'amount'],
     validations: {
-      category: ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various'],
-      amounts: ['amount_ll', 'amount_usd']
+      source: ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various']
     }
   },
   EXPENSE_ENTRIES: {
-    headers: ['date', 'main_category', 'subcategory', 'investment_type', 'amount_ll', 'amount_usd'],
-    required: ['date', 'main_category', 'investment_type', 'amount_ll', 'amount_usd'],
-    validations: {
-      investment_type: ['Long Term', 'Mid Term', 'Short Term'],
-      amounts: ['amount_ll', 'amount_usd']
-    }
+    headers: ['id', 'date', 'category', 'amount', 'description'],
+    required: ['date', 'category', 'amount'],
+    validations: {}
   },
   INVESTMENT_ENTRIES: {
-    headers: ['date', 'investment_type', 'description', 'amount_ll', 'amount_usd', 'owner_allocation'],
-    required: ['date', 'investment_type', 'description', 'amount_ll', 'amount_usd', 'owner_allocation'],
+    headers: ['id', 'date', 'type', 'amount', 'description'],
+    required: ['date', 'type', 'amount'],
     validations: {
-      investment_type: ['Long Term', 'Mid Term', 'Short Term'],
-      owner_allocation: ['Owner1', 'Owner2', 'Both'],
-      amounts: ['amount_ll', 'amount_usd']
+      type: ['Long Term', 'Mid Term', 'Short Term']
     }
   },
   DAILY_SUMMARY: {
