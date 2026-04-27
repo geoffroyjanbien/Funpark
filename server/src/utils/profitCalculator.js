@@ -25,8 +25,8 @@ async function calculateDailyProfit(date, dataPath = './data') {
   const dailyInvestments = investments.filter(i => i.date === date);
 
   // Calculate totals
-  const dailyRevenueLL = dailyRevenues.reduce((sum, r) => sum + parseFloat(r.amount_ll), 0);
-  const dailyExpensesLL = dailyExpenses.reduce((sum, e) => sum + parseFloat(e.amount_ll), 0);
+  const dailyRevenueLL = dailyRevenues.reduce((sum, r) => sum + (parseFloat(r.amount) || 0), 0);
+  const dailyExpensesLL = dailyExpenses.reduce((sum, e) => sum + (parseFloat(e.amount) || 0), 0);
   const dailyBalanceLL = dailyRevenueLL - dailyExpensesLL;
 
   // Calculate owner shares based on profit
@@ -37,7 +37,7 @@ async function calculateDailyProfit(date, dataPath = './data') {
 
   // Add Long Term investment allocation (100% to Owner2)
   const longTermInvestments = dailyInvestments.filter(i => i.investment_type === 'Long Term');
-  const longTermTotal = longTermInvestments.reduce((sum, i) => sum + parseFloat(i.amount_ll), 0);
+  const longTermTotal = longTermInvestments.reduce((sum, i) => sum + (parseFloat(i.amount) || 0), 0);
 
   // Adjust owner shares for Long Term investments
   // Long Term investments are 100% allocated to Owner2

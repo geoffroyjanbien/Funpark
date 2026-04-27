@@ -23,9 +23,7 @@ const SCHEMAS = {
   REVENUE: {
     headers: ['id', 'date', 'source', 'amount', 'description'],
     required: ['date', 'source', 'amount'],
-    validations: {
-      source: ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various']
-    }
+    validations: {}
   },
   EXPENSE_ENTRIES: {
     headers: ['id', 'date', 'category', 'amount', 'description'],
@@ -34,10 +32,8 @@ const SCHEMAS = {
   },
   INVESTMENT_ENTRIES: {
     headers: ['id', 'date', 'type', 'amount', 'description'],
-    required: ['date', 'type', 'amount'],
-    validations: {
-      type: ['Long Term', 'Mid Term', 'Short Term']
-    }
+    required: ['date', 'type'],
+    validations: {}
   },
   DAILY_SUMMARY: {
     headers: ['date', 'daily_revenue_ll', 'daily_expenses_ll', 'daily_balance_ll', 'owner1_share_ll', 'owner2_share_ll'],

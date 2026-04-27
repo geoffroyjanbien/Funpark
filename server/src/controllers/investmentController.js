@@ -22,6 +22,9 @@ const getAllInvestments = async (req, res) => {
       investments = investments.filter(i => i.type === type);
     }
 
+    // Sort latest first
+    investments.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     // Add IDs for frontend (using index as simple ID)
     const investmentsWithIds = investments.map((investment, index) => ({
       id: index + 1,

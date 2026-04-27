@@ -187,7 +187,9 @@ exports.getAllPayments = async (req, res) => {
     const payments = await readCSV(PAYMENTS_FILE);
     const employees = await readCSV(EMPLOYEES_FILE);
     
-    const paymentsWithNames = payments.map(payment => ({
+    const paymentsWithNames = payments
+      .sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date))
+      .map(payment => ({
       ...payment,
       amount: parseFloat(payment.amount),
       year: parseInt(payment.year),

@@ -22,6 +22,9 @@ const getAllRevenue = async (req, res) => {
       revenues = revenues.filter(r => (r.source || r.category) === category);
     }
 
+    // Sort latest first
+    revenues.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     // Apply limit if specified
     if (limit) {
       revenues = revenues.slice(0, parseInt(limit));
@@ -149,17 +152,6 @@ const updateRevenue = async (req, res) => {
     }
 
     const originalDate = revenues[revenueIndex].date;
-
-    // Validate category if provided
-    if (source) {
-      const validCategories = ['Hookah', 'Drinks', 'Crepe', 'Games', 'Various'];
-      if (!validCategories.includes(source)) {
-        return res.status(400).json({
-          success: false,
-          error: `Invalid category. Must be one of: ${validCategories.join(', ')}`
-        });
-      }
-    }
 
     const updates = {};
     if (date) updates.date = date;

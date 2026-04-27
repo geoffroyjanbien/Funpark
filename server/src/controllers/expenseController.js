@@ -22,6 +22,9 @@ const getAllExpenses = async (req, res) => {
       expenses = expenses.filter(e => e.category === category);
     }
 
+    // Sort latest first
+    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
+
     // Add IDs for frontend (using index as simple ID)
     const expensesWithIds = expenses.map((expense, index) => ({
       id: index + 1,
