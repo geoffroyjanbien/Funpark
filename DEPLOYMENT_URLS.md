@@ -4,10 +4,11 @@
 
 ### Frontend (Vercel)
 ```
-https://funpark-ekb5vo6ny-geoffroyjanbien-4204s-projects.vercel.app (latest)
-https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app (previous)
+https://funpark-git-master-geoffroyjanbien-4204s-projects.vercel.app (branch: master)
+https://funpark-ekb5vo6ny-geoffroyjanbien-4204s-projects.vercel.app (latest deployment)
+https://funpark-57exoneln-geoffroyjanbien-4204s-projects.vercel.app (previous deployment)
 ```
-**Note**: Vercel creates unique URLs for each deployment. All URLs matching `https://funpark*.vercel.app` are accepted by CORS.
+**Note**: Vercel creates unique URLs for each deployment and branch. All URLs matching `https://funpark*.vercel.app` are automatically accepted by CORS.
 
 ### Backend (Render)
 ```
