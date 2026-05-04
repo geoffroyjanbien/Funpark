@@ -36,7 +36,7 @@
         [class.active]="activeTab === 'employees'"
         (click)="onTabChange('employees')">
         <span class="tab-icon">👥</span>
-        <span class="tab-text">{{ 'SETTINGS.EMPLOYEES' | translate }}</span>
+        <span class="tab-text">{{ 'SALARIES.EMPLOYEES' | translate }}</span>
         <span class="tab-count">{{ employees.length }}</span>
       </button>
       <button 
@@ -187,10 +187,15 @@
             <strong>{{ filteredCategories.length }}</strong> {{ 'SETTINGS.TOTAL_CATEGORIES' | translate }}
           </span>
         </div>
-        <button class="btn btn-primary" (click)="openAddForm()">
-          <span class="icon">+</span>
-          {{ 'SETTINGS.ADD_CATEGORY' | translate }}
-        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" (click)="loadCategories()" [disabled]="loading">
+            🔄 {{ 'COMMON.REFRESH' | translate }}
+          </button>
+          <button class="btn btn-primary" (click)="openAddForm()">
+            <span class="icon">+</span>
+            {{ 'SETTINGS.ADD_CATEGORY' | translate }}
+          </button>
+        </div>
       </div>
 
       <!-- Category Form -->
@@ -240,9 +245,25 @@
 
       <!-- Categories List -->
       <div class="categories-list" *ngIf="!showForm">
+
+        <!-- Bulk toolbar -->
+        <div class="bulk-toolbar" *ngIf="selectedCategoryIds.size > 0">
+          <span>{{ selectedCategoryIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+          <button class="btn btn-danger btn-sm" (click)="bulkDeleteCategories()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
+          <button class="btn btn-secondary btn-sm" (click)="selectedCategoryIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+        </div>
+
+        <!-- Select All -->
+        <div class="select-all-row" *ngIf="filteredCategories.length > 0">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0">
+            <input type="checkbox" [checked]="allCategoriesSelected" (change)="toggleSelectAllCategories()">
+            <span>{{ 'COMMON.SELECT_ALL' | translate }} ({{ filteredCategories.length }})</span>
+          </label>
+        </div>
         <!-- Parent Categories with Children -->
         <div class="category-group" *ngFor="let category of filteredCategories" [hidden]="!isParentCategory(category) || !hasChildren(category)">
           <div class="category-item" [class.parent]="true" [class.has-children]="true">
+            <input type="checkbox" [checked]="selectedCategoryIds.has(category.id)" (change)="selectedCategoryIds.has(category.id) ? selectedCategoryIds.delete(category.id) : selectedCategoryIds.add(category.id)" style="margin-right:8px">
             <div class="category-info">
               <span class="category-icon">📁</span>
               <span class="category-name">{{ getCategoryName(category) }}</span>
@@ -264,6 +285,7 @@
           <!-- Child Categories -->
           <div class="child-categories">
             <div class="category-item child" *ngFor="let child of getChildCategories(category)">
+              <input type="checkbox" [checked]="selectedCategoryIds.has(child.id)" (change)="selectedCategoryIds.has(child.id) ? selectedCategoryIds.delete(child.id) : selectedCategoryIds.add(child.id)" style="margin-right:8px">
               <div class="category-info">
                 <span class="category-icon">📄</span>
                 <span class="category-name">{{ getCategoryName(child) }}</span>
@@ -281,8 +303,9 @@
         </div>
 
         <!-- Standalone Categories (no parent, no children) -->
-        <div class="category-item standalone" *ngFor="let category of filteredCategories" 
+        <div class="category-item standalone" *ngFor="let category of filteredCategories"
              [hidden]="hasChildren(category) || category.parent_category">
+          <input type="checkbox" [checked]="selectedCategoryIds.has(category.id)" (change)="selectedCategoryIds.has(category.id) ? selectedCategoryIds.delete(category.id) : selectedCategoryIds.add(category.id)" style="margin-right:8px">
           <div class="category-info">
             <span class="category-icon">📄</span>
             <span class="category-name">{{ getCategoryName(category) }}</span>
@@ -309,17 +332,22 @@
     </div>
 
     <!-- Employees Tab -->
-    <div class="tab-content" *ngIf="activeTab === 'employees' && !loading">
+    <div class="tab-content" *ngIf="activeTab === 'employees' && !employeesLoading">
       <div class="action-bar" *ngIf="!showForm">
         <div class="category-stats">
           <span class="stat-item">
-            <strong>{{ employees.length }}</strong> {{ 'SETTINGS.EMPLOYEES' | translate }}
+            <strong>{{ employees.length }}</strong> {{ 'SALARIES.EMPLOYEES' | translate }}
           </span>
         </div>
-        <button class="btn btn-primary" (click)="openAddForm()">
-          <span class="icon">+</span>
-          {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
-        </button>
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-secondary" (click)="loadEmployees()" [disabled]="employeesLoading">
+            🔄 {{ 'COMMON.REFRESH' | translate }}
+          </button>
+          <button class="btn btn-primary" (click)="openAddForm()">
+            <span class="icon">+</span>
+            {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
+          </button>
+        </div>
       </div>
 
       <!-- Employee Form -->
@@ -382,7 +410,24 @@
 
       <!-- Employees List -->
       <div class="categories-list" *ngIf="!showForm">
+
+        <!-- Bulk toolbar -->
+        <div class="bulk-toolbar" *ngIf="selectedEmployeeIds.size > 0">
+          <span>{{ selectedEmployeeIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+          <button class="btn btn-danger btn-sm" (click)="bulkDeleteEmployees()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
+          <button class="btn btn-secondary btn-sm" (click)="selectedEmployeeIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+        </div>
+
+        <!-- Select All -->
+        <div class="select-all-row" *ngIf="employees.length > 0">
+          <label style="display:flex;align-items:center;gap:8px;cursor:pointer;padding:6px 0">
+            <input type="checkbox" [checked]="allEmployeesSelected" (change)="toggleSelectAllEmployees()">
+            <span>{{ 'COMMON.SELECT_ALL' | translate }} ({{ employees.length }})</span>
+          </label>
+        </div>
+
         <div class="category-item" *ngFor="let employee of employees">
+          <input type="checkbox" [checked]="selectedEmployeeIds.has(employee.id!)" (change)="selectedEmployeeIds.has(employee.id!) ? selectedEmployeeIds.delete(employee.id!) : selectedEmployeeIds.add(employee.id!)" style="margin-right:8px">
           <div class="category-info">
             <span class="category-icon">👤</span>
             <span class="category-name">{{ employee.name }} - {{ employee.position }}</span>

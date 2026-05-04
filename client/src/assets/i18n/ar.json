@@ -36,7 +36,11 @@
     "EXPAND_ALL": "توسيع الكل",
     "COLLAPSE_ALL": "طي الكل",
     "ALL": "الكل",
-    "NOTES": "ملاحظات"
+    "NOTES": "ملاحظات",
+    "SELECTED": "محدد",
+    "DELETE_SELECTED": "حذف المحدد",
+    "CLEAR": "مسح",
+    "SELECT_ALL": "تحديد الكل"
   },
   "FILTERS": {
     "VIEW_MODE": "وضع العرض",

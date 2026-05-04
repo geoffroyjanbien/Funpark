@@ -94,12 +94,19 @@
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">{{ 'SALARIES.EMPLOYEES_LIST' | translate }}</h2>
+        <button (click)="loadEmployees()" class="btn btn-secondary btn-sm" [disabled]="loading">🔄 {{ 'COMMON.REFRESH' | translate }}</button>
       </div>
       <div class="card-content">
+        <div class="bulk-toolbar" *ngIf="selectedEmployeeIds.size > 0">
+          <span>{{ selectedEmployeeIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+          <button class="btn btn-danger btn-sm" (click)="bulkDeleteEmployees()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
+          <button class="btn btn-secondary btn-sm" (click)="selectedEmployeeIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+        </div>
         <div class="table-responsive">
           <table class="table">
             <thead>
               <tr>
+                <th style="width:40px"><input type="checkbox" [checked]="allEmployeesSelected" (change)="toggleSelectAllEmployees()"></th>
                 <th>{{ 'SALARIES.NAME' | translate }}</th>
                 <th>{{ 'SALARIES.POSITION' | translate }}</th>
                 <th>{{ 'SALARIES.MONTHLY_SALARY' | translate }}</th>
@@ -110,6 +117,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let employee of filteredEmployees; trackBy: trackById">
+                <td><input type="checkbox" [checked]="selectedEmployeeIds.has(employee.id!)" (change)="selectedEmployeeIds.has(employee.id!) ? selectedEmployeeIds.delete(employee.id!) : selectedEmployeeIds.add(employee.id!)"></td>
                 <td>{{ employee.name }}</td>
                 <td>{{ employee.position }}</td>
                 <td class="text-right">${{ employee.monthly_salary | number:'1.0-0' }}</td>
@@ -158,12 +166,19 @@
     <div class="card">
       <div class="card-header">
         <h2 class="card-title">{{ 'SALARIES.PAYMENTS_LIST' | translate }}</h2>
+        <button (click)="loadPayments()" class="btn btn-secondary btn-sm" [disabled]="loading">🔄 {{ 'COMMON.REFRESH' | translate }}</button>
       </div>
       <div class="card-content">
+        <div class="bulk-toolbar" *ngIf="selectedPaymentIds.size > 0">
+          <span>{{ selectedPaymentIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+          <button class="btn btn-danger btn-sm" (click)="bulkDeletePayments()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
+          <button class="btn btn-secondary btn-sm" (click)="selectedPaymentIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+        </div>
         <div class="table-responsive">
           <table class="table">
             <thead>
               <tr>
+                <th style="width:40px"><input type="checkbox" [checked]="allPaymentsSelected" (change)="toggleSelectAllPayments()"></th>
                 <th>{{ 'COMMON.DATE' | translate }}</th>
                 <th>{{ 'SALARIES.EMPLOYEE' | translate }}</th>
                 <th>{{ 'COMMON.AMOUNT' | translate }}</th>
@@ -175,6 +190,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let payment of filteredPayments; trackBy: trackById">
+                <td><input type="checkbox" [checked]="selectedPaymentIds.has(payment.id!)" (change)="selectedPaymentIds.has(payment.id!) ? selectedPaymentIds.delete(payment.id!) : selectedPaymentIds.add(payment.id!)"></td>
                 <td>{{ payment.payment_date | customDate }}</td>
                 <td>{{ getEmployeeName(payment.employee_id) }}</td>
                 <td class="text-right">${{ payment.amount | number:'1.0-0' }}</td>

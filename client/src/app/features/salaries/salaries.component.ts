@@ -33,6 +33,9 @@ export class SalariesComponent implements OnInit {
   // UI State
   loading = false;
   error: string | null = null;
+  selectedEmployeeIds = new Set<string>();
+  selectedPaymentIds = new Set<string>();
+  bulkDeleting = false;
   
   // Summary
   summary = {
@@ -215,13 +218,30 @@ export class SalariesComponent implements OnInit {
     if (!confirm(`Are you sure you want to delete ${employee.name}?`)) return;
     
     this.salariesService.deleteEmployee(employee.id!).subscribe({
-      next: () => {
-        this.loadData();
-      },
-      error: (error) => {
-        this.error = 'Failed to delete employee';
-      }
+      next: () => { this.loadData(); },
+      error: () => { this.error = 'Failed to delete employee'; }
     });
+  }
+
+  bulkDeleteEmployees(): void {
+    if (!this.selectedEmployeeIds.size || !confirm(`Delete ${this.selectedEmployeeIds.size} employees?`)) return;
+    this.bulkDeleting = true;
+    Promise.all(Array.from(this.selectedEmployeeIds).map(id => this.salariesService.deleteEmployee(id).toPromise()))
+      .then(() => { this.selectedEmployeeIds.clear(); this.loadData(); })
+      .catch(() => { this.error = 'Failed to delete some employees'; })
+      .finally(() => { this.bulkDeleting = false; });
+  }
+
+  get allEmployeesSelected(): boolean {
+    return this.filteredEmployees.length > 0 && this.filteredEmployees.every(e => this.selectedEmployeeIds.has(e.id!));
+  }
+
+  toggleSelectAllEmployees(): void {
+    if (this.allEmployeesSelected) {
+      this.filteredEmployees.forEach(e => this.selectedEmployeeIds.delete(e.id!));
+    } else {
+      this.filteredEmployees.forEach(e => this.selectedEmployeeIds.add(e.id!));
+    }
   }
 
   // Payment Methods
@@ -287,13 +307,30 @@ export class SalariesComponent implements OnInit {
     if (!confirm('Are you sure you want to delete this payment?')) return;
     
     this.salariesService.deletePayment(payment.id!).subscribe({
-      next: () => {
-        this.loadData();
-      },
-      error: (error) => {
-        this.error = 'Failed to delete payment';
-      }
+      next: () => { this.loadData(); },
+      error: () => { this.error = 'Failed to delete payment'; }
     });
+  }
+
+  bulkDeletePayments(): void {
+    if (!this.selectedPaymentIds.size || !confirm(`Delete ${this.selectedPaymentIds.size} payments?`)) return;
+    this.bulkDeleting = true;
+    Promise.all(Array.from(this.selectedPaymentIds).map(id => this.salariesService.deletePayment(id).toPromise()))
+      .then(() => { this.selectedPaymentIds.clear(); this.loadData(); })
+      .catch(() => { this.error = 'Failed to delete some payments'; })
+      .finally(() => { this.bulkDeleting = false; });
+  }
+
+  get allPaymentsSelected(): boolean {
+    return this.filteredPayments.length > 0 && this.filteredPayments.every(p => this.selectedPaymentIds.has(p.id!));
+  }
+
+  toggleSelectAllPayments(): void {
+    if (this.allPaymentsSelected) {
+      this.filteredPayments.forEach(p => this.selectedPaymentIds.delete(p.id!));
+    } else {
+      this.filteredPayments.forEach(p => this.selectedPaymentIds.add(p.id!));
+    }
   }
 
   // Filters

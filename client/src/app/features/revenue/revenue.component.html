@@ -161,14 +161,20 @@
       <h2 class="card-title">{{ 'REVENUE.TITLE' | translate }}</h2>
       <div class="card-actions">
         <button (click)="loadRevenue()" class="btn btn-secondary btn-sm" [disabled]="loading">
-          <span *ngIf="loading">⟳</span>
-          <span *ngIf="!loading">🔄</span>
-          {{ 'COMMON.REFRESH' | translate }}
+          <span>🔄</span> {{ 'COMMON.REFRESH' | translate }}
         </button>
       </div>
     </div>
 
     <div class="card-content">
+      <!-- Bulk action toolbar -->
+      <div class="bulk-toolbar" *ngIf="selectedIds.size > 0">
+        <span>{{ selectedIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+        <button class="btn btn-danger btn-sm" (click)="bulkDelete()" [disabled]="bulkDeleting">
+          🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}
+        </button>
+        <button class="btn btn-secondary btn-sm" (click)="selectedIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+      </div>
       <div *ngIf="loading" class="loading-state">
         <div class="loading-spinner">⟳</div>
         <p>{{ 'COMMON.LOADING' | translate }}...</p>
@@ -201,6 +207,9 @@
           <table class="table" *ngIf="group.expanded">
             <thead>
               <tr>
+                <th style="width:40px">
+                  <input type="checkbox" [checked]="allVisibleSelected" (change)="toggleSelectAll()">
+                </th>
                 <th>{{ 'COMMON.DATE' | translate }}</th>
                 <th>{{ 'REVENUE.SOURCE' | translate }}</th>
                 <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
@@ -210,6 +219,7 @@
             </thead>
             <tbody>
               <tr *ngFor="let item of group.items; trackBy: trackById">
+                <td><input type="checkbox" [checked]="isSelected(item.id!)" (change)="toggleSelection(item.id!)"></td>
                 <td>{{ item.date | customDate }}</td>
                 <td>
                   <span class="source-badge" [ngClass]="getSourceClass(item.source)">

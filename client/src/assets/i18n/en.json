@@ -36,7 +36,11 @@
     "EXPAND_ALL": "Expand All",
     "COLLAPSE_ALL": "Collapse All",
     "ALL": "All",
-    "NOTES": "Notes"
+    "NOTES": "Notes",
+    "SELECTED": "selected",
+    "DELETE_SELECTED": "Delete Selected",
+    "CLEAR": "Clear",
+    "SELECT_ALL": "Select All"
   },
   "FILTERS": {
     "VIEW_MODE": "View Mode",

@@ -10,7 +10,7 @@ export interface Category {
   name_en: string;
   name_ar: string;
   parent_category?: string;
-  is_active: string;
+  is_active: boolean;
 }
 
 export interface ApiResponse<T> {

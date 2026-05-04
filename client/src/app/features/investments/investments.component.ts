@@ -20,6 +20,8 @@ export class InvestmentsComponent implements OnInit {
   searchTerm = '';
   loading = false;
   error: string | null = null;
+  selectedIds = new Set<string>();
+  bulkDeleting = false;
 
   // Categories
   investmentTypes: Category[] = [];
@@ -312,6 +314,36 @@ export class InvestmentsComponent implements OnInit {
 
   trackById(index: number, item: InvestmentItem): string {
     return item.id || index.toString();
+  }
+
+  toggleSelection(id: string): void {
+    this.selectedIds.has(id) ? this.selectedIds.delete(id) : this.selectedIds.add(id);
+  }
+
+  isSelected(id: string): boolean {
+    return this.selectedIds.has(id);
+  }
+
+  get allVisibleSelected(): boolean {
+    return this.filteredItems.length > 0 && this.filteredItems.every(i => this.selectedIds.has(i.id!));
+  }
+
+  toggleSelectAll(): void {
+    if (this.allVisibleSelected) {
+      this.filteredItems.forEach(i => this.selectedIds.delete(i.id!));
+    } else {
+      this.filteredItems.forEach(i => this.selectedIds.add(i.id!));
+    }
+  }
+
+  bulkDelete(): void {
+    if (!this.selectedIds.size || !confirm(`Delete ${this.selectedIds.size} selected items?`)) return;
+    this.bulkDeleting = true;
+    const ids = Array.from(this.selectedIds);
+    Promise.all(ids.map(id => this.investmentsService.deleteInvestment(id).toPromise()))
+      .then(() => { this.selectedIds.clear(); this.loadInvestments(); })
+      .catch(() => { this.error = 'Failed to delete some items'; })
+      .finally(() => { this.bulkDeleting = false; });
   }
 
   getTypeClass(type: string): string {

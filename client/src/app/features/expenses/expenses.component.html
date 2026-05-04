@@ -163,6 +163,19 @@
 
   <!-- Data Table -->
   <div class="table-container" *ngIf="!loading">
+    <div class="card-actions" style="display:flex;justify-content:flex-end;margin-bottom:8px">
+      <button (click)="loadExpenses()" class="btn btn-secondary btn-sm" [disabled]="loading">
+        🔄 {{ 'COMMON.REFRESH' | translate }}
+      </button>
+    </div>
+    <!-- Bulk action toolbar -->
+    <div class="bulk-toolbar" *ngIf="selectedIds.size > 0">
+      <span>{{ selectedIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
+      <button class="btn btn-danger btn-sm" (click)="bulkDelete()" [disabled]="bulkDeleting">
+        🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}
+      </button>
+      <button class="btn btn-secondary btn-sm" (click)="selectedIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
+    </div>
     <div class="group-controls" *ngIf="groupByField !== 'none' && groupedData.length > 1">
       <button (click)="expandAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.EXPAND_ALL' | translate }}</button>
       <button (click)="collapseAll()" class="btn btn-secondary btn-sm">{{ 'COMMON.COLLAPSE_ALL' | translate }}</button>
@@ -179,6 +192,7 @@
       <table class="data-table" *ngIf="group.items.length > 0 && group.expanded">
         <thead>
           <tr>
+            <th style="width:40px"><input type="checkbox" [checked]="allVisibleSelected" (change)="toggleSelectAll()"></th>
             <th>{{ 'COMMON.DATE' | translate }}</th>
             <th>{{ 'EXPENSES.CATEGORY' | translate }}</th>
             <th>{{ 'COMMON.AMOUNT' | translate }}</th>
@@ -188,6 +202,7 @@
         </thead>
         <tbody>
           <tr *ngFor="let item of group.items; trackBy: trackById" [class]="getCategoryClass(item.category)">
+            <td><input type="checkbox" [checked]="isSelected(item.id!)" (change)="toggleSelection(item.id!)"></td>
             <td>{{item.date | customDate}}</td>
             <td>{{ 'EXPENSES.CATEGORIES.' + (item.category | normalizeKey) | translate }}</td>
             <td class="amount-cell">${{item.amount | number:'1.2-2'}}</td>
