@@ -253,6 +253,7 @@
     "MONTHLY_SUMMARY": "الملخص الشهري",
     "PROFIT_LOSS": "الأرباح والخسائر",
     "OWNER_DISTRIBUTION": "توزيع المالكين",
+    "SHARES_DISTRIBUTION": "توزيع حصص الربح",
     "LOAD_ERROR": "فشل تحميل البيانات السنوية"
   },
   "FORM": {

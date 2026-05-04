@@ -1,7 +1,12 @@
 <div class="reports-container">
   <div class="header">
     <h1>{{ 'REPORTS.TITLE' | translate }}</h1>
-    <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
+    <div style="display:flex;gap:8px">
+      <button (click)="onViewModeChange()" class="btn btn-secondary" [disabled]="loading">
+        <span>🔄</span> {{ 'COMMON.REFRESH' | translate }}
+      </button>
+      <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
+    </div>
   </div>
 
   <!-- Controls -->

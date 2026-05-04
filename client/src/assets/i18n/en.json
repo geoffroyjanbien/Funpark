@@ -253,6 +253,7 @@
     "MONTHLY_SUMMARY": "Monthly Summary",
     "PROFIT_LOSS": "Profit & Loss",
     "OWNER_DISTRIBUTION": "Owner Distribution",
+    "SHARES_DISTRIBUTION": "Profit Shares Distribution",
     "LOAD_ERROR": "Failed to load yearly data"
   },
   "FORM": {

@@ -1,14 +1,19 @@
 <div class="dashboard">
   <div class="dashboard-header">
-    <h1 class="dashboard-title">{{ 'DASHBOARD.TITLE' | translate }}</h1>
-    <p class="dashboard-subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+    <div>
+      <h1 class="dashboard-title">{{ 'DASHBOARD.TITLE' | translate }}</h1>
+      <p class="dashboard-subtitle">{{ 'DASHBOARD.SUBTITLE' | translate }}</p>
+    </div>
+    <button (click)="loadAll()" class="btn btn-secondary" [disabled]="loading">
+      <span>{{ loading ? '⏳' : '🔄' }}</span> {{ 'COMMON.REFRESH' | translate }}
+    </button>
   </div>
 
   <div class="dashboard-stats">
     <div class="stat-card">
       <div class="stat-icon">💰</div>
       <div class="stat-content">
-        <h3 class="stat-value">${{ summary?.totalRevenue | number:'1.0-0' }}</h3>
+        <h3 class="stat-value"><span *ngIf="!loading">${{ summary?.totalRevenue | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-value"></span></h3>
         <p class="stat-label">{{ 'DASHBOARD.TOTAL_REVENUE' | translate }}</p>
       </div>
     </div>
@@ -16,7 +21,7 @@
     <div class="stat-card">
       <div class="stat-icon">💸</div>
       <div class="stat-content">
-        <h3 class="stat-value">${{ summary?.totalExpenses | number:'1.0-0' }}</h3>
+        <h3 class="stat-value"><span *ngIf="!loading">${{ summary?.totalExpenses | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-value"></span></h3>
         <p class="stat-label">{{ 'DASHBOARD.TOTAL_EXPENSES' | translate }}</p>
       </div>
     </div>
@@ -24,7 +29,7 @@
     <div class="stat-card">
       <div class="stat-icon">👥</div>
       <div class="stat-content">
-        <h3 class="stat-value">${{ summary?.totalSalaries | number:'1.0-0' }}</h3>
+        <h3 class="stat-value"><span *ngIf="!loading">${{ summary?.totalSalaries | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-value"></span></h3>
         <p class="stat-label">{{ 'SALARIES.TOTAL_SALARIES' | translate }}</p>
       </div>
     </div>
@@ -32,7 +37,7 @@
     <div class="stat-card">
       <div class="stat-icon">📈</div>
       <div class="stat-content">
-        <h3 class="stat-value">${{ summary?.totalInvestments | number:'1.0-0' }}</h3>
+        <h3 class="stat-value"><span *ngIf="!loading">${{ summary?.totalInvestments | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-value"></span></h3>
         <p class="stat-label">{{ 'INVESTMENTS.TOTAL_INVESTMENTS' | translate }}</p>
       </div>
     </div>
@@ -40,7 +45,7 @@
     <div class="stat-card">
       <div class="stat-icon">💎</div>
       <div class="stat-content">
-        <h3 class="stat-value">${{ summary?.netProfit | number:'1.0-0' }}</h3>
+        <h3 class="stat-value"><span *ngIf="!loading">${{ summary?.netProfit | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-value"></span></h3>
         <p class="stat-label">{{ 'DASHBOARD.NET_PROFIT' | translate }}</p>
       </div>
     </div>
@@ -56,11 +61,11 @@
         <div class="profit-distribution">
           <div class="profit-item">
             <span class="profit-label">{{ 'DASHBOARD.FIRST_SHARE' | translate }} (70%)</span>
-            <span class="profit-value">${{ summary?.ownerShare | number:'1.0-0' }}</span>
+            <span class="profit-value"><span *ngIf="!loading">${{ summary?.ownerShare | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-share"></span></span>
           </div>
           <div class="profit-item">
             <span class="profit-label">{{ 'DASHBOARD.SECOND_SHARE' | translate }} (30%)</span>
-            <span class="profit-value">${{ summary?.partnerShare | number:'1.0-0' }}</span>
+            <span class="profit-value"><span *ngIf="!loading">${{ summary?.partnerShare | number:'1.0-0' }}</span><span *ngIf="loading" class="skeleton skeleton-share"></span></span>
           </div>
         </div>
       </div>
@@ -108,11 +113,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of recentRevenue">
-                <td>{{ item.date | customDate }}</td>
-                <td>{{ 'REVENUE.SOURCES.' + (item.source | normalizeKey) | translate }}</td>
-                <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
-              </tr>
+              <ng-container *ngIf="!loading">
+                <tr *ngFor="let item of recentRevenue">
+                  <td>{{ item.date | customDate }}</td>
+                  <td>{{ 'REVENUE.SOURCES.' + (item.source | normalizeKey) | translate }}</td>
+                  <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="loading">
+                <tr *ngFor="let i of [1,2,3,4,5]">
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
@@ -135,11 +149,20 @@
               </tr>
             </thead>
             <tbody>
-              <tr *ngFor="let item of recentExpenses">
-                <td>{{ item.date | customDate }}</td>
-                <td>{{ item.category }}</td>
-                <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
-              </tr>
+              <ng-container *ngIf="!loading">
+                <tr *ngFor="let item of recentExpenses">
+                  <td>{{ item.date | customDate }}</td>
+                  <td>{{ item.category }}</td>
+                  <td class="text-right">${{ item.amount | number:'1.0-0' }}</td>
+                </tr>
+              </ng-container>
+              <ng-container *ngIf="loading">
+                <tr *ngFor="let i of [1,2,3,4,5]">
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                  <td><span class="skeleton skeleton-cell"></span></td>
+                </tr>
+              </ng-container>
             </tbody>
           </table>
         </div>
