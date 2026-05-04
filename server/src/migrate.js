@@ -1,3 +1,4 @@
+require('dotenv').config();
 const fs = require('fs');
 const path = require('path');
 const csv = require('csv-parser');
@@ -44,12 +45,27 @@ async function migrateRevenue() {
   console.log('Migrating revenue...');
   const data = await readCSV(path.join(__dirname, '../data/revenue.csv'));
   
-  const revenue = data.map(row => ({
-    date: row.date,
-    source: row.source,
-    amount: parseFloat(row.amount),
-    description: row.description || null
-  }));
+  const revenue = data
+    .filter(row => {
+      // Validate date
+      const date = new Date(row.date);
+      if (isNaN(date.getTime())) {
+        console.log(`⚠ Skipping invalid date: ${row.date}`);
+        return false;
+      }
+      return true;
+    })
+    .map(row => ({
+      date: row.date,
+      source: row.source,
+      amount: parseFloat(row.amount),
+      description: row.description || null
+    }));
+
+  if (revenue.length === 0) {
+    console.log('⚠ No valid revenue entries to migrate');
+    return;
+  }
 
   const { data: inserted, error } = await supabase
     .from('revenue')
@@ -67,12 +83,27 @@ async function migrateExpenses() {
   console.log('Migrating expenses...');
   const data = await readCSV(path.join(__dirname, '../data/expense_entries.csv'));
   
-  const expenses = data.map(row => ({
-    date: row.date,
-    category: row.category,
-    amount: parseFloat(row.amount),
-    description: row.description || null
-  }));
+  const expenses = data
+    .filter(row => {
+      // Validate date
+      const date = new Date(row.date);
+      if (isNaN(date.getTime())) {
+        console.log(`⚠ Skipping invalid date: ${row.date}`);
+        return false;
+      }
+      return true;
+    })
+    .map(row => ({
+      date: row.date,
+      category: row.category,
+      amount: parseFloat(row.amount),
+      description: row.description || null
+    }));
+
+  if (expenses.length === 0) {
+    console.log('⚠ No valid expense entries to migrate');
+    return;
+  }
 
   const { data: inserted, error } = await supabase
     .from('expense_entries')
@@ -102,12 +133,32 @@ async function migrateInvestments() {
     return;
   }
   
-  const investments = data.map(row => ({
-    date: row.date,
-    type: row.type,
-    amount: parseFloat(row.amount),
-    description: row.description || null
-  }));
+  const investments = data
+    .filter(row => {
+      // Validate date and amount
+      const date = new Date(row.date);
+      const amount = parseFloat(row.amount);
+      if (isNaN(date.getTime())) {
+        console.log(`⚠ Skipping invalid date: ${row.date}`);
+        return false;
+      }
+      if (isNaN(amount) || !row.amount) {
+        console.log(`⚠ Skipping entry with invalid amount`);
+        return false;
+      }
+      return true;
+    })
+    .map(row => ({
+      date: row.date,
+      type: row.type,
+      amount: parseFloat(row.amount),
+      description: row.description || null
+    }));
+
+  if (investments.length === 0) {
+    console.log('⚠ No valid investment entries to migrate');
+    return;
+  }
 
   const { data: inserted, error } = await supabase
     .from('investment_entries')
