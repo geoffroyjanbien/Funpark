@@ -18,11 +18,11 @@ export interface SalaryPayment {
   employee_id: string;
   employee_name?: string;
   amount: number;
-  payment_date: string;
+  payment_date: string;  // maps to 'date' in DB
   payment_type: 'full' | 'partial' | 'advance';
-  month: string;
-  year: number;
-  notes?: string;
+  month?: string;        // derived from date
+  year?: number;         // derived from date
+  notes?: string;        // maps to 'description' in DB
 }
 
 export interface ApiResponse<T> {

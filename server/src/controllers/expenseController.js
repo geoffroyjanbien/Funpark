@@ -1,9 +1,9 @@
-const { readCSV, appendToCSV, updateInCSV, deleteFromCSV } = require('../utils/csvHandler');
-const { updateDailySummary } = require('../utils/profitCalculator');
+require('dotenv').config();
+const supabase = require('../config/supabase');
 
 /**
  * Expense Controller
- * Handles CRUD operations for expense entries
+ * Handles CRUD operations for expense entries using Supabase
  */
 
 /**
@@ -11,33 +11,31 @@ const { updateDailySummary } = require('../utils/profitCalculator');
  */
 const getAllExpenses = async (req, res) => {
   try {
-    const { date, category } = req.query;
-    let expenses = await readCSV('EXPENSE_ENTRIES');
-
-    // Apply filters
+    const { date, category, limit } = req.query;
+    
+    let query = supabase
+      .from('expense_entries')
+      .select('*')
+      .order('date', { ascending: false });
+    
     if (date) {
-      expenses = expenses.filter(e => e.date === date);
+      query = query.eq('date', date);
     }
     if (category) {
-      expenses = expenses.filter(e => e.category === category);
+      query = query.eq('category', category);
     }
-
-    // Sort latest first
-    expenses.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Add IDs for frontend (using index as simple ID)
-    const expensesWithIds = expenses.map((expense, index) => ({
-      id: index + 1,
-      date: expense.date,
-      category: expense.main_category || expense.category || '', // Handle both old and new format
-      amount: parseFloat(expense.amount_ll || expense.amount_usd || expense.amount || 0),
-      description: expense.subcategory || expense.description || ''
-    }));
-
+    if (limit) {
+      query = query.limit(parseInt(limit));
+    }
+    
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    
     res.json({
       success: true,
-      data: expensesWithIds,
-      count: expensesWithIds.length
+      data: data,
+      count: data.length
     });
   } catch (error) {
     console.error('Error getting expenses:', error);
@@ -54,22 +52,25 @@ const getAllExpenses = async (req, res) => {
 const getExpenseById = async (req, res) => {
   try {
     const { id } = req.params;
-    const expenses = await readCSV('EXPENSE_ENTRIES');
-
-    const expense = expenses[parseInt(id) - 1];
-    if (!expense) {
+    
+    const { data, error } = await supabase
+      .from('expense_entries')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Expense entry not found'
       });
     }
-
+    
     res.json({
       success: true,
-      data: {
-        id: parseInt(id),
-        ...expense
-      }
+      data: data
     });
   } catch (error) {
     console.error('Error getting expense by ID:', error);
@@ -95,30 +96,22 @@ const createExpense = async (req, res) => {
       });
     }
 
-    // Convert to CSV format matching the schema
-    const expenseData = {
-      date,
-      main_category: category,
-      subcategory: description || '',
-      investment_type: 'Short Term', // Default to Short Term
-      amount_ll: parseFloat(amount).toFixed(2),
-      amount_usd: '0.00'
-    };
-
-    await appendToCSV('EXPENSE_ENTRIES', expenseData);
-
-    // Update daily summary
-    await updateDailySummary(date);
-
-    res.status(201).json({
-      success: true,
-      data: {
-        id: Date.now().toString(),
+    const { data, error } = await supabase
+      .from('expense_entries')
+      .insert([{
         date,
         category,
         amount: parseFloat(amount),
-        description
-      },
+        description: description || null
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
+
+    res.status(201).json({
+      success: true,
+      data: data,
       message: 'Expense entry created successfully'
     });
   } catch (error) {
@@ -138,44 +131,31 @@ const updateExpense = async (req, res) => {
     const { id } = req.params;
     const { date, category, amount, description } = req.body;
 
-    const expenses = await readCSV('EXPENSE_ENTRIES');
-    const expenseIndex = parseInt(id) - 1;
+    const updateData = {};
+    if (date) updateData.date = date;
+    if (category) updateData.category = category;
+    if (amount !== undefined) updateData.amount = parseFloat(amount);
+    if (description !== undefined) updateData.description = description;
 
-    if (expenseIndex < 0 || expenseIndex >= expenses.length) {
+    const { data, error } = await supabase
+      .from('expense_entries')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Expense entry not found'
       });
     }
 
-    const originalDate = expenses[expenseIndex].date;
-
-    const updates = {};
-    if (date) updates.date = date;
-    if (category) updates.main_category = category;
-    if (description !== undefined) updates.subcategory = description;
-    if (amount !== undefined) {
-      updates.amount_ll = parseFloat(amount).toFixed(2);
-      updates.amount_usd = '0.00';
-    }
-
-    await updateInCSV('EXPENSE_ENTRIES', expenses[expenseIndex], updates);
-
-    // Update daily summaries for both original and new dates if date changed
-    await updateDailySummary(originalDate);
-    if (date && date !== originalDate) {
-      await updateDailySummary(date);
-    }
-
     res.json({
       success: true,
-      data: {
-        id: parseInt(id),
-        date: updates.date || expenses[expenseIndex].date,
-        category: updates.main_category || expenses[expenseIndex].main_category,
-        amount: parseFloat(updates.amount_ll || expenses[expenseIndex].amount_ll),
-        description: updates.subcategory || expenses[expenseIndex].subcategory || ''
-      },
+      data: data,
       message: 'Expense entry updated successfully'
     });
   } catch (error) {
@@ -193,21 +173,13 @@ const updateExpense = async (req, res) => {
 const deleteExpense = async (req, res) => {
   try {
     const { id } = req.params;
-    const expenses = await readCSV('EXPENSE_ENTRIES');
-    const expenseIndex = parseInt(id) - 1;
 
-    if (expenseIndex < 0 || expenseIndex >= expenses.length) {
-      return res.status(404).json({
-        success: false,
-        error: 'Expense entry not found'
-      });
-    }
-
-    const date = expenses[expenseIndex].date;
-    await deleteFromCSV('EXPENSE_ENTRIES', expenses[expenseIndex]);
-
-    // Update daily summary
-    await updateDailySummary(date);
+    const { error } = await supabase
+      .from('expense_entries')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
 
     res.json({
       success: true,

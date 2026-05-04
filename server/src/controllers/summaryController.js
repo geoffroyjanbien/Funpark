@@ -1,9 +1,9 @@
-const { readCSV } = require('../utils/csvHandler');
-const { calculateDailyProfit, calculateMonthlySummary, calculateYearlySummary, recalculateAllSummaries } = require('../utils/profitCalculator');
+require('dotenv').config();
+const supabase = require('../config/supabase');
 
 /**
  * Summary Controller
- * Handles summary calculations and reporting
+ * Handles summary calculations and reporting using Supabase
  */
 
 /**
@@ -20,34 +20,51 @@ const getDailySummary = async (req, res) => {
       });
     }
 
-    // Validate date format
-    const dateRegex = /^\d{4}-\d{2}-\d{2}$/;
-    if (!dateRegex.test(date)) {
-      return res.status(400).json({
-        success: false,
-        error: 'Invalid date format. Expected YYYY-MM-DD'
-      });
-    }
+    // Get revenue for the date
+    const { data: revenues, error: revError } = await supabase
+      .from('revenue')
+      .select('*')
+      .eq('date', date);
+    
+    if (revError) throw revError;
 
-    // Get daily summary
-    const summary = await calculateDailyProfit(date);
+    // Get expenses for the date
+    const { data: expenses, error: expError } = await supabase
+      .from('expense_entries')
+      .select('*')
+      .eq('date', date);
+    
+    if (expError) throw expError;
 
-    // Get detailed revenue and expense items for the date
-    const revenues = await readCSV('REVENUE');
-    const expenses = await readCSV('EXPENSE_ENTRIES');
-    const investments = await readCSV('INVESTMENT_ENTRIES');
+    // Get investments for the date
+    const { data: investments, error: invError } = await supabase
+      .from('investment_entries')
+      .select('*')
+      .eq('date', date);
+    
+    if (invError) throw invError;
 
-    const dailyRevenues = revenues.filter(r => r.date === date);
-    const dailyExpenses = expenses.filter(e => e.date === date);
-    const dailyInvestments = investments.filter(i => i.date === date);
+    // Calculate totals
+    const totalRevenue = revenues.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    const totalInvestments = investments.reduce((sum, i) => sum + parseFloat(i.amount), 0);
+    const balance = totalRevenue - totalExpenses - totalInvestments;
+    const owner1Share = balance * 0.7;
+    const owner2Share = balance * 0.3;
 
     res.json({
       success: true,
       data: {
-        ...summary,
-        revenue_items: dailyRevenues,
-        expense_items: dailyExpenses,
-        investment_items: dailyInvestments
+        date,
+        total_revenue_ll: totalRevenue.toFixed(2),
+        total_expenses_ll: totalExpenses.toFixed(2),
+        total_investments_ll: totalInvestments.toFixed(2),
+        balance_ll: balance.toFixed(2),
+        owner1_share_ll: owner1Share.toFixed(2),
+        owner2_share_ll: owner2Share.toFixed(2),
+        revenue_items: revenues,
+        expense_items: expenses,
+        investment_items: investments
       }
     });
   } catch (error) {
@@ -66,8 +83,6 @@ const getMonthlySummary = async (req, res) => {
   try {
     const { month, year } = req.query;
 
-    console.log('getMonthlySummary called with:', { month, year });
-
     if (!month || !year) {
       return res.status(400).json({
         success: false,
@@ -78,8 +93,6 @@ const getMonthlySummary = async (req, res) => {
     const monthNum = parseInt(month);
     const yearNum = parseInt(year);
 
-    console.log('Parsed values:', { monthNum, yearNum });
-
     if (monthNum < 1 || monthNum > 12) {
       return res.status(400).json({
         success: false,
@@ -87,12 +100,58 @@ const getMonthlySummary = async (req, res) => {
       });
     }
 
-    const summary = await calculateMonthlySummary(yearNum, monthNum);
-    console.log('Calculated summary:', summary);
+    // Create date range for the month
+    const startDate = `${yearNum}-${String(monthNum).padStart(2, '0')}-01`;
+    const endDate = new Date(yearNum, monthNum, 0);
+    const endDateStr = `${yearNum}-${String(monthNum).padStart(2, '0')}-${String(endDate.getDate()).padStart(2, '0')}`;
+
+    // Get revenue for the month
+    const { data: revenues, error: revError } = await supabase
+      .from('revenue')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDateStr);
+    
+    if (revError) throw revError;
+
+    // Get expenses for the month
+    const { data: expenses, error: expError } = await supabase
+      .from('expense_entries')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDateStr);
+    
+    if (expError) throw expError;
+
+    // Get investments for the month
+    const { data: investments, error: invError } = await supabase
+      .from('investment_entries')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDateStr);
+    
+    if (invError) throw invError;
+
+    // Calculate totals
+    const totalRevenue = revenues.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    const totalInvestments = investments.reduce((sum, i) => sum + parseFloat(i.amount), 0);
+    const balance = totalRevenue - totalExpenses - totalInvestments;
+    const owner1Share = balance * 0.7;
+    const owner2Share = balance * 0.3;
 
     res.json({
       success: true,
-      data: summary
+      data: {
+        month: monthNum,
+        year: yearNum,
+        total_revenue_ll: totalRevenue.toFixed(2),
+        total_expenses_ll: totalExpenses.toFixed(2),
+        total_investments_ll: totalInvestments.toFixed(2),
+        balance_ll: balance.toFixed(2),
+        owner1_share_ll: owner1Share.toFixed(2),
+        owner2_share_ll: owner2Share.toFixed(2)
+      }
     });
   } catch (error) {
     console.error('Error getting monthly summary:', error);
@@ -118,23 +177,54 @@ const getYearlySummary = async (req, res) => {
     }
 
     const yearNum = parseInt(year);
-    const summary = await calculateYearlySummary(yearNum);
+    const startDate = `${yearNum}-01-01`;
+    const endDate = `${yearNum}-12-31`;
 
-    // Get monthly breakdown for the year
-    const monthlyBreakdown = [];
-    for (let month = 1; month <= 12; month++) {
-      const monthlySummary = await calculateMonthlySummary(yearNum, month);
-      // Only include months with data
-      if (parseFloat(monthlySummary.total_revenue_ll) > 0 || parseFloat(monthlySummary.total_expenses_ll) > 0) {
-        monthlyBreakdown.push(monthlySummary);
-      }
-    }
+    // Get revenue for the year
+    const { data: revenues, error: revError } = await supabase
+      .from('revenue')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDate);
+    
+    if (revError) throw revError;
+
+    // Get expenses for the year
+    const { data: expenses, error: expError } = await supabase
+      .from('expense_entries')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDate);
+    
+    if (expError) throw expError;
+
+    // Get investments for the year
+    const { data: investments, error: invError } = await supabase
+      .from('investment_entries')
+      .select('amount')
+      .gte('date', startDate)
+      .lte('date', endDate);
+    
+    if (invError) throw invError;
+
+    // Calculate totals
+    const totalRevenue = revenues.reduce((sum, r) => sum + parseFloat(r.amount), 0);
+    const totalExpenses = expenses.reduce((sum, e) => sum + parseFloat(e.amount), 0);
+    const totalInvestments = investments.reduce((sum, i) => sum + parseFloat(i.amount), 0);
+    const balance = totalRevenue - totalExpenses - totalInvestments;
+    const owner1Share = balance * 0.7;
+    const owner2Share = balance * 0.3;
 
     res.json({
       success: true,
       data: {
-        ...summary,
-        months: monthlyBreakdown
+        year: yearNum,
+        total_revenue_ll: totalRevenue.toFixed(2),
+        total_expenses_ll: totalExpenses.toFixed(2),
+        total_investments_ll: totalInvestments.toFixed(2),
+        balance_ll: balance.toFixed(2),
+        owner1_share_ll: owner1Share.toFixed(2),
+        owner2_share_ll: owner2Share.toFixed(2)
       }
     });
   } catch (error) {
@@ -147,15 +237,13 @@ const getYearlySummary = async (req, res) => {
 };
 
 /**
- * Recalculate all summaries (useful after bulk data changes)
+ * Recalculate all summaries (not needed with Supabase - calculations are done on-the-fly)
  */
 const recalculateAllSummariesController = async (req, res) => {
   try {
-    await recalculateAllSummaries();
-
     res.json({
       success: true,
-      message: 'All summaries recalculated successfully'
+      message: 'Summaries are calculated on-the-fly with Supabase'
     });
   } catch (error) {
     console.error('Error recalculating summaries:', error);
@@ -171,12 +259,17 @@ const recalculateAllSummariesController = async (req, res) => {
  */
 const getSummaryViews = async (req, res) => {
   try {
-    const summaryViews = await readCSV('SUMMARY_VIEWS');
+    const { data, error } = await supabase
+      .from('daily_summary')
+      .select('*')
+      .order('date', { ascending: false });
+    
+    if (error) throw error;
 
     res.json({
       success: true,
-      data: summaryViews,
-      count: summaryViews.length
+      data: data,
+      count: data.length
     });
   } catch (error) {
     console.error('Error getting summary views:', error);

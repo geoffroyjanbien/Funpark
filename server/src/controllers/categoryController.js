@@ -1,8 +1,9 @@
-const { readCSV, writeCSV, appendToCSV, updateInCSV, deleteFromCSV } = require('../utils/csvHandler');
+require('dotenv').config();
+const supabase = require('../config/supabase');
 
 /**
  * Categories Controller
- * Handles category management for revenue, expenses, and investments
+ * Handles category management for revenue, expenses, and investments using Supabase
  */
 
 /**
@@ -10,12 +11,18 @@ const { readCSV, writeCSV, appendToCSV, updateInCSV, deleteFromCSV } = require('
  */
 const getAllCategories = async (req, res) => {
   try {
-    const categories = await readCSV('CATEGORIES');
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .order('type', { ascending: true })
+      .order('name_en', { ascending: true });
+    
+    if (error) throw error;
     
     res.json({
       success: true,
-      data: categories,
-      count: categories.length
+      data: data,
+      count: data.length
     });
   } catch (error) {
     console.error('Error getting categories:', error);
@@ -40,13 +47,19 @@ const getCategoriesByType = async (req, res) => {
       });
     }
 
-    const categories = await readCSV('CATEGORIES');
-    const filtered = categories.filter(cat => cat.type === type && cat.is_active === 'true');
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('type', type)
+      .eq('is_active', true)
+      .order('name_en', { ascending: true });
+    
+    if (error) throw error;
     
     res.json({
       success: true,
-      data: filtered,
-      count: filtered.length
+      data: data,
+      count: data.length
     });
   } catch (error) {
     console.error('Error getting categories by type:', error);
@@ -63,10 +76,16 @@ const getCategoriesByType = async (req, res) => {
 const getCategoryById = async (req, res) => {
   try {
     const { id } = req.params;
-    const categories = await readCSV('CATEGORIES');
-    const category = categories.find(cat => cat.id === id);
     
-    if (!category) {
+    const { data, error } = await supabase
+      .from('categories')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Category not found'
@@ -75,7 +94,7 @@ const getCategoryById = async (req, res) => {
     
     res.json({
       success: true,
-      data: category
+      data: data
     });
   } catch (error) {
     console.error('Error getting category:', error);
@@ -108,24 +127,23 @@ const createCategory = async (req, res) => {
       });
     }
 
-    // Get all categories to generate new ID
-    const categories = await readCSV('CATEGORIES');
-    const maxId = categories.reduce((max, cat) => Math.max(max, parseInt(cat.id) || 0), 0);
+    const { data, error } = await supabase
+      .from('categories')
+      .insert([{
+        type,
+        name_en,
+        name_ar,
+        parent_category: parent_category || null,
+        is_active: true
+      }])
+      .select()
+      .single();
     
-    const newCategory = {
-      id: (maxId + 1).toString(),
-      type,
-      name_en,
-      name_ar,
-      parent_category: parent_category || '',
-      is_active: 'true'
-    };
-
-    await appendToCSV('CATEGORIES', newCategory);
+    if (error) throw error;
 
     res.status(201).json({
       success: true,
-      data: newCategory,
+      data: data,
       message: 'Category created successfully'
     });
   } catch (error) {
@@ -145,28 +163,32 @@ const updateCategory = async (req, res) => {
     const { id } = req.params;
     const { type, name_en, name_ar, parent_category, is_active } = req.body;
     
-    // Validation
-    if (!type || !name_en || !name_ar) {
-      return res.status(400).json({
+    const updateData = {};
+    if (type) updateData.type = type;
+    if (name_en) updateData.name_en = name_en;
+    if (name_ar) updateData.name_ar = name_ar;
+    if (parent_category !== undefined) updateData.parent_category = parent_category || null;
+    if (is_active !== undefined) updateData.is_active = is_active;
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
+      return res.status(404).json({
         success: false,
-        error: 'Type, English name, and Arabic name are required'
+        error: 'Category not found'
       });
     }
 
-    const updatedCategory = {
-      id,
-      type,
-      name_en,
-      name_ar,
-      parent_category: parent_category || '',
-      is_active: is_active !== undefined ? is_active.toString() : 'true'
-    };
-
-    await updateInCSV('CATEGORIES', { id }, updatedCategory);
-
     res.json({
       success: true,
-      data: updatedCategory,
+      data: data,
       message: 'Category updated successfully'
     });
   } catch (error) {
@@ -184,24 +206,22 @@ const updateCategory = async (req, res) => {
 const deleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const { data, error } = await supabase
+      .from('categories')
+      .update({ is_active: false })
+      .eq('id', id)
+      .select()
+      .single();
     
-    const categories = await readCSV('CATEGORIES');
-    const category = categories.find(cat => cat.id === id);
+    if (error) throw error;
     
-    if (!category) {
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Category not found'
       });
     }
-
-    // Soft delete
-    const updatedCategory = {
-      ...category,
-      is_active: 'false'
-    };
-
-    await updateInCSV('CATEGORIES', { id }, updatedCategory);
 
     res.json({
       success: true,
@@ -222,8 +242,13 @@ const deleteCategory = async (req, res) => {
 const permanentDeleteCategory = async (req, res) => {
   try {
     const { id } = req.params;
+
+    const { error } = await supabase
+      .from('categories')
+      .delete()
+      .eq('id', id);
     
-    await deleteFromCSV('CATEGORIES', { id });
+    if (error) throw error;
 
     res.json({
       success: true,

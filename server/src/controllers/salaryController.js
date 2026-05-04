@@ -1,369 +1,238 @@
-const fs = require('fs').promises;
-const path = require('path');
-const { v4: uuidv4 } = require('uuid');
-
-const EMPLOYEES_FILE = path.join(__dirname, '../../data/employees.csv');
-const PAYMENTS_FILE = path.join(__dirname, '../../data/salary_payments.csv');
-
-// Helper function to read CSV
-async function readCSV(filePath) {
-  try {
-    const data = await fs.readFile(filePath, 'utf8');
-    const lines = data.trim().split('\n');
-    if (lines.length <= 1) return [];
-    
-    const headers = lines[0].split(',');
-    return lines.slice(1).map(line => {
-      const values = line.split(',');
-      const obj = {};
-      headers.forEach((header, index) => {
-        obj[header.trim()] = values[index]?.trim() || '';
-      });
-      return obj;
-    });
-  } catch (error) {
-    if (error.code === 'ENOENT') {
-      return [];
-    }
-    throw error;
-  }
-}
-
-// Helper function to write CSV
-async function writeCSV(filePath, data, headers) {
-  const csvContent = [
-    headers.join(','),
-    ...data.map(row => headers.map(h => row[h] || '').join(','))
-  ].join('\n');
-  
-  await fs.writeFile(filePath, csvContent, 'utf8');
-}
+const supabase = require('../config/supabase');
 
 // Employee Controllers
 exports.getAllEmployees = async (req, res) => {
   try {
-    const employees = await readCSV(EMPLOYEES_FILE);
-    res.json({
-      success: true,
-      data: employees,
-      count: employees.length
-    });
+    const { data, error } = await supabase
+      .from('employees')
+      .select('*')
+      .order('name', { ascending: true });
+
+    if (error) throw error;
+    res.json({ success: true, data, count: data.length });
   } catch (error) {
     console.error('Error reading employees:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to read employees',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to read employees', error: error.message });
   }
 };
 
 exports.getEmployeeById = async (req, res) => {
   try {
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const employee = employees.find(e => e.id === req.params.id);
-    
-    if (!employee) {
-      return res.status(404).json({
-        success: false,
-        message: 'Employee not found'
-      });
-    }
-    
-    res.json({
-      success: true,
-      data: employee
-    });
+    const { data, error } = await supabase
+      .from('employees')
+      .select('*')
+      .eq('id', req.params.id)
+      .single();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    res.json({ success: true, data });
   } catch (error) {
     console.error('Error reading employee:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to read employee',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to read employee', error: error.message });
   }
 };
 
 exports.createEmployee = async (req, res) => {
   try {
     const { name, position, monthly_salary, hire_date, status } = req.body;
-    
+
     if (!name || !position || !monthly_salary || !hire_date) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields'
-      });
+      return res.status(400).json({ success: false, message: 'Missing required fields' });
     }
-    
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const newEmployee = {
-      id: uuidv4(),
-      name,
-      position,
-      monthly_salary: parseFloat(monthly_salary),
-      hire_date,
-      status: status || 'active'
-    };
-    
-    employees.push(newEmployee);
-    await writeCSV(EMPLOYEES_FILE, employees, ['id', 'name', 'position', 'monthly_salary', 'hire_date', 'status']);
-    
-    res.status(201).json({
-      success: true,
-      data: newEmployee,
-      message: 'Employee created successfully'
-    });
+
+    const { data, error } = await supabase
+      .from('employees')
+      .insert([{ name, position, monthly_salary: parseFloat(monthly_salary), hire_date, status: status || 'active' }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, data, message: 'Employee created successfully' });
   } catch (error) {
     console.error('Error creating employee:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create employee',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to create employee', error: error.message });
   }
 };
 
 exports.updateEmployee = async (req, res) => {
   try {
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const index = employees.findIndex(e => e.id === req.params.id);
-    
-    if (index === -1) {
-      return res.status(404).json({
-        success: false,
-        message: 'Employee not found'
-      });
-    }
-    
-    employees[index] = { ...employees[index], ...req.body };
-    await writeCSV(EMPLOYEES_FILE, employees, ['id', 'name', 'position', 'monthly_salary', 'hire_date', 'status']);
-    
-    res.json({
-      success: true,
-      data: employees[index],
-      message: 'Employee updated successfully'
-    });
+    const { name, position, monthly_salary, hire_date, status } = req.body;
+    const updateData = {};
+    if (name) updateData.name = name;
+    if (position) updateData.position = position;
+    if (monthly_salary !== undefined) updateData.monthly_salary = parseFloat(monthly_salary);
+    if (hire_date) updateData.hire_date = hire_date;
+    if (status) updateData.status = status;
+
+    const { data, error } = await supabase
+      .from('employees')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ success: false, message: 'Employee not found' });
+
+    res.json({ success: true, data, message: 'Employee updated successfully' });
   } catch (error) {
     console.error('Error updating employee:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update employee',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to update employee', error: error.message });
   }
 };
 
 exports.deleteEmployee = async (req, res) => {
   try {
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const filtered = employees.filter(e => e.id !== req.params.id);
-    
-    if (filtered.length === employees.length) {
-      return res.status(404).json({
-        success: false,
-        message: 'Employee not found'
-      });
-    }
-    
-    await writeCSV(EMPLOYEES_FILE, filtered, ['id', 'name', 'position', 'monthly_salary', 'hire_date', 'status']);
-    
-    res.json({
-      success: true,
-      message: 'Employee deleted successfully'
-    });
+    const { error } = await supabase
+      .from('employees')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Employee deleted successfully' });
   } catch (error) {
     console.error('Error deleting employee:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete employee',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to delete employee', error: error.message });
   }
 };
 
 // Payment Controllers
+// Maps DB field 'date' <-> frontend field 'payment_date' for compatibility
+const mapPayment = (p) => ({
+  ...p,
+  payment_date: p.date,
+  month: p.month || new Date(p.date).toLocaleString('en-US', { month: 'long' }),
+  year: p.year || new Date(p.date).getFullYear()
+});
+
 exports.getAllPayments = async (req, res) => {
   try {
-    const payments = await readCSV(PAYMENTS_FILE);
-    const employees = await readCSV(EMPLOYEES_FILE);
-    
-    const paymentsWithNames = payments
-      .sort((a, b) => new Date(b.payment_date) - new Date(a.payment_date))
-      .map(payment => ({
-      ...payment,
-      amount: parseFloat(payment.amount),
-      year: parseInt(payment.year),
-      employee_name: employees.find(e => e.id === payment.employee_id)?.name || 'Unknown'
+    const { data, error } = await supabase
+      .from('salary_payments')
+      .select('*, employees(name)')
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+
+    const payments = data.map(p => ({
+      ...mapPayment(p),
+      employee_name: p.employees?.name || 'Unknown',
+      employees: undefined
     }));
-    
-    console.log('Returning payments:', paymentsWithNames);
-    
-    res.json({
-      success: true,
-      data: paymentsWithNames,
-      count: paymentsWithNames.length
-    });
+
+    res.json({ success: true, data: payments, count: payments.length });
   } catch (error) {
     console.error('Error reading payments:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to read payments',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to read payments', error: error.message });
   }
 };
 
 exports.getPaymentsByEmployee = async (req, res) => {
   try {
-    const payments = await readCSV(PAYMENTS_FILE);
-    const filtered = payments.filter(p => p.employee_id === req.params.employeeId);
-    
-    res.json({
-      success: true,
-      data: filtered,
-      count: filtered.length
-    });
+    const { data, error } = await supabase
+      .from('salary_payments')
+      .select('*')
+      .eq('employee_id', req.params.employeeId)
+      .order('date', { ascending: false });
+
+    if (error) throw error;
+    res.json({ success: true, data: data.map(mapPayment), count: data.length });
   } catch (error) {
     console.error('Error reading payments:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to read payments',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to read payments', error: error.message });
   }
 };
 
 exports.getPaymentsByMonth = async (req, res) => {
   try {
     const { year, month } = req.query;
-    const payments = await readCSV(PAYMENTS_FILE);
-    
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-    const monthName = monthNames[parseInt(month) - 1];
-    
-    const filtered = payments.filter(p => 
-      p.year === year && p.month === monthName
-    );
-    
-    res.json({
-      success: true,
-      data: filtered,
-      count: filtered.length
-    });
+    const monthNum = String(parseInt(month)).padStart(2, '0');
+    const startDate = `${year}-${monthNum}-01`;
+    const endDate = new Date(parseInt(year), parseInt(month), 0);
+    const endDateStr = `${year}-${monthNum}-${String(endDate.getDate()).padStart(2, '0')}`;
+
+    const { data, error } = await supabase
+      .from('salary_payments')
+      .select('*')
+      .gte('date', startDate)
+      .lte('date', endDateStr);
+
+    if (error) throw error;
+    res.json({ success: true, data: data.map(mapPayment), count: data.length });
   } catch (error) {
     console.error('Error reading payments:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to read payments',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to read payments', error: error.message });
   }
 };
 
 exports.createPayment = async (req, res) => {
   try {
-    const { employee_id, amount, payment_date, payment_type, month, year, notes } = req.body;
-    
-    console.log('Creating payment with data:', req.body);
-    
-    if (!employee_id || !amount || !payment_date || !payment_type || !month || !year) {
-      return res.status(400).json({
-        success: false,
-        message: 'Missing required fields',
-        received: req.body
-      });
+    const { employee_id, amount, payment_date, payment_type, notes } = req.body;
+
+    if (!employee_id || !amount || !payment_date || !payment_type) {
+      return res.status(400).json({ success: false, message: 'Missing required fields', received: req.body });
     }
-    
-    const payments = await readCSV(PAYMENTS_FILE);
-    const newPayment = {
-      id: uuidv4(),
-      employee_id,
-      amount: parseFloat(amount),
-      payment_date,
-      payment_type,
-      month,
-      year: parseInt(year),
-      notes: notes || ''
-    };
-    
-    console.log('New payment object:', newPayment);
-    
-    payments.push(newPayment);
-    await writeCSV(PAYMENTS_FILE, payments, ['id', 'employee_id', 'amount', 'payment_date', 'payment_type', 'month', 'year', 'notes']);
-    
-    console.log('Payment saved successfully');
-    
-    res.status(201).json({
-      success: true,
-      data: newPayment,
-      message: 'Payment created successfully'
-    });
+
+    const { data, error } = await supabase
+      .from('salary_payments')
+      .insert([{
+        employee_id,
+        amount: parseFloat(amount),
+        date: payment_date,
+        payment_type,
+        description: notes || null
+      }])
+      .select()
+      .single();
+
+    if (error) throw error;
+    res.status(201).json({ success: true, data: mapPayment(data), message: 'Payment created successfully' });
   } catch (error) {
     console.error('Error creating payment:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to create payment',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to create payment', error: error.message });
   }
 };
 
 exports.updatePayment = async (req, res) => {
   try {
-    const payments = await readCSV(PAYMENTS_FILE);
-    const index = payments.findIndex(p => p.id === req.params.id);
-    
-    if (index === -1) {
-      return res.status(404).json({
-        success: false,
-        message: 'Payment not found'
-      });
-    }
-    
-    payments[index] = { ...payments[index], ...req.body };
-    await writeCSV(PAYMENTS_FILE, payments, ['id', 'employee_id', 'amount', 'payment_date', 'payment_type', 'month', 'year', 'notes']);
-    
-    res.json({
-      success: true,
-      data: payments[index],
-      message: 'Payment updated successfully'
-    });
+    const { amount, payment_date, payment_type, notes } = req.body;
+    const updateData = {};
+    if (amount !== undefined) updateData.amount = parseFloat(amount);
+    if (payment_date) updateData.date = payment_date;
+    if (payment_type) updateData.payment_type = payment_type;
+    if (notes !== undefined) updateData.description = notes;
+
+    const { data, error } = await supabase
+      .from('salary_payments')
+      .update(updateData)
+      .eq('id', req.params.id)
+      .select()
+      .single();
+
+    if (error) throw error;
+    if (!data) return res.status(404).json({ success: false, message: 'Payment not found' });
+
+    res.json({ success: true, data: mapPayment(data), message: 'Payment updated successfully' });
   } catch (error) {
     console.error('Error updating payment:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to update payment',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to update payment', error: error.message });
   }
 };
 
 exports.deletePayment = async (req, res) => {
   try {
-    const payments = await readCSV(PAYMENTS_FILE);
-    const filtered = payments.filter(p => p.id !== req.params.id);
-    
-    if (filtered.length === payments.length) {
-      return res.status(404).json({
-        success: false,
-        message: 'Payment not found'
-      });
-    }
-    
-    await writeCSV(PAYMENTS_FILE, filtered, ['id', 'employee_id', 'amount', 'payment_date', 'payment_type', 'month', 'year', 'notes']);
-    
-    res.json({
-      success: true,
-      message: 'Payment deleted successfully'
-    });
+    const { error } = await supabase
+      .from('salary_payments')
+      .delete()
+      .eq('id', req.params.id);
+
+    if (error) throw error;
+    res.json({ success: true, message: 'Payment deleted successfully' });
   } catch (error) {
     console.error('Error deleting payment:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to delete payment',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to delete payment', error: error.message });
   }
 };
 
@@ -371,24 +240,29 @@ exports.deletePayment = async (req, res) => {
 exports.getSalarySummary = async (req, res) => {
   try {
     const { year, month } = req.query;
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const payments = await readCSV(PAYMENTS_FILE);
-    
+
+    const { data: employees, error: empError } = await supabase
+      .from('employees')
+      .select('monthly_salary, status');
+    if (empError) throw empError;
+
     const activeEmployees = employees.filter(e => e.status === 'active');
     const totalMonthlySalaries = activeEmployees.reduce((sum, e) => sum + parseFloat(e.monthly_salary || 0), 0);
-    
-    let filteredPayments = payments;
+
+    let paymentsQuery = supabase.from('salary_payments').select('amount');
     if (year && month) {
-      const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                         'July', 'August', 'September', 'October', 'November', 'December'];
-      const monthName = monthNames[parseInt(month) - 1];
-      filteredPayments = payments.filter(p => 
-        p.year === year && p.month === monthName
-      );
+      const monthNum = String(parseInt(month)).padStart(2, '0');
+      const startDate = `${year}-${monthNum}-01`;
+      const endDate = new Date(parseInt(year), parseInt(month), 0);
+      const endDateStr = `${year}-${monthNum}-${String(endDate.getDate()).padStart(2, '0')}`;
+      paymentsQuery = paymentsQuery.gte('date', startDate).lte('date', endDateStr);
     }
-    
-    const totalPaidThisMonth = filteredPayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
-    
+
+    const { data: payments, error: payError } = await paymentsQuery;
+    if (payError) throw payError;
+
+    const totalPaidThisMonth = payments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
+
     res.json({
       success: true,
       data: {
@@ -401,47 +275,40 @@ exports.getSalarySummary = async (req, res) => {
     });
   } catch (error) {
     console.error('Error calculating summary:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to calculate summary',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to calculate summary', error: error.message });
   }
 };
 
-// Detailed employee payment summary
 exports.getEmployeePaymentSummary = async (req, res) => {
   try {
     const { year, month } = req.query;
-    
+
     if (!year || !month) {
-      return res.status(400).json({
-        success: false,
-        message: 'Year and month are required'
-      });
+      return res.status(400).json({ success: false, message: 'Year and month are required' });
     }
-    
-    const employees = await readCSV(EMPLOYEES_FILE);
-    const payments = await readCSV(PAYMENTS_FILE);
-    
-    const monthNames = ['January', 'February', 'March', 'April', 'May', 'June',
-                       'July', 'August', 'September', 'October', 'November', 'December'];
-    const monthName = monthNames[parseInt(month) - 1];
-    
-    // Calculate summary for each employee
+
+    const monthNum = String(parseInt(month)).padStart(2, '0');
+    const startDate = `${year}-${monthNum}-01`;
+    const endDate = new Date(parseInt(year), parseInt(month), 0);
+    const endDateStr = `${year}-${monthNum}-${String(endDate.getDate()).padStart(2, '0')}`;
+    const monthName = new Date(parseInt(year), parseInt(month) - 1).toLocaleString('en-US', { month: 'long' });
+
+    const { data: employees, error: empError } = await supabase.from('employees').select('*');
+    if (empError) throw empError;
+
+    const { data: payments, error: payError } = await supabase
+      .from('salary_payments')
+      .select('*')
+      .gte('date', startDate)
+      .lte('date', endDateStr);
+    if (payError) throw payError;
+
     const employeeSummaries = employees.map(employee => {
-      const employeePayments = payments.filter(p => 
-        p.employee_id === employee.id && 
-        p.year === year && 
-        p.month === monthName
-      );
-      
+      const employeePayments = payments.filter(p => p.employee_id === employee.id);
       const totalPaid = employeePayments.reduce((sum, p) => sum + parseFloat(p.amount || 0), 0);
       const monthlySalary = parseFloat(employee.monthly_salary || 0);
       const remaining = monthlySalary - totalPaid;
-      const isPaid = remaining <= 0;
-      const paymentPercentage = monthlySalary > 0 ? (totalPaid / monthlySalary * 100).toFixed(2) : 0;
-      
+
       return {
         employee_id: employee.id,
         employee_name: employee.name,
@@ -449,21 +316,20 @@ exports.getEmployeePaymentSummary = async (req, res) => {
         status: employee.status,
         monthly_salary: monthlySalary,
         total_paid: totalPaid,
-        remaining: remaining,
-        is_fully_paid: isPaid,
-        payment_percentage: parseFloat(paymentPercentage),
+        remaining,
+        is_fully_paid: remaining <= 0,
+        payment_percentage: monthlySalary > 0 ? parseFloat((totalPaid / monthlySalary * 100).toFixed(2)) : 0,
         payment_count: employeePayments.length,
         payments: employeePayments.map(p => ({
           id: p.id,
           amount: parseFloat(p.amount),
-          payment_date: p.payment_date,
+          payment_date: p.date,
           payment_type: p.payment_type,
-          notes: p.notes
+          notes: p.description
         }))
       };
     });
-    
-    // Calculate totals
+
     const totals = {
       total_employees: employees.length,
       active_employees: employees.filter(e => e.status === 'active').length,
@@ -472,23 +338,13 @@ exports.getEmployeePaymentSummary = async (req, res) => {
       total_remaining: employeeSummaries.reduce((sum, e) => sum + Math.max(0, e.remaining), 0),
       fully_paid_count: employeeSummaries.filter(e => e.is_fully_paid).length
     };
-    
+
     res.json({
       success: true,
-      data: {
-        year: parseInt(year),
-        month: parseInt(month),
-        month_name: monthName,
-        employees: employeeSummaries,
-        totals
-      }
+      data: { year: parseInt(year), month: parseInt(month), month_name: monthName, employees: employeeSummaries, totals }
     });
   } catch (error) {
     console.error('Error calculating employee payment summary:', error);
-    res.status(500).json({
-      success: false,
-      message: 'Failed to calculate employee payment summary',
-      error: error.message
-    });
+    res.status(500).json({ success: false, message: 'Failed to calculate employee payment summary', error: error.message });
   }
 };

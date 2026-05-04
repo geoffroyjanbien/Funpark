@@ -1,9 +1,9 @@
-const { readCSV, appendToCSV, updateInCSV, deleteFromCSV } = require('../utils/csvHandler');
-const { updateDailySummary } = require('../utils/profitCalculator');
+require('dotenv').config();
+const supabase = require('../config/supabase');
 
 /**
  * Revenue Controller
- * Handles CRUD operations for revenue entries
+ * Handles CRUD operations for revenue entries using Supabase
  */
 
 /**
@@ -12,37 +12,30 @@ const { updateDailySummary } = require('../utils/profitCalculator');
 const getAllRevenue = async (req, res) => {
   try {
     const { date, category, limit } = req.query;
-    let revenues = await readCSV('REVENUE');
-
-    // Apply filters
+    
+    let query = supabase
+      .from('revenue')
+      .select('*')
+      .order('date', { ascending: false });
+    
     if (date) {
-      revenues = revenues.filter(r => r.date === date);
+      query = query.eq('date', date);
     }
     if (category) {
-      revenues = revenues.filter(r => (r.source || r.category) === category);
+      query = query.eq('source', category);
     }
-
-    // Sort latest first
-    revenues.sort((a, b) => new Date(b.date) - new Date(a.date));
-
-    // Apply limit if specified
     if (limit) {
-      revenues = revenues.slice(0, parseInt(limit));
+      query = query.limit(parseInt(limit));
     }
-
-    // Map to frontend format
-    const revenuesWithIds = revenues.map((revenue) => ({
-      id: revenue.id || Date.now().toString(),
-      date: revenue.date,
-      source: revenue.source || revenue.category,
-      amount: parseFloat(revenue.amount || revenue.amount_ll || revenue.amount_usd || 0),
-      description: revenue.description || ''
-    }));
-
+    
+    const { data, error } = await query;
+    
+    if (error) throw error;
+    
     res.json({
       success: true,
-      data: revenuesWithIds,
-      count: revenuesWithIds.length
+      data: data,
+      count: data.length
     });
   } catch (error) {
     console.error('Error getting revenue:', error);
@@ -59,22 +52,25 @@ const getAllRevenue = async (req, res) => {
 const getRevenueById = async (req, res) => {
   try {
     const { id } = req.params;
-    const revenues = await readCSV('REVENUE');
-
-    const revenue = revenues[parseInt(id) - 1];
-    if (!revenue) {
+    
+    const { data, error } = await supabase
+      .from('revenue')
+      .select('*')
+      .eq('id', id)
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Revenue entry not found'
       });
     }
-
+    
     res.json({
       success: true,
-      data: {
-        id: parseInt(id),
-        ...revenue
-      }
+      data: data
     });
   } catch (error) {
     console.error('Error getting revenue by ID:', error);
@@ -100,28 +96,22 @@ const createRevenue = async (req, res) => {
       });
     }
 
-    // Get current max ID
-    const revenues = await readCSV('REVENUE');
-    const maxId = revenues.reduce((max, r) => Math.max(max, parseInt(r.id) || 0), 0);
-    const newId = maxId + 1;
-
-    // Create revenue data
-    const revenueData = {
-      id: newId,
-      date,
-      source,
-      amount: parseFloat(amount),
-      description: description || ''
-    };
-
-    await appendToCSV('REVENUE', revenueData);
-
-    // Update daily summary
-    await updateDailySummary(date);
+    const { data, error } = await supabase
+      .from('revenue')
+      .insert([{
+        date,
+        source,
+        amount: parseFloat(amount),
+        description: description || null
+      }])
+      .select()
+      .single();
+    
+    if (error) throw error;
 
     res.status(201).json({
       success: true,
-      data: revenueData,
+      data: data,
       message: 'Revenue entry created successfully'
     });
   } catch (error) {
@@ -141,43 +131,31 @@ const updateRevenue = async (req, res) => {
     const { id } = req.params;
     const { date, source, amount, description } = req.body;
 
-    const revenues = await readCSV('REVENUE');
-    const revenueIndex = parseInt(id) - 1;
+    const updateData = {};
+    if (date) updateData.date = date;
+    if (source) updateData.source = source;
+    if (amount !== undefined) updateData.amount = parseFloat(amount);
+    if (description !== undefined) updateData.description = description;
 
-    if (revenueIndex < 0 || revenueIndex >= revenues.length) {
+    const { data, error } = await supabase
+      .from('revenue')
+      .update(updateData)
+      .eq('id', id)
+      .select()
+      .single();
+    
+    if (error) throw error;
+    
+    if (!data) {
       return res.status(404).json({
         success: false,
         error: 'Revenue entry not found'
       });
     }
 
-    const originalDate = revenues[revenueIndex].date;
-
-    const updates = {};
-    if (date) updates.date = date;
-    if (source) updates.category = source; // Map source to category
-    if (amount !== undefined) {
-      updates.amount_ll = parseFloat(amount).toFixed(2);
-      updates.amount_usd = parseFloat(amount).toFixed(2);
-    }
-
-    await updateInCSV('REVENUE', revenues[revenueIndex], updates);
-
-    // Update daily summaries for both original and new dates if date changed
-    await updateDailySummary(originalDate);
-    if (date && date !== originalDate) {
-      await updateDailySummary(date);
-    }
-
     res.json({
       success: true,
-      data: {
-        id: parseInt(id),
-        date: updates.date || revenues[revenueIndex].date,
-        source: updates.category || revenues[revenueIndex].category,
-        amount: parseFloat(updates.amount_ll || revenues[revenueIndex].amount_ll),
-        description: description || ''
-      },
+      data: data,
       message: 'Revenue entry updated successfully'
     });
   } catch (error) {
@@ -195,21 +173,13 @@ const updateRevenue = async (req, res) => {
 const deleteRevenue = async (req, res) => {
   try {
     const { id } = req.params;
-    const revenues = await readCSV('REVENUE');
-    const revenueIndex = parseInt(id) - 1;
 
-    if (revenueIndex < 0 || revenueIndex >= revenues.length) {
-      return res.status(404).json({
-        success: false,
-        error: 'Revenue entry not found'
-      });
-    }
-
-    const date = revenues[revenueIndex].date;
-    await deleteFromCSV('REVENUE', revenues[revenueIndex]);
-
-    // Update daily summary
-    await updateDailySummary(date);
+    const { error } = await supabase
+      .from('revenue')
+      .delete()
+      .eq('id', id);
+    
+    if (error) throw error;
 
     res.json({
       success: true,
