@@ -1,4 +1,0 @@
-id,employee_id,amount,payment_date,payment_type,month,year,notes
-43a4c73e-2094-4147-a0f7-cc158b5ab64a,6b5a74f8-c86b-440d-a1d6-6bea4fdf1388,100,2026-04-26,partial,April,2026,
-a9c2ec8a-df66-41a6-823b-db34ac233e76,6b5a74f8-c86b-440d-a1d6-6bea4fdf1388,56,2026-04-27,partial,April,2026,
-20eac252-afb4-408f-91a9-8b3d1f567ef2,6b5a74f8-c86b-440d-a1d6-6bea4fdf1388,5,2026-04-27,partial,April,2026,
