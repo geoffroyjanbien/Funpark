@@ -191,7 +191,7 @@
           <button class="btn btn-secondary" (click)="loadCategories()" [disabled]="loading">
             🔄 {{ 'COMMON.REFRESH' | translate }}
           </button>
-          <button class="btn btn-primary" (click)="openAddForm()">
+          <button *ngIf="authService.isAdmin()" class="btn btn-primary" (click)="openAddForm()">
             <span class="icon">+</span>
             {{ 'SETTINGS.ADD_CATEGORY' | translate }}
           </button>
@@ -247,7 +247,7 @@
       <div class="categories-list" *ngIf="!showForm">
 
         <!-- Bulk toolbar -->
-        <div class="bulk-toolbar" *ngIf="selectedCategoryIds.size > 0">
+        <div class="bulk-toolbar" *ngIf="authService.isAdmin() && selectedCategoryIds.size > 0">
           <span>{{ selectedCategoryIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
           <button class="btn btn-danger btn-sm" (click)="bulkDeleteCategories()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
           <button class="btn btn-secondary btn-sm" (click)="selectedCategoryIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
@@ -273,10 +273,10 @@
               </span>
             </div>
             <div class="category-actions">
-              <button class="btn-icon edit" (click)="openEditForm(category)" [title]="'COMMON.EDIT' | translate">
+              <button *ngIf="authService.isAdmin()" class="btn-icon edit" (click)="openEditForm(category)" [title]="'COMMON.EDIT' | translate">
                 ✏️
               </button>
-              <button class="btn-icon delete" (click)="deleteCategory(category)" [title]="'COMMON.DELETE' | translate">
+              <button *ngIf="authService.isAdmin()" class="btn-icon delete" (click)="deleteCategory(category)" [title]="'COMMON.DELETE' | translate">
                 🗑️
               </button>
             </div>
@@ -291,10 +291,10 @@
                 <span class="category-name">{{ getCategoryName(child) }}</span>
               </div>
               <div class="category-actions">
-                <button class="btn-icon edit" (click)="openEditForm(child)" [title]="'COMMON.EDIT' | translate">
+                <button *ngIf="authService.isAdmin()" class="btn-icon edit" (click)="openEditForm(child)" [title]="'COMMON.EDIT' | translate">
                   ✏️
                 </button>
-                <button class="btn-icon delete" (click)="deleteCategory(child)" [title]="'COMMON.DELETE' | translate">
+                <button *ngIf="authService.isAdmin()" class="btn-icon delete" (click)="deleteCategory(child)" [title]="'COMMON.DELETE' | translate">
                   🗑️
                 </button>
               </div>
@@ -311,10 +311,10 @@
             <span class="category-name">{{ getCategoryName(category) }}</span>
           </div>
           <div class="category-actions">
-            <button class="btn-icon edit" (click)="openEditForm(category)" [title]="'COMMON.EDIT' | translate">
+            <button *ngIf="authService.isAdmin()" class="btn-icon edit" (click)="openEditForm(category)" [title]="'COMMON.EDIT' | translate">
               ✏️
             </button>
-            <button class="btn-icon delete" (click)="deleteCategory(category)" [title]="'COMMON.DELETE' | translate">
+            <button *ngIf="authService.isAdmin()" class="btn-icon delete" (click)="deleteCategory(category)" [title]="'COMMON.DELETE' | translate">
               🗑️
             </button>
           </div>
@@ -323,7 +323,7 @@
         <div class="no-data" *ngIf="filteredCategories.length === 0">
           <div class="no-data-icon">📭</div>
           <p>{{ 'SETTINGS.NO_CATEGORIES' | translate }}</p>
-          <button class="btn btn-primary" (click)="openAddForm()">
+          <button *ngIf="authService.isAdmin()" class="btn btn-primary" (click)="openAddForm()">
             <span class="icon">+</span>
             {{ 'SETTINGS.ADD_FIRST_CATEGORY' | translate }}
           </button>
@@ -343,7 +343,7 @@
           <button class="btn btn-secondary" (click)="loadEmployees()" [disabled]="employeesLoading">
             🔄 {{ 'COMMON.REFRESH' | translate }}
           </button>
-          <button class="btn btn-primary" (click)="openAddForm()">
+          <button *ngIf="authService.isAdmin()" class="btn btn-primary" (click)="openAddForm()">
             <span class="icon">+</span>
             {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
           </button>
@@ -412,7 +412,7 @@
       <div class="categories-list" *ngIf="!showForm">
 
         <!-- Bulk toolbar -->
-        <div class="bulk-toolbar" *ngIf="selectedEmployeeIds.size > 0">
+        <div class="bulk-toolbar" *ngIf="authService.isAdmin() && selectedEmployeeIds.size > 0">
           <span>{{ selectedEmployeeIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
           <button class="btn btn-danger btn-sm" (click)="bulkDeleteEmployees()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
           <button class="btn btn-secondary btn-sm" (click)="selectedEmployeeIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
@@ -437,10 +437,10 @@
             <span class="children-count">${{ employee.monthly_salary | number:'1.0-0' }}/{{ 'SALARIES.MONTH' | translate }}</span>
           </div>
           <div class="category-actions">
-            <button class="btn-icon edit" (click)="openEditForm(employee)" [title]="'COMMON.EDIT' | translate">
+            <button *ngIf="authService.isAdmin()" class="btn-icon edit" (click)="openEditForm(employee)" [title]="'COMMON.EDIT' | translate">
               ✏️
             </button>
-            <button class="btn-icon delete" (click)="deleteCategory(employee)" [title]="'COMMON.DELETE' | translate">
+            <button *ngIf="authService.isAdmin()" class="btn-icon delete" (click)="deleteCategory(employee)" [title]="'COMMON.DELETE' | translate">
               🗑️
             </button>
           </div>
@@ -449,7 +449,7 @@
         <div class="no-data" *ngIf="employees.length === 0">
           <div class="no-data-icon">💭</div>
           <p>{{ 'SETTINGS.NO_CATEGORIES' | translate }}</p>
-          <button class="btn btn-primary" (click)="openAddForm()">
+          <button *ngIf="authService.isAdmin()" class="btn btn-primary" (click)="openAddForm()">
             <span class="icon">+</span>
             {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
           </button>
@@ -458,3 +458,5 @@
     </div>
   </div>
 </div>
+
+

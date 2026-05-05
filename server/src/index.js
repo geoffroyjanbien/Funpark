@@ -5,6 +5,7 @@ const winston = require('winston');
 const path = require('path');
 
 // Import routes
+const authRoutes = require('./routes/auth');
 const revenueRoutes = require('./routes/revenue');
 const expenseRoutes = require('./routes/expenses');
 const investmentRoutes = require('./routes/investments');
@@ -79,6 +80,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
+app.use('/api/auth', authRoutes);
 app.use('/api/revenue', revenueRoutes);
 app.use('/api/expenses', expenseRoutes);
 app.use('/api/investments', investmentRoutes);

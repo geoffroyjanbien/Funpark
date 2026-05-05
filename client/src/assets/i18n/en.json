@@ -10,7 +10,8 @@
     "INVESTMENTS": "Investments",
     "SALARIES": "Salaries",
     "REPORTS": "Reports",
-    "SETTINGS": "Settings"
+    "SETTINGS": "Settings",
+    "SIGN_OUT": "Sign Out"
   },
   "COMMON": {
     "ADD": "Add",
@@ -41,6 +42,24 @@
     "DELETE_SELECTED": "Delete Selected",
     "CLEAR": "Clear",
     "SELECT_ALL": "Select All"
+  },
+  "LOGIN": {
+    "TITLE": "Sign In",
+    "USERNAME": "Username",
+    "PASSWORD": "Password",
+    "USERNAME_PLACEHOLDER": "Enter username",
+    "PASSWORD_PLACEHOLDER": "Enter password",
+    "SIGN_IN": "Sign In",
+    "SIGNING_IN": "Signing in...",
+    "ERROR": "Invalid username or password",
+    "REQUIRED": "Please enter username and password"
+  },
+  "ROLES": {
+    "ADMIN": "Administrator",
+    "READONLY": "Read Only User"
+  },
+  "APP_TITLE": {
+    "MANAGEMENT_SYSTEM": "Management System"
   },
   "FILTERS": {
     "VIEW_MODE": "View Mode",

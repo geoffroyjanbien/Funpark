@@ -1,0 +1,62 @@
+<div class="login-container">
+  <div class="language-switcher-login">
+    <button 
+      (click)="switchLanguage('en')" 
+      [class.active]="currentLang === 'en'"
+      class="lang-btn">
+      EN
+    </button>
+    <button 
+      (click)="switchLanguage('ar')" 
+      [class.active]="currentLang === 'ar'"
+      class="lang-btn">
+      AR
+    </button>
+  </div>
+  
+  <div class="login-card">
+    <div class="login-header">
+      <img src="assets/funpark.jpg" alt="Funpark Logo" class="login-logo">
+      <h1 class="login-title">
+        <span class="letter-f">F</span><span class="letter-u">u</span><span class="letter-n">n</span><span class="letter-p">p</span><span class="letter-a">a</span><span class="letter-r">r</span><span class="letter-k">k</span>
+      </h1>
+      <p>{{ 'APP_TITLE.MANAGEMENT_SYSTEM' | translate }}</p>
+    </div>
+
+    <form (ngSubmit)="onSubmit()" class="login-form">
+      <div class="form-group">
+        <label for="username">{{ 'LOGIN.USERNAME' | translate }}</label>
+        <input
+          type="text"
+          id="username"
+          [(ngModel)]="username"
+          name="username"
+          [placeholder]="'LOGIN.USERNAME_PLACEHOLDER' | translate"
+          [disabled]="isLoading"
+          required
+        />
+      </div>
+
+      <div class="form-group">
+        <label for="password">{{ 'LOGIN.PASSWORD' | translate }}</label>
+        <input
+          type="password"
+          id="password"
+          [(ngModel)]="password"
+          name="password"
+          [placeholder]="'LOGIN.PASSWORD_PLACEHOLDER' | translate"
+          [disabled]="isLoading"
+          required
+        />
+      </div>
+
+      <div class="error-message" *ngIf="errorMessage">
+        {{ errorMessage }}
+      </div>
+
+      <button type="submit" class="login-button" [disabled]="isLoading">
+        {{ isLoading ? ('LOGIN.SIGNING_IN' | translate) : ('LOGIN.SIGN_IN' | translate) }}
+      </button>
+    </form>
+  </div>
+</div>

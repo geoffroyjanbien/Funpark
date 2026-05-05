@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { InvestmentsService, InvestmentItem } from '../../services/investments.service';
 import { CategoryService, Category } from '../../services/category.service';
 import { TableGroupingService, GroupedData } from '../../shared/table-grouping.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-investments',
@@ -39,7 +40,8 @@ export class InvestmentsComponent implements OnInit {
     private investmentsService: InvestmentsService,
     private categoryService: CategoryService,
     private fb: FormBuilder,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public authService: AuthService
   ) {
     this.investmentForm = this.fb.group({
       date: ['', Validators.required],

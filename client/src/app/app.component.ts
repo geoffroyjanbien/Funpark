@@ -13,6 +13,7 @@ export class AppComponent implements OnInit {
   currentLang = 'en';
   mobileMenuOpen = false;
   pageTitle = '';
+  isLoginPage = false;
 
   constructor(
     private translate: TranslateService,
@@ -31,6 +32,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
+    // Set initial login page state
+    this.isLoginPage = this.router.url === '/login';
+    
     // Subscribe to language changes
     this.translate.onLangChange.subscribe((event) => {
       this.setDirection(event.lang);
@@ -41,6 +45,7 @@ export class AppComponent implements OnInit {
     this.router.events.pipe(
       filter(event => event instanceof NavigationEnd)
     ).subscribe(() => {
+      this.isLoginPage = this.router.url === '/login';
       this.updatePageTitle();
     });
     

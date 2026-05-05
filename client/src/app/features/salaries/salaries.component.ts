@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { FormBuilder, FormGroup, Validators } from '@angular/forms';
 import { SalariesService, Employee, SalaryPayment } from '../../services/salaries.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-salaries',
@@ -56,7 +57,8 @@ export class SalariesComponent implements OnInit {
 
   constructor(
     private fb: FormBuilder,
-    private salariesService: SalariesService
+    private salariesService: SalariesService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

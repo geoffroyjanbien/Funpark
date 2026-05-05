@@ -2,6 +2,7 @@ import { Component, OnInit } from '@angular/core';
 import { TranslateService } from '@ngx-translate/core';
 import { CategoryService, Category } from '../../services/category.service';
 import { SalariesService, Employee } from '../../services/salaries.service';
+import { AuthService } from '../../services/auth.service';
 
 type SettingsTab = 'revenue' | 'expense' | 'investment' | 'employees' | 'general';
 
@@ -48,7 +49,8 @@ export class SettingsComponent implements OnInit {
   constructor(
     private categoryService: CategoryService,
     private salariesService: SalariesService,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public authService: AuthService
   ) {}
 
   ngOnInit(): void {

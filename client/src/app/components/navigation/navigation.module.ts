@@ -4,9 +4,10 @@ import { RouterModule } from '@angular/router';
 import { TranslateModule } from '@ngx-translate/core';
 
 import { NavigationComponent } from './navigation.component';
+import { RoleTranslatePipe } from '../../pipes/role-translate.pipe';
 
 @NgModule({
-  declarations: [NavigationComponent],
+  declarations: [NavigationComponent, RoleTranslatePipe],
   imports: [
     CommonModule,
     RouterModule,

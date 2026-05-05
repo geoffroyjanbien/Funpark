@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { RevenueService, RevenueItem } from '../../services/revenue.service';
 import { CategoryService, Category } from '../../services/category.service';
 import { TableGroupingService, GroupedData } from '../../shared/table-grouping.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-revenue',
@@ -39,7 +40,8 @@ export class RevenueComponent implements OnInit {
     private revenueService: RevenueService,
     private categoryService: CategoryService,
     private fb: FormBuilder,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public authService: AuthService
   ) {
     this.revenueForm = this.fb.group({
       date: ['', Validators.required],

@@ -5,6 +5,11 @@
   position: relative;
 }
 
+.login-wrapper {
+  width: 100%;
+  min-height: 100vh;
+}
+
 .mobile-menu-toggle {
   display: none;
 }

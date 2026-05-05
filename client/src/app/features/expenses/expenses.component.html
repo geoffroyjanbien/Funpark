@@ -6,7 +6,7 @@
     </div>
     <div class="header-actions">
       <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
-      <button (click)="openAddForm()" class="btn btn-add">
+      <button *ngIf="authService.isAdmin()" (click)="openAddForm()" class="btn btn-add">
         <span class="icon">➕</span>
         {{ 'EXPENSES.ADD_EXPENSE' | translate }}
       </button>
@@ -169,7 +169,7 @@
       </button>
     </div>
     <!-- Bulk action toolbar -->
-    <div class="bulk-toolbar" *ngIf="selectedIds.size > 0">
+    <div class="bulk-toolbar" *ngIf="selectedIds.size > 0 && authService.isAdmin()">
       <span>{{ selectedIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
       <button class="btn btn-danger btn-sm" (click)="bulkDelete()" [disabled]="bulkDeleting">
         🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}
@@ -192,22 +192,22 @@
       <table class="data-table" *ngIf="group.items.length > 0 && group.expanded">
         <thead>
           <tr>
-            <th style="width:40px"><input type="checkbox" [checked]="allVisibleSelected" (change)="toggleSelectAll()"></th>
+            <th *ngIf="authService.isAdmin()" style="width:40px"><input type="checkbox" [checked]="allVisibleSelected" (change)="toggleSelectAll()"></th>
             <th>{{ 'COMMON.DATE' | translate }}</th>
             <th>{{ 'EXPENSES.CATEGORY' | translate }}</th>
             <th>{{ 'COMMON.AMOUNT' | translate }}</th>
             <th>{{ 'COMMON.DESCRIPTION' | translate }}</th>
-            <th>{{ 'COMMON.ACTIONS' | translate }}</th>
+            <th *ngIf="authService.isAdmin()">{{ 'COMMON.ACTIONS' | translate }}</th>
           </tr>
         </thead>
         <tbody>
           <tr *ngFor="let item of group.items; trackBy: trackById" [class]="getCategoryClass(item.category)">
-            <td><input type="checkbox" [checked]="isSelected(item.id!)" (change)="toggleSelection(item.id!)"></td>
+            <td *ngIf="authService.isAdmin()"><input type="checkbox" [checked]="isSelected(item.id!)" (change)="toggleSelection(item.id!)"></td>
             <td>{{item.date | customDate}}</td>
             <td>{{ 'EXPENSES.CATEGORIES.' + (item.category | normalizeKey) | translate }}</td>
             <td class="amount-cell">${{item.amount | number:'1.2-2'}}</td>
             <td>{{item.description || '-'}}</td>
-            <td class="actions-cell">
+            <td *ngIf="authService.isAdmin()" class="actions-cell">
               <button class="btn btn-edit" (click)="editItem(item)">{{ 'COMMON.EDIT' | translate }}</button>
               <button class="btn btn-delete" (click)="deleteItem(item)">{{ 'COMMON.DELETE' | translate }}</button>
             </td>

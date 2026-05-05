@@ -6,11 +6,11 @@
     </div>
     <div class="header-actions">
       <a routerLink="/dashboard" class="btn btn-secondary">{{ 'NAV.DASHBOARD' | translate }}</a>
-      <button *ngIf="activeTab === 'employees'" (click)="openEmployeeForm()" class="btn btn-add">
+      <button *ngIf="activeTab === 'employees' && authService.isAdmin()" (click)="openEmployeeForm()" class="btn btn-add">
         <span class="icon">➕</span>
         {{ 'SALARIES.ADD_EMPLOYEE' | translate }}
       </button>
-      <button *ngIf="activeTab === 'payments'" (click)="openPaymentForm()" class="btn btn-add">
+      <button *ngIf="activeTab === 'payments' && authService.isAdmin()" (click)="openPaymentForm()" class="btn btn-add">
         <span class="icon">➕</span>
         {{ 'SALARIES.ADD_PAYMENT' | translate }}
       </button>
@@ -97,7 +97,7 @@
         <button (click)="loadEmployees()" class="btn btn-secondary btn-sm" [disabled]="loading">🔄 {{ 'COMMON.REFRESH' | translate }}</button>
       </div>
       <div class="card-content">
-        <div class="bulk-toolbar" *ngIf="selectedEmployeeIds.size > 0">
+        <div class="bulk-toolbar" *ngIf="selectedEmployeeIds.size > 0 && authService.isAdmin()">
           <span>{{ selectedEmployeeIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
           <button class="btn btn-danger btn-sm" (click)="bulkDeleteEmployees()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
           <button class="btn btn-secondary btn-sm" (click)="selectedEmployeeIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
@@ -128,10 +128,10 @@
                   </span>
                 </td>
                 <td class="text-center">
-                  <button (click)="openEmployeeForm(employee)" class="btn-action btn-edit" title="Edit">
+                  <button *ngIf="authService.isAdmin()" (click)="openEmployeeForm(employee)" class="btn-action btn-edit" title="Edit">
                     ✏️
                   </button>
-                  <button (click)="deleteEmployee(employee)" class="btn-action btn-delete" title="Delete">
+                  <button *ngIf="authService.isAdmin()" (click)="deleteEmployee(employee)" class="btn-action btn-delete" title="Delete">
                     🗑️
                   </button>
                 </td>
@@ -169,7 +169,7 @@
         <button (click)="loadPayments()" class="btn btn-secondary btn-sm" [disabled]="loading">🔄 {{ 'COMMON.REFRESH' | translate }}</button>
       </div>
       <div class="card-content">
-        <div class="bulk-toolbar" *ngIf="selectedPaymentIds.size > 0">
+        <div class="bulk-toolbar" *ngIf="selectedPaymentIds.size > 0 && authService.isAdmin()">
           <span>{{ selectedPaymentIds.size }} {{ 'COMMON.SELECTED' | translate }}</span>
           <button class="btn btn-danger btn-sm" (click)="bulkDeletePayments()" [disabled]="bulkDeleting">🗑️ {{ 'COMMON.DELETE_SELECTED' | translate }}</button>
           <button class="btn btn-secondary btn-sm" (click)="selectedPaymentIds.clear()">✕ {{ 'COMMON.CLEAR' | translate }}</button>
@@ -202,10 +202,10 @@
                 <td>{{ payment.month }} {{ payment.year }}</td>
                 <td>{{ payment.notes || '-' }}</td>
                 <td class="text-center">
-                  <button (click)="openPaymentForm(payment)" class="btn-action btn-edit" title="Edit">
+                  <button *ngIf="authService.isAdmin()" (click)="openPaymentForm(payment)" class="btn-action btn-edit" title="Edit">
                     ✏️
                   </button>
-                  <button (click)="deletePayment(payment)" class="btn-action btn-delete" title="Delete">
+                  <button *ngIf="authService.isAdmin()" (click)="deletePayment(payment)" class="btn-action btn-delete" title="Delete">
                     🗑️
                   </button>
                 </td>
@@ -434,3 +434,4 @@
     </div>
   </div>
 </div>
+

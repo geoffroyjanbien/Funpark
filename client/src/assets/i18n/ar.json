@@ -10,7 +10,8 @@
     "INVESTMENTS": "الاستثمارات",
     "SALARIES": "الرواتب",
     "REPORTS": "التقارير",
-    "SETTINGS": "الإعدادات"
+    "SETTINGS": "الإعدادات",
+    "SIGN_OUT": "تسجيل الخروج"
   },
   "COMMON": {
     "ADD": "إضافة",
@@ -41,6 +42,24 @@
     "DELETE_SELECTED": "حذف المحدد",
     "CLEAR": "مسح",
     "SELECT_ALL": "تحديد الكل"
+  },
+  "LOGIN": {
+    "TITLE": "تسجيل الدخول",
+    "USERNAME": "اسم المستخدم",
+    "PASSWORD": "كلمة المرور",
+    "USERNAME_PLACEHOLDER": "أدخل اسم المستخدم",
+    "PASSWORD_PLACEHOLDER": "أدخل كلمة المرور",
+    "SIGN_IN": "تسجيل الدخول",
+    "SIGNING_IN": "جاري تسجيل الدخول...",
+    "ERROR": "اسم المستخدم أو كلمة المرور غير صحيحة",
+    "REQUIRED": "الرجاء إدخال اسم المستخدم وكلمة المرور"
+  },
+  "ROLES": {
+    "ADMIN": "مدير النظام",
+    "READONLY": "مستخدم للقراءة فقط"
+  },
+  "APP_TITLE": {
+    "MANAGEMENT_SYSTEM": "نظام الإدارة"
   },
   "FILTERS": {
     "VIEW_MODE": "وضع العرض",

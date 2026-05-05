@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { ExpensesService, ExpenseItem } from '../../services/expenses.service';
 import { CategoryService, Category } from '../../services/category.service';
 import { TableGroupingService, GroupedData } from '../../shared/table-grouping.service';
+import { AuthService } from '../../services/auth.service';
 
 @Component({
   selector: 'app-expenses',
@@ -39,7 +40,8 @@ export class ExpensesComponent implements OnInit {
     private expensesService: ExpensesService,
     private categoryService: CategoryService,
     private fb: FormBuilder,
-    private translate: TranslateService
+    private translate: TranslateService,
+    public authService: AuthService
   ) {
     this.expenseForm = this.fb.group({
       date: ['', Validators.required],

@@ -85,6 +85,14 @@
   </ul>
 
   <div class="nav-footer">
+    <div class="user-info" *ngIf="currentUser">
+      <span class="user-name">{{ currentUser.full_name }}</span>
+      <span class="user-role">{{ currentUser.role | roleTranslate }}</span>
+    </div>
+    <button class="sign-out-btn" (click)="signOut()">
+      <span class="nav-icon">🚪</span>
+      <span class="nav-text">{{ 'NAV.SIGN_OUT' | translate }}</span>
+    </button>
     <div class="nav-info">
       <small class="nav-version">v1.0.0</small>
       <small class="nav-date">{{ currentDate | date:'short' }}</small>
