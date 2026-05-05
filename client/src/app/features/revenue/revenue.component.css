@@ -151,7 +151,7 @@
 }
 
 .modal-close {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   font-size: 1.5rem;
   color: var(--muted-text);
@@ -268,7 +268,7 @@
 }
 
 .alert-close {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   color: inherit;
   cursor: pointer;
@@ -465,7 +465,7 @@
 
 /* Action Buttons */
 .btn-action {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
   padding: var(--spacing-xs);
@@ -704,3 +704,28 @@
     font-size: 0.8rem;
   }
 }
+
+/* Action Buttons */
+.btn-action {
+  background: none;
+  border: 1px solid transparent;
+  cursor: pointer;
+  padding: var(--spacing-xs);
+  margin: 0 var(--spacing-xs);
+  border-radius: var(--radius-sm);
+  font-size: 1rem;
+  transition: all 0.2s ease;
+}
+
+.btn-edit:hover {
+  background-color: rgba(74, 158, 255, 0.1);
+  border-color: var(--primary-accent);
+  color: var(--primary-accent);
+}
+
+.btn-delete:hover {
+  background-color: rgba(239, 68, 68, 0.1);
+  border-color: var(--error-color);
+  color: var(--error-color);
+}
+

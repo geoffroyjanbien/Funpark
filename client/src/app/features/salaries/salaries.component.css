@@ -168,7 +168,7 @@
 }
 
 .modal-close {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   font-size: 1.5rem;
   color: var(--muted-text);
@@ -282,7 +282,7 @@
 }
 
 .alert-close {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   color: inherit;
   cursor: pointer;
@@ -403,7 +403,7 @@
 
 /* Action Buttons */
 .btn-action {
-  background: none;
+  background: transparent;
   border: 1px solid transparent;
   cursor: pointer;
   padding: var(--spacing-xs);

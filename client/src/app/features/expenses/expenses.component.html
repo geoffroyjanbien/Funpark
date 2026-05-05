@@ -208,8 +208,12 @@
             <td class="amount-cell">${{item.amount | number:'1.2-2'}}</td>
             <td>{{item.description || '-'}}</td>
             <td *ngIf="authService.isAdmin()" class="actions-cell">
-              <button class="btn btn-edit" (click)="editItem(item)">{{ 'COMMON.EDIT' | translate }}</button>
-              <button class="btn btn-delete" (click)="deleteItem(item)">{{ 'COMMON.DELETE' | translate }}</button>
+              <button (click)="editItem(item)" class="btn-action btn-edit" title="Edit">
+                ✏️
+              </button>
+              <button (click)="deleteItem(item)" class="btn-action btn-delete" title="Delete">
+                🗑️
+              </button>
             </td>
           </tr>
         </tbody>
@@ -221,3 +225,4 @@
     </div>
   </div>
 </div>
+
